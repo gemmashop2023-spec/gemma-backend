@@ -1,0 +1,28 @@
+# ═══════════════════════════════════════════════════════════
+#  GEMMA — Variabili d'ambiente
+#  Copia questo file come .env.local per test locale
+#  Su Vercel: incolla ogni variabile in Settings → Environment Variables
+# ═══════════════════════════════════════════════════════════
+
+# ── Supabase ────────────────────────────────────────────────
+# Trovi questi valori in: supabase.com → tuo progetto → Settings → API
+SUPABASE_URL=https://XXXXXXXXXXXXXXXX.supabase.co
+SUPABASE_SERVICE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.XXXXXXXX
+
+# ── Amazon SP-API ───────────────────────────────────────────
+# Seller Central → App e servizi → Sviluppa app → Credenziali
+AMAZON_CLIENT_ID=amzn1.application-oa2-client.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+AMAZON_CLIENT_SECRET=amzn1.oa2-cs.v1.XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+AMAZON_REFRESH_TOKEN=Atzr|XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+# IT=APJ6JRA9NG5V4 | DE=A1PA6795UKMFR9 | FR=A13V1IB3VIYZZH | ES=A1RKKUPIHCS9HS
+AMAZON_MARKETPLACE_ID=APJ6JRA9NG5V4
+
+# ── eBay REST API ───────────────────────────────────────────
+# developer.ebay.com → My Account → Application Keys → Production
+EBAY_APP_ID=TuoNome-GemmaApp-PRD-XXXXXXXXXXXXXXXX-XXXXXXXX
+EBAY_CERT_ID=PRD-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+EBAY_REFRESH_TOKEN=v^1.1#i^1#r^1#f^1#p^3#I^3#t^Ul4xMF...XXXXXXXX
+
+# ── Sicurezza Cron ──────────────────────────────────────────
+# Genera una stringa random (es. da: openssl rand -hex 32)
+CRON_SECRET=genera_una_stringa_casuale_lunga_qui
