@@ -267,32 +267,29 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 ════════════════════════════════════════════ -->
 <div class="pg active" id="pg-dashboard">
   <div class="kgrid k4">
-    <div class="kc"><div class="kc-lbl">Ordini attivi (Amazon+eBay)</div><div class="kc-val">0</div><div class="kc-sub up">↑ +3 vs ieri</div></div>
-    <div class="kc"><div class="kc-lbl">Fatturato oggi</div><div class="kc-val">€0</div><div class="kc-sub up">↑ +12%</div></div>
-    <div class="kc"><div class="kc-lbl">Acquisti aperti</div><div class="kc-val warn">0</div><div class="kc-sub">3 in transito</div></div>
-    <div class="kc"><div class="kc-lbl">Alert critici</div><div class="kc-val dn">0</div><div class="kc-sub dn">intervento richiesto</div></div>
+    <div class="kc"><div class="kc-lbl">Ordini attivi (Amazon+eBay)</div><div class="kc-val">0</div><div class="kc-sub up"></div></div>
+    <div class="kc"><div class="kc-lbl">Fatturato oggi</div><div class="kc-val">€0</div><div class="kc-sub up"></div></div>
+    <div class="kc"><div class="kc-lbl">Acquisti aperti</div><div class="kc-val warn">0</div><div class="kc-sub">0 in transito</div></div>
+    <div class="kc"><div class="kc-lbl">Alert critici</div><div class="kc-val dn">0</div><div class="kc-sub dn"></div></div>
   </div>
   <div class="kgrid k4">
-    <div class="kc" style="border-left:3px solid var(--blue)"><div class="kc-lbl" style="color:var(--blue)">VENDITE — Resi aperti</div><div class="kc-val">2</div><div class="kc-sub"><span class="link-ord" onclick="nav('resi-clienti')">→ Resi clienti</span></div></div>
-    <div class="kc" style="border-left:3px solid var(--red)"><div class="kc-lbl" style="color:var(--red)">VENDITE — Cancellazioni</div><div class="kc-val">2</div><div class="kc-sub"><span class="link-ord" onclick="nav('cancellazioni')">→ Cancellazioni</span></div></div>
-    <div class="kc" style="border-left:3px solid var(--purple)"><div class="kc-lbl" style="color:var(--purple)">ACQUISTI — Contestazioni</div><div class="kc-val">3</div><div class="kc-sub"><span class="link-ord" onclick="nav('contestazioni-acquisti')">→ Contestazioni acquisti</span></div></div>
-    <div class="kc" style="border-left:3px solid var(--amber)"><div class="kc-lbl" style="color:var(--amber)">MAGAZZINO — In assistenza</div><div class="kc-val">1</div><div class="kc-sub"><span class="link-ord" onclick="nav('assistenza')">→ In assistenza</span></div></div>
+    <div class="kc" style="border-left:3px solid var(--blue)"><div class="kc-lbl" style="color:var(--blue)">VENDITE — Resi aperti</div><div class="kc-val">0</div><div class="kc-sub"><span class="link-ord" onclick="nav('resi-clienti')">→ Resi clienti</span></div></div>
+    <div class="kc" style="border-left:3px solid var(--red)"><div class="kc-lbl" style="color:var(--red)">VENDITE — Cancellazioni</div><div class="kc-val">0</div><div class="kc-sub"><span class="link-ord" onclick="nav('cancellazioni')">→ Cancellazioni</span></div></div>
+    <div class="kc" style="border-left:3px solid var(--purple)"><div class="kc-lbl" style="color:var(--purple)">ACQUISTI — Contestazioni</div><div class="kc-val">0</div><div class="kc-sub"><span class="link-ord" onclick="nav('contestazioni-acquisti')">→ Contestazioni acquisti</span></div></div>
+    <div class="kc" style="border-left:3px solid var(--amber)"><div class="kc-lbl" style="color:var(--amber)">MAGAZZINO — In assistenza</div><div class="kc-val">0</div><div class="kc-sub"><span class="link-ord" onclick="nav('assistenza')">→ In assistenza</span></div></div>
   </div>
   <div class="kgrid k2">
     <div class="card">
       <div class="card-hdr"><div class="card-ttl"><i class="ti ti-brand-amazon" style="color:#ff9900"></i>Ultimi ordini Amazon</div><button class="btn bg bxs" onclick="nav('ordini-amazon')">Vedi tutti</button></div>
       <div class="tw"><table><thead><tr><th>Ordine</th><th>Prodotto</th><th>Cliente</th><th>Stato</th></tr></thead><tbody>
-        <tr><td class="link-ord" onclick="navTo('ordine','#114-8823441-1234567')" style="cursor:pointer">#114-8823441-1234567</td><td>iPhone 15 Pro Max</td><td>Giulia R.</td><td><span class="chip c-amber">In lavorazione</span></td></tr>
-        <tr><td class="link-ord" onclick="navTo('ordine','#114-6634521-9876543')" style="cursor:pointer">#114-6634521-9876543</td><td>Galaxy S24 Ultra</td><td>Sara M.</td><td><span class="chip c-blue">Nuovo</span></td></tr>
-        <tr><td class="link-ord" onclick="navTo('ordine','#114-7712009-6543210')" style="cursor:pointer">#114-7712009-6543210</td><td>MacBook Air M2</td><td>Luca T.</td><td><span class="chip c-green">Evaso</span></td></tr>
-      </tbody></table></div>
+        <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:20px">Nessun ordine recente</td></tr></table></div>
     </div>
     <div class="card">
       <div class="card-hdr"><div class="card-ttl"><i class="ti ti-building-warehouse" style="color:var(--green)"></i>Scorte critiche</div><button class="btn bg bxs" onclick="nav('magazzino')">Magazzino</button></div>
       <div style="display:flex;flex-direction:column;gap:9px">
-        <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>iPhone 15 128GB Black</span><span class="dn">2/5</span></div><div style="height:6px;background:#f3f4f6;border-radius:3px"><div style="width:40%;height:100%;background:var(--red);border-radius:3px"></div></div></div>
-        <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>AirPods Pro 2</span><span class="warn">3/6</span></div><div style="height:6px;background:#f3f4f6;border-radius:3px"><div style="width:50%;height:100%;background:var(--amber);border-radius:3px"></div></div></div>
-        <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span>Samsung A54</span><span class="warn">4/8</span></div><div style="height:6px;background:#f3f4f6;border-radius:3px"><div style="width:50%;height:100%;background:var(--amber);border-radius:3px"></div></div></div>
+        <div style="font-size:12px;color:var(--text-muted);text-align:center;padding:20px">Nessuna scorta critica</div></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span><div style="height:6px;background:#f3f4f6;border-radius:3px"><div style="width:50%;height:100%;background:var(--amber);border-radius:3px"></div></div></div>
+        <div><div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:3px"><span><div style="height:6px;background:#f3f4f6;border-radius:3px"><div style="width:50%;height:100%;background:var(--amber);border-radius:3px"></div></div></div>
       </div>
     </div>
   </div>
@@ -365,9 +362,9 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
   </span></div>
 
   <div class="kgrid k5">
-    <div class="kc"><div class="kc-lbl">Aperte</div><div class="kc-val warn">2</div><div class="kc-sub">€765 esposti</div></div>
+    <div class="kc"><div class="kc-lbl">Aperte</div><div class="kc-val warn">0</div><div class="kc-sub">€765 esposti</div></div>
     <div class="kc"><div class="kc-lbl">Parz. rimborsate</div><div class="kc-val" style="color:var(--blue)">1</div><div class="kc-sub">€100 ricevuti</div></div>
-    <div class="kc"><div class="kc-lbl">Chiuse — vinte</div><div class="kc-val up">1</div><div class="kc-sub">€610 recuperati</div></div>
+    <div class="kc"><div class="kc-lbl">Chiuse — vinte</div><div class="kc-val up">0</div><div class="kc-sub">€610 recuperati</div></div>
     <div class="kc"><div class="kc-lbl">Totale contestato</div><div class="kc-val">€1.375</div></div>
     <div class="kc"><div class="kc-lbl">Con reso generato</div><div class="kc-val" style="color:var(--purple)">2</div><div class="kc-sub"><span class="link-ord" onclick="nav('resi-venditori')">→ Resi a venditori</span></div></div>
   </div>
@@ -420,11 +417,11 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
   </span></div>
 
   <div class="kgrid k5">
-    <div class="kc"><div class="kc-lbl">Pratiche aperte</div><div class="kc-val warn">2</div><div class="kc-sub">da completare</div></div>
+    <div class="kc"><div class="kc-lbl">Pratiche aperte</div><div class="kc-val warn">0</div><div class="kc-sub">da completare</div></div>
     <div class="kc"><div class="kc-lbl">In istruttoria</div><div class="kc-val" style="color:var(--blue)">1</div></div>
     <div class="kc"><div class="kc-lbl">Rimborsi ottenuti</div><div class="kc-val up">€350</div></div>
     <div class="kc"><div class="kc-lbl">Rimborsi attesi</div><div class="kc-val" style="color:var(--purple)">€1.688</div></div>
-    <div class="kc"><div class="kc-lbl">Pratiche chiuse</div><div class="kc-val">1</div></div>
+    <div class="kc"><div class="kc-lbl">Pratiche chiuse</div><div class="kc-val">0</div></div>
   </div>
 
   <div class="toolbar">
@@ -487,9 +484,9 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
   <div class="kgrid k5">
     <div class="kc"><div class="kc-lbl">Resi aperti</div><div class="kc-val dn">0</div></div>
     <div class="kc"><div class="kc-lbl">In transito verso noi</div><div class="kc-val warn">0</div></div>
-    <div class="kc"><div class="kc-lbl">Ricevuti questo mese</div><div class="kc-val">3</div></div>
+    <div class="kc"><div class="kc-lbl">Ricevuti questo mese</div><div class="kc-val">0</div></div>
     <div class="kc"><div class="kc-lbl">Rimborsi emessi</div><div class="kc-val dn">€3.677</div></div>
-    <div class="kc"><div class="kc-lbl">Reintegrati a stock</div><div class="kc-val up">2</div></div>
+    <div class="kc"><div class="kc-lbl">Reintegrati a stock</div><div class="kc-val up">0</div></div>
   </div>
   <div class="toolbar">
     <select class="fi" style="width:150px"><option>Tutti gli stati</option><option>In attesa</option><option>In transito</option><option>Ricevuto</option><option>Chiuso</option></select>
@@ -509,11 +506,11 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 <!-- ════════ MAGAZZINO ════════ -->
 <div class="pg" id="pg-magazzino">
   <div class="kgrid k5">
-    <div class="kc"><div class="kc-lbl">Prodotti totali</div><div class="kc-val">342</div></div>
-    <div class="kc"><div class="kc-lbl">Sotto soglia</div><div class="kc-val warn">8</div></div>
+    <div class="kc"><div class="kc-lbl">Prodotti totali</div><div class="kc-val">0</div></div>
+    <div class="kc"><div class="kc-lbl">Sotto soglia</div><div class="kc-val warn">0</div></div>
     <div class="kc"><div class="kc-lbl">In assistenza</div><div class="kc-val" style="color:var(--amber)">0</div></div>
-    <div class="kc"><div class="kc-lbl">Valore stock</div><div class="kc-val">€42.8k</div></div>
-    <div class="kc"><div class="kc-lbl">Usati/Ricond.</div><div class="kc-val warn">53</div></div>
+    <div class="kc"><div class="kc-lbl">Valore stock</div><div class="kc-val">€0</div></div>
+    <div class="kc"><div class="kc-lbl">Usati/Ricond.</div><div class="kc-val warn">0</div></div>
   </div>
   <div class="toolbar">
     <input class="fi" style="width:220px" placeholder="Cerca SKU, nome..."/>
@@ -552,8 +549,8 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
   <div class="kgrid k4" style="margin-bottom:18px">
     <div class="kc" style="border-left:3px solid var(--green)"><div class="kc-lbl">Entrate (carichi)</div><div class="kc-val up" id="kpi-entrate">+23</div><div class="kc-sub">€12.840 valore</div></div>
     <div class="kc" style="border-left:3px solid var(--red)"><div class="kc-lbl">Uscite (vendite)</div><div class="kc-val dn" id="kpi-uscite">−18</div><div class="kc-sub">€15.320 valore</div></div>
-    <div class="kc" style="border-left:3px solid var(--amber)"><div class="kc-lbl">In assistenza</div><div class="kc-val warn">1</div><div class="kc-sub">€229 bloccato</div></div>
-    <div class="kc" style="border-left:3px solid var(--text-muted)"><div class="kc-lbl">Rettifiche</div><div class="kc-val">2</div></div>
+    <div class="kc" style="border-left:3px solid var(--amber)"><div class="kc-lbl">In assistenza</div><div class="kc-val warn">0</div><div class="kc-sub">€229 bloccato</div></div>
+    <div class="kc" style="border-left:3px solid var(--text-muted)"><div class="kc-lbl">Rettifiche</div><div class="kc-val">0</div></div>
   </div>
 
   <!-- LEGENDA -->
@@ -576,47 +573,17 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 <div class="pg" id="pg-assistenza">
   <div class="ai ai-amber"><i class="ti ti-tool"></i><span>Gli articoli in assistenza sono <strong>temporaneamente fuori stock</strong>. Il magazzino li mostra come non disponibili finché non rientrano o vengono dichiarati irreparabilità.</span></div>
   <div class="kgrid k4">
-    <div class="kc"><div class="kc-lbl">In assistenza ora</div><div class="kc-val warn">1</div></div>
+    <div class="kc"><div class="kc-lbl">In assistenza ora</div><div class="kc-val warn">0</div></div>
     <div class="kc"><div class="kc-lbl">Valore bloccato</div><div class="kc-val warn">€229</div></div>
-    <div class="kc"><div class="kc-lbl">Rientrati questo mese</div><div class="kc-val up">2</div></div>
-    <div class="kc"><div class="kc-lbl">Dichiarati irriparabili</div><div class="kc-val dn">1</div></div>
+    <div class="kc"><div class="kc-lbl">Rientrati questo mese</div><div class="kc-val up">0</div></div>
+    <div class="kc"><div class="kc-lbl">Dichiarati irriparabili</div><div class="kc-val dn">0</div></div>
   </div>
   <div class="toolbar">
     <select class="fi" style="width:140px"><option>Tutti gli stati</option><option>In assistenza</option><option>Rientrato</option><option>Irriparabile</option></select>
     <div class="ml"><button class="btn bp" onclick="openModal('m-invia-assistenza')"><i class="ti ti-plus"></i>Invia in assistenza</button></div>
   </div>
   <div class="tw"><table><thead><tr><th>ID</th><th>SKU</th><th>Prodotto</th><th>Condiz. ingresso</th><th>Motivo</th><th>Centro assistenza</th><th>Data invio</th><th>Data prevista rientro</th><th>Costo stimato</th><th>Stato</th><th></th></tr></thead><tbody>
-    <tr>
-      <td class="mono" style="color:var(--amber);font-weight:700">ASS-001</td>
-      <td class="mono">APPL-APP2-WHT</td>
-      <td><strong>AirPods Pro 2 White</strong></td>
-      <td><span class="chip c-red">Difetto — mic</span></td>
-      <td>Microfono sinistro non funzionante</td>
-      <td>iService Milano</td>
-      <td>20/05/2026</td>
-      <td>28/05/2026</td>
-      <td>€45</td>
-      <td><span class="assist-badge"><i class="ti ti-tool" style="font-size:10px"></i>In assistenza</span></td>
-      <td class="rg">
-        <button class="btn bg bxs"><i class="ti ti-eye"></i></button>
-        <button class="btn bgreen bxs" onclick="segnaRientrato()"><i class="ti ti-check"></i>Rientrato</button>
-        <button class="btn bred bxs" onclick="segnaIrriparabile()"><i class="ti ti-x"></i>Irripar.</button>
-      </td>
-    </tr>
-    <tr style="opacity:.6">
-      <td class="mono" style="color:var(--green);font-weight:700">ASS-002</td>
-      <td class="mono">APPL-IP13-64-BLK</td>
-      <td><strong>iPhone 13 64GB Black</strong></td>
-      <td><span class="chip c-amber">Usato — schermo</span></td>
-      <td>Sostituzione display</td>
-      <td>iService Milano</td>
-      <td>05/05/2026</td>
-      <td>10/05/2026</td>
-      <td>€80</td>
-      <td><span class="chip c-green">Rientrato</span></td>
-      <td><button class="btn bg bxs"><i class="ti ti-eye"></i></button></td>
-    </tr>
-  </tbody></table></div>
+        <tr><td colspan="4" style="text-align:center;color:var(--text-muted);padding:20px">Nessun ordine recente</td></tr></table></div>
 </div>
 
 <!-- ════════ ACQUISTI ════════ -->
@@ -625,10 +592,10 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 
   <div class="kgrid k5">
     <div class="kc"><div class="kc-lbl">Acquisti totali mese</div><div class="kc-val">€6.135</div><div class="kc-sub">4 ordini</div></div>
-    <div class="kc"><div class="kc-lbl">Non spediti</div><div class="kc-val warn">1</div><div class="kc-sub">in attesa ritiro</div></div>
+    <div class="kc"><div class="kc-lbl">Non spediti</div><div class="kc-val warn">0</div><div class="kc-sub">in attesa ritiro</div></div>
     <div class="kc"><div class="kc-lbl">Verso magazzino</div><div class="kc-val" style="color:var(--blue)">2</div><div class="kc-sub">in transito</div></div>
     <div class="kc"><div class="kc-lbl">Verso cliente</div><div class="kc-val" style="color:var(--orange)">1</div><div class="kc-sub">spedizione diretta</div></div>
-    <div class="kc"><div class="kc-lbl">Consegnati</div><div class="kc-val up">1</div></div>
+    <div class="kc"><div class="kc-lbl">Consegnati</div><div class="kc-val up">0</div></div>
   </div>
 
   <!-- LEGENDA DESTINAZIONE -->
@@ -681,31 +648,29 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 <div class="pg" id="pg-contestazioni">
   <div class="ai ai-blue"><i class="ti ti-info-circle"></i><span>Le contestazioni riguardano esclusivamente <strong>acquisti da venditori</strong> su piattaforme secondarie. Non hanno relazione con i resi clienti.</span></div>
   <div class="kgrid k4">
-    <div class="kc"><div class="kc-lbl">Contestazioni aperte</div><div class="kc-val warn">2</div><div class="kc-sub">€765 esposti</div></div>
-    <div class="kc"><div class="kc-lbl">Chiuse — vinte</div><div class="kc-val up">1</div><div class="kc-sub">€610 recuperati</div></div>
+    <div class="kc"><div class="kc-lbl">Contestazioni aperte</div><div class="kc-val warn">0</div><div class="kc-sub">€765 esposti</div></div>
+    <div class="kc"><div class="kc-lbl">Chiuse — vinte</div><div class="kc-val up">0</div><div class="kc-sub">€610 recuperati</div></div>
     <div class="kc"><div class="kc-lbl">Totale contestato</div><div class="kc-val">€1.375</div></div>
     <div class="kc"><div class="kc-lbl">Con reso a venditore</div><div class="kc-val" style="color:var(--purple)">2</div><div class="kc-sub"><span class="link-ord" onclick="nav('resi-venditori')">→ Resi venditori</span></div></div>
   </div>
   <div class="tw"><table><thead><tr><th>ID</th><th>Data</th><th>Acquisto</th><th>Prodotto</th><th>Piattaforma</th><th>Motivo</th><th>Contestato</th><th>Rimb. parz.</th><th>Rimb. tot.</th><th>Stato</th><th>Reso gen.</th><th></th></tr></thead><tbody>
     <tr><td class="mono" style="color:var(--purple);font-weight:700">CONT-001</td><td>15/05</td><td class="link-ord" onclick="navTo('acquisto','ACQ-005')" style="cursor:pointer">ACQ-005</td><td>iPad Air 5 256GB</td><td><span class="chip c-amber">Subito.it</span></td><td><span class="chip c-red">Non conforme</span></td><td>€610</td><td style="color:var(--green);font-weight:700">€610</td><td style="color:var(--green);font-weight:700">€610</td><td><span class="chip c-teal">Chiusa vinta</span></td><td><span class="arrow-link" onclick="navTo('reso-venditore','RESO-001')" style="cursor:pointer"><i class="ti ti-arrow-forward-up"></i>RESO-001</span></td><td><button class="btn bg bxs"><i class="ti ti-eye"></i></button></td></tr>
     <tr><td class="mono" style="color:var(--purple);font-weight:700">CONT-002</td><td>19/05</td><td class="link-ord" onclick="navTo('acquisto','ACQ-002')" style="cursor:pointer">ACQ-002</td><td>Samsung S24 256GB</td><td><span class="chip c-purple">Vinted</span></td><td><span class="chip c-amber">Difetto</span></td><td>€580</td><td style="color:var(--text-muted)">—</td><td style="color:var(--text-muted)">In attesa</td><td><span class="chip c-amber">In attesa</span></td><td style="color:var(--text-muted)">—</td><td><button class="btn bg bxs"><i class="ti ti-eye"></i></button></td></tr>
-    <tr><td class="mono" style="color:var(--purple);font-weight:700">CONT-003</td><td>19/05</td><td class="link-ord" onclick="navTo('acquisto','ACQ-003')" style="cursor:pointer">ACQ-003</td><td>AirPods Pro 2</td><td><span class="chip c-blue">eBay</span></td><td><span class="chip c-red">Art. diverso</span></td><td>€185</td><td style="color:var(--green);font-weight:700">€100</td><td style="color:var(--text-muted)">In attesa saldo</td><td><span class="chip c-amber">Parz. rimb.</span></td><td><span class="arrow-link" onclick="navTo('reso-venditore','RESO-002')" style="cursor:pointer"><i class="ti ti-arrow-forward-up"></i>RESO-002</span></td><td><button class="btn bg bxs"><i class="ti ti-eye"></i></button></td></tr>
-  </tbody><tfoot><tr><td colspan="6" style="text-align:right;font-size:11px;color:var(--text-sec)">TOTALI</td><td>€1.375</td><td style="color:var(--green)">€710</td><td style="color:var(--green)">€610</td><td colspan="3"></td></tr></tfoot></table></div>
+    <tr><td class="mono" style="color:var(--purple);font-weight:700">CONT-003</td><td>19/05</td><td class="link-ord" onclick="navTo('acquisto','ACQ-003')" style="cursor:pointer">ACQ-003</td><td>
 </div>
 
 <!-- ════════ RESI A VENDITORI ════════ -->
 <div class="pg" id="pg-resi-venditori">
   <div class="ai ai-blue"><i class="ti ti-info-circle"></i><span>Questa sezione raccoglie i resi <strong>verso venditori</strong> su piattaforme (Subito, Vinted, eBay), generati da contestazioni di non conformità. Separati dai resi clienti in <span class="link-ord" onclick="nav('resi-clienti')">Vendite → Resi clienti</span>.</span></div>
   <div class="kgrid k4">
-    <div class="kc"><div class="kc-lbl">Resi attivi</div><div class="kc-val warn">1</div></div>
+    <div class="kc"><div class="kc-lbl">Resi attivi</div><div class="kc-val warn">0</div></div>
     <div class="kc"><div class="kc-lbl">Valore in transito</div><div class="kc-val warn">€185</div></div>
     <div class="kc"><div class="kc-lbl">Conclusi mese</div><div class="kc-val up">1</div></div>
     <div class="kc"><div class="kc-lbl">Importo recuperato</div><div class="kc-val up">€610</div></div>
   </div>
   <div class="tw"><table><thead><tr><th>ID Reso</th><th>Data</th><th>Contestazione</th><th>Acquisto</th><th>Prodotto</th><th>Venditore</th><th>Piattaforma</th><th>Valore</th><th>Corriere</th><th>Tracking reso</th><th>Stato</th><th></th></tr></thead><tbody>
     <tr><td class="mono" style="color:var(--purple);font-weight:700">RESO-001</td><td>17/05</td><td class="link-ord" onclick="nav('contestazioni')">CONT-001</td><td class="link-ord" onclick="navTo('acquisto','ACQ-005')" style="cursor:pointer">ACQ-005</td><td>iPad Air 5 256GB</td><td>tech_reuse_mi</td><td><span class="chip c-amber">Subito.it</span></td><td>€610</td><td>BRT</td><td class="mono">BRT-RSO-001122</td><td><span class="chip c-green">Ricevuto</span></td><td><button class="btn bg bxs"><i class="ti ti-eye"></i></button></td></tr>
-    <tr><td class="mono" style="color:var(--purple);font-weight:700">RESO-002</td><td>20/05</td><td class="link-ord" onclick="nav('contestazioni')">CONT-003</td><td class="link-ord" onclick="navTo('acquisto','ACQ-003')" style="cursor:pointer">ACQ-003</td><td>AirPods Pro 2a gen</td><td>electronics_shop</td><td><span class="chip c-blue">eBay</span></td><td>€185</td><td>GLS</td><td class="mono">GLS-RSO-774219</td><td><span class="chip c-blue">In transito</span></td><td class="rg"><button class="btn bgreen bxs"><i class="ti ti-check"></i>Ricevuto</button><button class="btn bg bxs"><i class="ti ti-eye"></i></button></td></tr>
-  </tbody></table></div>
+    <tr><td class="mono" style="color:var(--purple);font-weight:700">RESO-002</td><td>20/05</td><td class="link-ord" onclick="nav('contestazioni')">CONT-003</td><td class="link-ord" onclick="navTo('acquisto','ACQ-003')" style="cursor:pointer">ACQ-003</td><td>
   <div class="tbar">
     <div class="ti"><div class="l">In transito</div><div class="v warn">€185</div></div><div class="tsep"></div>
     <div class="ti"><div class="l">Recuperato</div><div class="v" style="color:var(--green)">€610</div></div><div class="tsep"></div>
@@ -736,7 +701,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 
   <!-- KPI REPORT -->
   <div class="kgrid k4" style="margin-bottom:16px">
-    <div class="kc"><div class="kc-lbl">Fatturato (vendite)</div><div class="kc-val">€18.4k</div><div class="kc-sub up">↑ +12%</div></div>
+    <div class="kc"><div class="kc-lbl">Fatturato (vendite)</div><div class="kc-val">€18.4k</div><div class="kc-sub up"></div></div>
     <div class="kc"><div class="kc-lbl">Costo acquisti</div><div class="kc-val">€12.8k</div></div>
     <div class="kc"><div class="kc-lbl">Margine lordo</div><div class="kc-val up">€5.6k</div><div class="kc-sub up">30.4%</div></div>
     <div class="kc"><div class="kc-lbl">Rimborsi emessi</div><div class="kc-val dn">€3.677</div></div>
@@ -1195,6 +1160,386 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
   </div>
 </div>
 
+
+
+<div class="mbg hidden" id="m-collega-acquisto">
+  <div class="modal" style="width:500px">
+    <div class="mh">
+      <div>
+        <div style="font-size:15px;font-weight:700">Collega ordine di acquisto</div>
+        <div style="font-size:12px;color:var(--text-sec);margin-top:2px">Ordine <span id="collega-ordine-label" style="font-weight:700;color:var(--blue)"></span></div>
+      </div>
+      <button class="mc" onclick="closeModal('m-collega-acquisto')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="mb">
+      <div class="ai ai-amber"><i class="ti ti-info-circle"></i><span>Associa l'acquisto fatto su piattaforma secondaria a questo ordine Amazon per tracciarne lo stato in tabella.</span></div>
+      <div class="fg" style="margin-bottom:12px">
+        <div class="fl">ID acquisto esistente</div>
+        <div style="display:flex;gap:8px">
+          <input class="fi" id="collega-acq-id" placeholder="es. ACQ-002" style="flex:1"/>
+          <button class="btn bg" onclick="nav('acquisti');closeModal('m-collega-acquisto')"><i class="ti ti-external-link"></i>Cerca</button>
+        </div>
+      </div>
+      <div style="text-align:center;font-size:11px;color:var(--text-muted);margin:8px 0">oppure crea un nuovo acquisto al volo</div>
+      <div class="fr" style="margin-bottom:12px">
+        <div class="fg" style="margin-bottom:0"><div class="fl">Piattaforma</div><select class="fi"><option>Subito.it</option><option>Vinted</option><option>eBay</option><option>Fornitore</option><option>Acquisto libero</option></select></div>
+        <div class="fg" style="margin-bottom:0"><div class="fl">Venditore</div><input class="fi" placeholder="es. techresell_it"/></div>
+      </div>
+      <div class="fr">
+        <div class="fg" style="margin-bottom:0"><div class="fl">Prezzo acquisto (€)</div><input class="fi" type="number" placeholder="0.00"/></div>
+        <div class="fg" style="margin-bottom:0"><div class="fl">Stato attuale</div><select class="fi"><option>In attesa spedizione</option><option>Spedito</option><option>In transito</option><option>Consegnato</option></select></div>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn bg" onclick="closeModal('m-collega-acquisto')">Annulla</button>
+      <button class="btn bp" onclick="confermaCollegaAcquisto()"><i class="ti ti-link"></i>Collega</button>
+    </div>
+  </div>
+</div>
+
+<div class="mbg hidden" id="m-inserisci-tracking">
+  <div class="modal" style="width:480px">
+    <div class="mh">
+      <div>
+        <div style="font-size:15px;font-weight:700">Inserisci tracking</div>
+        <div style="font-size:12px;color:var(--text-sec);margin-top:2px">Ordine <span id="tracking-ordine-label" style="font-weight:700;color:var(--blue)"></span></div>
+      </div>
+      <button class="mc" onclick="closeModal('m-inserisci-tracking')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="mb">
+      <div class="ai ai-blue"><i class="ti ti-info-circle"></i><span>Inserendo il tracking lo stato dell'ordine passerà automaticamente da <strong>In lavorazione</strong> a <strong>Spedito</strong>.</span></div>
+      <div class="fr" style="margin-bottom:12px">
+        <div class="fg" style="margin-bottom:0">
+          <div class="fl">Corriere</div>
+          <select class="fi" id="new-tracking-corriere">
+            <option value="BRT">BRT</option>
+            <option value="GLS">GLS</option>
+            <option value="SDA">SDA</option>
+            <option value="Poste">Poste Italiane</option>
+            <option value="DHL">DHL</option>
+            <option value="UPS">UPS</option>
+            <option value="FedEx">FedEx</option>
+          </select>
+        </div>
+        <div class="fg" style="margin-bottom:0">
+          <div class="fl">Numero tracking</div>
+          <input class="fi" id="new-tracking-input" placeholder="es. BRT882944999" style="font-family:monospace"/>
+        </div>
+      </div>
+      <div class="fg" style="margin-bottom:0">
+        <div class="fl">Note spedizione (opzionale)</div>
+        <input class="fi" placeholder="es. Consegna solo in mattinata..."/>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn bg" onclick="closeModal('m-inserisci-tracking')">Annulla</button>
+      <button class="btn bp" onclick="confermaTracking()"><i class="ti ti-check"></i>Conferma — imposta Spedito</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: CAMBIA DESTINAZIONE ACQUISTO ═══ -->
+<div class="mbg hidden" id="m-cambia-dest">
+  <div class="modal" style="width:520px">
+    <div class="mh">
+      <div>
+        <div style="font-size:15px;font-weight:700">Imposta destinazione acquisto</div>
+        <div style="font-size:12px;color:var(--text-sec);margin-top:2px">Ordine vendita <span id="dest-ordine-label" style="font-weight:700;color:var(--blue)"></span></div>
+      </div>
+      <button class="mc" onclick="closeModal('m-cambia-dest')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="mb">
+
+      <!-- SCELTA DESTINAZIONE -->
+      <div class="fl" style="margin-bottom:10px">Scegli dove far recapitare l'acquisto</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+
+        <label id="dest-opt-magazzino" style="display:flex;gap:14px;padding:14px;border:2px solid var(--blue);border-radius:10px;cursor:pointer;background:var(--blue-lt);transition:all .15s" onclick="selDest('magazzino',this)">
+          <input type="radio" name="dest-radio" value="magazzino" checked style="margin-top:2px;flex-shrink:0;accent-color:var(--blue)"/>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:#1e40af;display:flex;align-items:center;gap:7px"><i class="ti ti-building-warehouse" style="font-size:16px"></i>Verso il magazzino</div>
+            <div style="font-size:11px;color:#1e40af;margin-top:4px;line-height:1.5">Il prodotto arriva prima da noi. Utile se l'articolo necessita di <strong>verifica, ricondizionamento o test</strong> prima di essere spedito al cliente.</div>
+            <div style="font-size:11px;color:var(--text-sec);margin-top:6px">📍 Indirizzo magazzino: <strong>Via Torino 12, 20123 Milano</strong></div>
+          </div>
+        </label>
+
+        <label id="dest-opt-cliente" style="display:flex;gap:14px;padding:14px;border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s" onclick="selDest('cliente',this)">
+          <input type="radio" name="dest-radio" value="cliente" style="margin-top:2px;flex-shrink:0;accent-color:var(--orange)"/>
+          <div>
+            <div style="font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:7px"><i class="ti ti-user" style="font-size:16px;color:var(--orange)"></i>Verso il cliente (spedizione diretta)</div>
+            <div style="font-size:11px;color:var(--text-sec);margin-top:4px;line-height:1.5">Il venditore spedisce <strong>direttamente all'indirizzo del cliente Amazon</strong>. Più veloce, ma senza possibilità di verifica preventiva.</div>
+            <div id="dest-cliente-addr" style="font-size:11px;color:var(--text-sec);margin-top:6px">📍 Destinatario: <strong id="dest-cliente-nome">—</strong></div>
+            <div class="ai ai-amber" style="margin-top:8px;margin-bottom:0;padding:8px 10px">
+              <i class="ti ti-alert-triangle" style="font-size:13px"></i>
+              <span style="font-size:11px">Scegliendo questa opzione <strong>non puoi verificare l'articolo</strong> prima che arrivi al cliente. In caso di contestazione sarà più difficile aprire una pratica alla piattaforma.</span>
+            </div>
+          </div>
+        </label>
+
+      </div>
+
+      <!-- INDIRIZZO PERSONALIZZATO (solo verso cliente) -->
+      <div id="dest-addr-box" style="display:none">
+        <div class="fl" style="margin-bottom:6px">Conferma indirizzo di consegna cliente</div>
+        <input class="fi" id="dest-addr-input" placeholder="es. Mario Rossi — Via Roma 5, 00100 Roma"/>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:4px">L'indirizzo viene comunicato al venditore per la spedizione diretta.</div>
+      </div>
+
+    </div>
+    <div class="mf">
+      <button class="btn bg" onclick="closeModal('m-cambia-dest')">Annulla</button>
+      <button class="btn bp" onclick="confermaDest()"><i class="ti ti-map-pin"></i>Conferma destinazione</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: INSERISCI TRACKING ACQUISTO ═══ -->
+<div class="mbg hidden" id="m-tracking-acquisto">
+  <div class="modal" style="width:460px">
+    <div class="mh">
+      <div>
+        <div style="font-size:15px;font-weight:700">Inserisci tracking acquisto</div>
+        <div style="font-size:12px;color:var(--text-sec);margin-top:2px"><span id="trk-acq-label" style="font-weight:700;color:var(--blue)"></span></div>
+      </div>
+      <button class="mc" onclick="closeModal('m-tracking-acquisto')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="mb">
+      <div class="ai ai-blue"><i class="ti ti-info-circle"></i><span>Inserendo il tracking lo stato passerà automaticamente a <strong>Verso magazzino</strong> o <strong>Verso cliente</strong> in base alla destinazione impostata.</span></div>
+      <div class="fr" style="margin-bottom:12px">
+        <div class="fg" style="margin-bottom:0">
+          <div class="fl">Corriere</div>
+          <select class="fi" id="trk-acq-corriere">
+            <option>BRT</option><option>GLS</option><option>SDA</option>
+            <option>Poste</option><option>DHL</option><option>UPS</option>
+          </select>
+        </div>
+        <div class="fg" style="margin-bottom:0">
+          <div class="fl">Numero tracking</div>
+          <input class="fi" id="trk-acq-numero" placeholder="es. BRT882944999" style="font-family:monospace"/>
+        </div>
+      </div>
+      <div class="fg" style="margin-bottom:0">
+        <div class="fl">Note (opzionale)</div>
+        <input class="fi" placeholder="es. Spedizione programmata per domani..."/>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn bg" onclick="closeModal('m-tracking-acquisto')">Annulla</button>
+      <button class="btn bp" onclick="confermaTrackingAcquisto()"><i class="ti ti-check"></i>Salva tracking</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: NUOVA CONTESTAZIONE ACQUISTO ═══ -->
+<div class="mbg hidden" id="m-nuova-contestazione">
+  <div class="modal" style="width:560px">
+    <div class="mh"><div><div style="font-size:15px;font-weight:700">Apri contestazione acquisto</div><div style="font-size:12px;color:var(--text-sec);margin-top:2px">Verso il venditore su piattaforma secondaria</div></div><button class="mc" onclick="closeModal('m-nuova-contestazione')"><i class="ti ti-x"></i></button></div>
+    <div class="mb">
+      <div class="fr" style="margin-bottom:12px">
+        <div class="fg" style="margin-bottom:0"><div class="fl">Acquisto di riferimento</div><input class="fi" placeholder="es. ACQ-002"/></div>
+        <div class="fg" style="margin-bottom:0"><div class="fl">Data contestazione</div><input class="fi" type="date"/></div>
+      </div>
+      <div class="fg" style="margin-bottom:12px"><div class="fl">Prodotto</div><input class="fi" placeholder="es. Samsung S24 256GB"/></div>
+      <div class="fr" style="margin-bottom:12px">
+        <div class="fg" style="margin-bottom:0"><div class="fl">Motivo</div>
+          <select class="fi"><option>Non conforme alla descrizione</option><option>Difetto non dichiarato</option><option>Articolo diverso</option><option>Danni da trasporto</option><option>Pezzi mancanti</option><option>Altro</option></select>
+        </div>
+        <div class="fg" style="margin-bottom:0"><div class="fl">Importo contestato (€)</div><input class="fi" type="number" placeholder="0.00"/></div>
+      </div>
+      <div class="fg" style="margin-bottom:12px"><div class="fl">Descrizione</div><textarea class="fi" rows="3" style="resize:vertical" placeholder="Descrivi la non conformità..."></textarea></div>
+      <div class="fg" style="margin-bottom:0"><div class="fl">Allegati (foto, screenshot)</div>
+        <div style="border:2px dashed var(--border);border-radius:8px;padding:14px;text-align:center;cursor:pointer;background:#fafafa" onclick="document.getElementById('cont-file-new').click()">
+          <i class="ti ti-cloud-upload" style="font-size:22px;color:var(--text-muted);display:block;margin-bottom:5px"></i><div style="font-size:11px;color:var(--text-muted)">PDF, JPG, PNG</div>
+        </div>
+        <input type="file" id="cont-file-new" style="display:none" multiple/>
+      </div>
+    </div>
+    <div class="mf"><button class="btn bg" onclick="closeModal('m-nuova-contestazione')">Annulla</button><button class="btn bp"><i class="ti ti-check"></i>Apri contestazione</button></div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: RESO A VENDITORE DA CONTESTAZIONE ═══ -->
+<div class="mbg hidden" id="m-reso-venditore">
+  <div class="modal" style="width:480px">
+    <div class="mh"><div><div style="font-size:15px;font-weight:700">Genera reso al venditore</div><div style="font-size:12px;color:var(--text-sec);margin-top:2px" id="reso-vend-sub">Da contestazione</div></div><button class="mc" onclick="closeModal('m-reso-venditore')"><i class="ti ti-x"></i></button></div>
+    <div class="mb">
+      <div class="fr" style="margin-bottom:12px">
+        <div class="fg" style="margin-bottom:0"><div class="fl">Corriere reso</div><select class="fi"><option>BRT</option><option>GLS</option><option>SDA</option><option>Poste</option></select></div>
+        <div class="fg" style="margin-bottom:0"><div class="fl">Data spedizione</div><input class="fi" type="date"/></div>
+      </div>
+      <div class="fg" style="margin-bottom:12px"><div class="fl">Tracking number reso</div><input class="fi" placeholder="es. BRT-RSO-000001" style="font-family:monospace"/></div>
+      <div class="fg" style="margin-bottom:0"><div class="fl">Note</div><textarea class="fi" rows="2" style="resize:vertical" placeholder="Note spedizione reso..."></textarea></div>
+    </div>
+    <div class="mf"><button class="btn bg" onclick="closeModal('m-reso-venditore')">Annulla</button><button class="btn bp"><i class="ti ti-check"></i>Registra reso</button></div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: NUOVA PRATICA ASSICURATIVA ═══ -->
+<div class="mbg hidden" id="m-nuova-pratica-assic">
+  <div class="modal" style="width:560px">
+    <div class="mh"><div><div style="font-size:15px;font-weight:700">Nuova richiesta rimborso assicurativo</div><div style="font-size:12px;color:var(--text-sec);margin-top:2px">Generata da reso cliente</div></div><button class="mc" onclick="closeModal('m-nuova-pratica-assic')"><i class="ti ti-x"></i></button></div>
+    <div class="mb">
+      <div class="fr" style="margin-bottom:12px">
+        <div class="fg" style="margin-bottom:0"><div class="fl">Reso di riferimento</div><input class="fi" id="assic-reso-id" placeholder="es. RSAMZ-001"/></div>
+        <div class="fg" style="margin-bottom:0"><div class="fl">Ordine vendita</div><input class="fi" id="assic-ordine" placeholder="es. #114-8823441-1234567"/></div>
+      </div>
+      <div class="fr" style="margin-bottom:12px">
+        <div class="fg" style="margin-bottom:0"><div class="fl">Soggetto</div><select class="fi" id="assic-soggetto">
+        <optgroup label="xCover">
+        <option value="xcover" selected>xCover</option>
+      </optgroup>
+      <optgroup label="Amazon">
+        <option value="amazon-atz">Amazon A-to-Z</option>
+        <option value="amazon-rimb">Amazon — rimborso generico</option>
+      </optgroup>
+      <optgroup label="Corriere">
+        <option value="brt">Corriere BRT</option>
+        <option value="gls">Corriere GLS</option>
+        <option value="sda">Corriere SDA</option>
+        <option value="poste">Corriere Poste</option>
+        <option value="dhl">Corriere DHL</option>
+      </optgroup>
+      </select></div>
+        <div class="fg" style="margin-bottom:0"><div class="fl">Tipo sinistro</div><select class="fi"><option>Rimborso contestato</option><option selected>Danno da trasporto</option><option>Smarrimento</option><option>Furto</option><option>Altro</option></select></div>
+      </div>
+      <div class="fr" style="margin-bottom:12px">
+        <div class="fg" style="margin-bottom:0"><div class="fl">Prodotto</div><input class="fi" id="assic-prodotto" placeholder="es. iPhone 15 Pro Max 256GB"/></div>
+        <div class="fg" style="margin-bottom:0">
+          <div class="fl">Importo richiesto (€)</div>
+          <input class="fi" id="assic-importo" type="number" placeholder="0.00"/>
+          <div style="font-size:10px;color:var(--text-muted);margin-top:3px">Pre-compilato con il valore del reso — modificabile</div>
+        </div>
+      </div>
+      <div class="fg" style="margin-bottom:12px"><div class="fl">Descrizione sinistro</div><textarea class="fi" rows="3" style="resize:vertical" placeholder="Descrivi l'accaduto..."></textarea></div>
+      <div class="fg" style="margin-bottom:0"><div class="fl">Allegati (documenti, foto, tracking)</div>
+        <div style="border:2px dashed var(--border);border-radius:8px;padding:14px;text-align:center;cursor:pointer;background:#fafafa" onclick="document.getElementById('assic-file-new').click()">
+          <i class="ti ti-cloud-upload" style="font-size:22px;color:var(--text-muted);display:block;margin-bottom:5px"></i><div style="font-size:11px;color:var(--text-muted)">PDF, JPG, PNG — max 10MB</div>
+        </div>
+        <input type="file" id="assic-file-new" style="display:none" multiple/>
+      </div>
+    </div>
+    <div class="mf"><button class="btn bg" onclick="closeModal('m-nuova-pratica-assic')">Annulla</button><button class="btn bp" onclick="confermaAperturaPratica()"><i class="ti ti-check"></i>Apri pratica</button></div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: CHIUDI PRATICA ASSICURATIVA ═══ -->
+<div class="mbg hidden" id="m-chiudi-pratica-assic">
+  <div class="modal" style="width:460px">
+    <div class="mh"><div><div style="font-size:15px;font-weight:700">Chiudi pratica assicurativa</div><div style="font-size:12px;color:var(--text-sec);margin-top:2px" id="chiudi-assic-sub">Indica esito e importo</div></div><button class="mc" onclick="closeModal('m-chiudi-pratica-assic')"><i class="ti ti-x"></i></button></div>
+    <div class="mb">
+      <div class="fg" style="margin-bottom:12px"><div class="fl">Esito</div>
+        <select class="fi" id="assic-esito-sel">
+          <option value="rimborsata">Rimborsata integralmente</option>
+          <option value="parziale">Rimborsata parzialmente</option>
+          <option value="rifiutata">Rifiutata</option>
+          <option value="ritirata">Ritirata</option>
+        </select>
+      </div>
+      <div class="fr" style="margin-bottom:12px">
+        <div class="fg" style="margin-bottom:0"><div class="fl">Importo rimborsato (€)</div><input class="fi" id="assic-rimb-input" type="number" placeholder="0.00"/></div>
+        <div class="fg" style="margin-bottom:0"><div class="fl">Data chiusura</div><input class="fi" type="date"/></div>
+      </div>
+      <div class="fg" style="margin-bottom:12px"><div class="fl">Note finali</div><textarea class="fi" rows="2" style="resize:vertical" placeholder="Es. Corriere ha accettato il risarcimento parziale..."></textarea></div>
+      <div class="fg" style="margin-bottom:0"><div class="fl">Documento di chiusura (opzionale)</div>
+        <div style="border:2px dashed var(--border);border-radius:8px;padding:12px;text-align:center;cursor:pointer;background:#fafafa" onclick="document.getElementById('assic-file-chiudi').click()">
+          <i class="ti ti-cloud-upload" style="font-size:18px;color:var(--text-muted);display:block;margin-bottom:4px"></i><div style="font-size:11px;color:var(--text-muted)">Allega PDF chiusura</div>
+        </div>
+        <input type="file" id="assic-file-chiudi" style="display:none"/>
+      </div>
+    </div>
+    <div class="mf"><button class="btn bg" onclick="closeModal('m-chiudi-pratica-assic')">Annulla</button><button class="btn bp" onclick="confermaChiudiAssic()"><i class="ti ti-archive"></i>Chiudi pratica</button></div>
+  </div>
+</div>
+
+<!-- ═══ MODAL: NUOVA PRATICA ASSICURATIVA DA RESO (pre-compilata) ═══ -->
+<div class="mbg hidden" id="m-nuova-pratica-assic-da-reso">
+  <div class="modal" style="width:560px">
+    <div class="mh">
+      <div>
+        <div style="font-size:15px;font-weight:700">Apri pratica assicurativa</div>
+        <div style="font-size:12px;color:var(--text-sec);margin-top:2px">Dati pre-compilati dal reso — verifica e conferma</div>
+      </div>
+      <button class="mc" onclick="closeModal('m-nuova-pratica-assic-da-reso')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="mb">
+      <div class="ai ai-amber" style="margin-bottom:14px"><i class="ti ti-info-circle"></i><span>I campi sono pre-compilati con i dati del reso. Seleziona il soggetto corretto e aggiungi gli allegati prima di inviare.</span></div>
+      <div class="fr" style="margin-bottom:12px">
+        <div class="fg" style="margin-bottom:0"><div class="fl">Reso di riferimento</div><input class="fi" id="np-reso-id" readonly style="background:#f9fafb;font-weight:700;color:var(--blue)"/></div>
+        <div class="fg" style="margin-bottom:0"><div class="fl">Ordine vendita</div><input class="fi" id="np-ordine" readonly style="background:#f9fafb"/></div>
+      </div>
+      <div class="fg" style="margin-bottom:12px"><div class="fl">Prodotto</div><input class="fi" id="np-prodotto" readonly style="background:#f9fafb"/></div>
+      <div class="fr" style="margin-bottom:12px">
+        <div class="fg" style="margin-bottom:0">
+          <div class="fl">Soggetto richiesta</div>
+          <select class="fi" id="np-soggetto">
+          <optgroup label="xCover">
+        <option value="xcover" selected>xCover</option>
+      </optgroup>
+      <optgroup label="Amazon">
+        <option value="amazon-atz">Amazon A-to-Z</option>
+        <option value="amazon-rimb">Amazon — rimborso generico</option>
+      </optgroup>
+      <optgroup label="Corriere">
+        <option value="brt">Corriere BRT</option>
+        <option value="gls">Corriere GLS</option>
+        <option value="sda">Corriere SDA</option>
+        <option value="poste">Corriere Poste</option>
+        <option value="dhl">Corriere DHL</option>
+      </optgroup>
+        </select>
+        </div>
+        <div class="fg" style="margin-bottom:0">
+          <div class="fl">Tipo sinistro</div>
+          <select class="fi" id="np-tipo">
+            <option>Rimborso contestato</option>
+            <option selected>Danno da trasporto</option>
+            <option>Smarrimento</option>
+            <option>Altro</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg" style="margin-bottom:12px">
+        <div class="fl">Importo richiesto (€)</div>
+        <input class="fi" id="np-importo" type="number"/>
+        <div style="font-size:10px;color:var(--text-muted);margin-top:3px">Pre-compilato con il valore del reso — modificabile</div>
+      </div>
+      <div class="fg" style="margin-bottom:12px"><div class="fl">Descrizione sinistro</div><textarea class="fi" rows="3" style="resize:vertical" placeholder="Descrivi l'accaduto in dettaglio..."></textarea></div>
+      <div class="fg" style="margin-bottom:0">
+        <div class="fl">Allegati (tracking, foto, email corriere)</div>
+        <div style="border:2px dashed var(--border);border-radius:8px;padding:14px;text-align:center;cursor:pointer;background:#fafafa" onclick="document.getElementById('np-file').click()">
+          <i class="ti ti-cloud-upload" style="font-size:22px;color:var(--text-muted);display:block;margin-bottom:5px"></i>
+          <div style="font-size:11px;color:var(--text-muted)">PDF, JPG, PNG — max 10MB per file</div>
+        </div>
+        <input type="file" id="np-file" style="display:none" multiple/>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn bg" onclick="closeModal('m-nuova-pratica-assic-da-reso')">Annulla</button>
+      <button class="btn bp" onclick="confermaAperturaPratica()"><i class="ti ti-shield-plus"></i>Apri pratica assicurativa</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SCHERMATA LOGIN ═══ -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon"><i class="ti ti-package" style="color:#fff;font-size:20px"></i></div>
+      <div><div class="login-title">GEMMA</div><div class="login-sub">Warehouse Manager</div></div>
+    </div>
+    <label class="login-label">Username</label>
+    <input class="login-input" id="login-username" type="text" placeholder="es. admin" autocomplete="username"/>
+    <label class="login-label">Password</label>
+    <input class="login-input" id="login-password" type="password" placeholder="••••••••" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter') doLogin()"/>
+    <button class="login-btn" onclick="doLogin()">
+      <span id="login-btn-text">Accedi</span>
+    </button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+
 <script>
 // ── NAVIGATION CONFIG ──
 const pageMap = {  dashboard:    {title:'Dashboard',               action:{icon:'ti-refresh',label:'Sincronizza'},   tabs:[]},
@@ -1380,10 +1725,7 @@ function openModal(id, p1, p2, p3) {
       if (assicStatus) assicStatus.innerHTML='<span style="font-size:11px;color:#4c1d95">Nessuna pratica aperta per questo reso.</span>';
       if (assicBtn) {
         assicBtn.innerHTML='<i class="ti ti-shield-plus"></i>Apri pratica assicurativa';
-        const resoMap = {
-          'RSAMZ-001':['iPhone 15 Pro Max 256GB','Giulia Rossi','#114-8823441-1234567','1289','Amazon A-to-Z'],
-          'RSAMZ-002':['MacBook Air M2 8GB','Luca Tosi','#114-7712009-6543210','1099','Corriere BRT'],
-        };
+        const resoMap = {};
         const r = resoMap[p1] || ['—','—','—','0','xCover'];
         assicBtn.onclick=()=>{ closeModal('m-det-reso'); apriPraticaAssic(p1,r[0],r[1],r[2],r[3],r[4]); };
       }
@@ -1418,141 +1760,8 @@ function applyDateRange() {
   }
 }
 
-// ── SCHEDA ARTICOLO ──
-const schede = {
-  IP15: {
-    title:'iPhone 15 128GB Black',
-    sub:'SKU: APPL-IP15-128-BLK · Categoria: Smartphone',
-    assist: false,
-    body:`
-      <div class="art-header">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start">
-          <div>
-            <div style="font-size:18px;font-weight:800;margin-bottom:4px">iPhone 15 128GB Black</div>
-            <div style="color:rgba(255,255,255,.6);font-size:12px;font-family:monospace">APPL-IP15-128-BLK · Posizione: A1-S1</div>
-          </div>
-          <span class="chip c-green" style="flex-shrink:0">Nuovo</span>
-        </div>
-        <div class="art-stato-grid">
-          <div class="art-stato-card"><div class="ast-v dn">2</div><div class="ast-l">In stock</div></div>
-          <div class="art-stato-card"><div class="ast-v" style="color:#fbbf24">1</div><div class="ast-l">In fulfillment</div></div>
-          <div class="art-stato-card"><div class="ast-v" style="color:#34d399">0</div><div class="ast-l">In assistenza</div></div>
-          <div class="art-stato-card"><div class="ast-v">0</div><div class="ast-l">In transito (acq.)</div></div>
-          <div class="art-stato-card"><div class="ast-v" style="color:#60a5fa">3</div><div class="ast-l">Tot. venduti</div></div>
-        </div>
-      </div>
-      <div class="kgrid k3" style="gap:10px;margin-bottom:14px">
-        <div class="kc"><div class="kc-lbl">Costo acquisto medio</div><div class="kc-val" style="font-size:18px">€620</div></div>
-        <div class="kc"><div class="kc-lbl">Prezzo vendita</div><div class="kc-val" style="font-size:18px;color:var(--green)">€829</div></div>
-        <div class="kc"><div class="kc-lbl">Margine lordo</div><div class="kc-val" style="font-size:18px;color:var(--green)">€209 · 25%</div></div>
-      </div>
-      <div class="sl">Movimenti recenti</div>
-      <div style="font-size:12px;display:flex;flex-direction:column;gap:8px">
-        <div style="display:flex;gap:10px;align-items:center"><span class="chip c-green" style="font-size:10px">Entrata</span><span>22/05 09:10 · +5 u. · da TechDistrib Srl <span class="link-ord" onclick="navTo('acquisto','ACQ-004')" style="cursor:pointer">ACQ-004</span></span></div>
-        <div style="display:flex;gap:10px;align-items:center"><span class="chip c-amber" style="font-size:10px">Prenotato</span><span>20/05 09:00 · −1 u. · ordine <span class="link-ord" onclick="navTo('ordine','#114-8823441-1234567')" style="cursor:pointer">#114-8823441-1234567</span> · in fulfillment</span></div>
-        <div style="display:flex;gap:10px;align-items:center"><span class="chip c-red" style="font-size:10px">Uscita</span><span>15/05 14:00 · −1 u. · venduto ordine <span class="link-ord" onclick="navTo('ordine','#114-7700001-1000001')" style="cursor:pointer">#114-7700001-1000001</span></span></div>
-      </div>`
-  },
-  APP2: {
-    title:'AirPods Pro 2 White',
-    sub:'SKU: APPL-APP2-WHT · Categoria: Accessori · Ricondizionato',
-    assist: true,
-    body:`
-      <div class="art-header" style="background:linear-gradient(135deg,#451a03 60%,#78350f)">
-        <div style="display:flex;justify-content:space-between;align-items:flex-start">
-          <div>
-            <div style="font-size:18px;font-weight:800;margin-bottom:4px">AirPods Pro 2 White</div>
-            <div style="color:rgba(255,255,255,.6);font-size:12px;font-family:monospace">APPL-APP2-WHT · Posizione: C3-S4</div>
-          </div>
-          <span class="chip c-purple" style="flex-shrink:0">Ricondizionato</span>
-        </div>
-        <div class="art-stato-grid">
-          <div class="art-stato-card"><div class="ast-v" style="color:#fbbf24">3</div><div class="ast-l">In stock</div></div>
-          <div class="art-stato-card"><div class="ast-v">0</div><div class="ast-l">In fulfillment</div></div>
-          <div class="art-stato-card" style="background:rgba(245,158,11,.2)"><div class="ast-v" style="color:#fbbf24">1</div><div class="ast-l">⚠ In assistenza</div></div>
-          <div class="art-stato-card"><div class="ast-v">0</div><div class="ast-l">In transito</div></div>
-          <div class="art-stato-card"><div class="ast-v" style="color:#60a5fa">2</div><div class="ast-l">Tot. venduti</div></div>
-        </div>
-      </div>
-      <div class="ai ai-amber" style="margin-top:0"><i class="ti ti-tool"></i><div><strong>1 unità attualmente in assistenza</strong><br/>Inviata il 20/05/2026 · Centro: iService Milano · Rientro previsto: 28/05/2026 · Costo stimato: €45</div></div>
-      <div class="kgrid k3" style="gap:10px;margin-bottom:14px">
-        <div class="kc"><div class="kc-lbl">Costo acquisto</div><div class="kc-val" style="font-size:18px">€140</div></div>
-        <div class="kc"><div class="kc-lbl">Logistica</div><div class="kc-val" style="font-size:18px;color:var(--purple)">€12</div></div>
-        <div class="kc"><div class="kc-lbl">Prezzo vendita</div><div class="kc-val" style="font-size:18px;color:var(--green)">€229</div></div>
-      </div>
-      <div class="sl">Storico assistenze</div>
-      <div style="font-size:12px;display:flex;flex-direction:column;gap:8px">
-        <div style="display:flex;gap:10px;align-items:center;padding:10px;background:var(--amber-lt);border-radius:8px;border:1px solid #fde68a"><span class="assist-badge" style="font-size:10px"><i class="ti ti-tool" style="font-size:10px"></i>In corso</span><span>Invio 20/05 · Microfono sinistro non funzionante · iService Milano</span></div>
-      </div>`
-  },
-  MBA: {
-    title:'MacBook Air M2 8GB Silver',
-    sub:'SKU: APPL-MBAM2-8-SLV · Categoria: PC & Mac',
-    assist:false,
-    body:`<div class="art-header"><div style="font-size:18px;font-weight:800;margin-bottom:4px">MacBook Air M2 8GB Silver</div><div style="color:rgba(255,255,255,.6);font-size:12px;font-family:monospace">APPL-MBAM2-8-SLV · Posizione: B2-S1</div><div class="art-stato-grid"><div class="art-stato-card"><div class="ast-v up">12</div><div class="ast-l">In stock</div></div><div class="art-stato-card"><div class="ast-v">0</div><div class="ast-l">In fulfillment</div></div><div class="art-stato-card"><div class="ast-v">0</div><div class="ast-l">In assistenza</div></div><div class="art-stato-card"><div class="ast-v">0</div><div class="ast-l">In transito</div></div><div class="art-stato-card"><div class="ast-v" style="color:#60a5fa">7</div><div class="ast-l">Tot. venduti</div></div></div></div><div class="kgrid k3" style="gap:10px;margin-top:14px"><div class="kc"><div class="kc-lbl">Costo acquisto</div><div class="kc-val" style="font-size:18px">€950</div></div><div class="kc"><div class="kc-lbl">Prezzo vendita</div><div class="kc-val" style="font-size:18px;color:var(--green)">€1.099</div></div><div class="kc"><div class="kc-lbl">Margine</div><div class="kc-val" style="font-size:18px;color:var(--green)">€149 · 14%</div></div></div>`,
-  },
-  S24: {
-    title:'Samsung S24 256GB Gray',
-    sub:'SKU: SAMS-S24-256-GRY · Categoria: Smartphone · Usato',
-    assist:false,
-    body:`<div class="art-header" style="background:linear-gradient(135deg,#0c2340 60%,#1e3a5f)"><div style="font-size:18px;font-weight:800;margin-bottom:4px">Samsung S24 256GB Gray</div><div style="color:rgba(255,255,255,.6);font-size:12px;font-family:monospace">SAMS-S24-256-GRY · Posizione: A1-S2</div><div class="art-stato-grid"><div class="art-stato-card"><div class="ast-v warn">4</div><div class="ast-l">In stock</div></div><div class="art-stato-card"><div class="ast-v">1</div><div class="ast-l">In fulfillment</div></div><div class="art-stato-card"><div class="ast-v">0</div><div class="ast-l">In assistenza</div></div><div class="art-stato-card"><div class="ast-v">1</div><div class="ast-l">In transito acq.</div></div><div class="art-stato-card"><div class="ast-v" style="color:#60a5fa">2</div><div class="ast-l">Tot. venduti</div></div></div></div><div class="kgrid k3" style="gap:10px;margin-top:14px"><div class="kc"><div class="kc-lbl">Costo acquisto</div><div class="kc-val" style="font-size:18px">€480</div></div><div class="kc"><div class="kc-lbl">Logistica</div><div class="kc-val" style="font-size:18px;color:var(--purple)">€25</div></div><div class="kc"><div class="kc-lbl">Prezzo vendita</div><div class="kc-val" style="font-size:18px;color:var(--green)">€879</div></div></div>`,
-  }
-};
+const schede = {}
 
-function openScheda(id) {
-  const d = schede[id];
-  if (!d) return;
-  document.getElementById('scheda-title').textContent = d.title;
-  document.getElementById('scheda-sub').textContent = d.sub;
-  document.getElementById('scheda-body').innerHTML = d.body;
-  const ab = document.getElementById('scheda-assist-badge');
-  ab.innerHTML = d.assist
-    ? '<span class="assist-badge"><i class="ti ti-tool" style="font-size:11px"></i>In assistenza</span>'
-    : '';
-  openModal('m-scheda');
-}
-
-function segnaRientrato() {
-  alert('Articolo segnato come rientrato dall\'assistenza.\nLo stock verrà reintegrato e il movimento registrato.');
-}
-function segnaIrriparabile() {
-  alert('Articolo dichiarato irriparabile.\nVerrà rimosso dallo stock e registrato come perdita nei movimenti.');
-}
-function tbAction() {}
-
-// ── SCHEDA IP14 ──
-schede['IP14'] = {
-  title:'iPhone 14 128GB Black',
-  sub:'SKU: APPL-IP14-128-BLK · Categoria: Smartphone · Usato come nuovo',
-  assist:false,
-  body:`
-    <div class="art-header" style="background:linear-gradient(135deg,#14532d 60%,#166534)">
-      <div style="display:flex;justify-content:space-between;align-items:flex-start">
-        <div>
-          <div style="font-size:18px;font-weight:800;margin-bottom:4px">iPhone 14 128GB Black</div>
-          <div style="color:rgba(255,255,255,.6);font-size:12px;font-family:monospace">APPL-IP14-128-BLK · Posizione: A1-S3</div>
-        </div>
-        <span class="chip" style="background:#bbf7d0;color:#14532d;flex-shrink:0"><i class="ti ti-sparkles" style="font-size:10px"></i> Usato come nuovo</span>
-      </div>
-      <div class="art-stato-grid">
-        <div class="art-stato-card"><div class="ast-v up">3</div><div class="ast-l">In stock</div></div>
-        <div class="art-stato-card"><div class="ast-v">0</div><div class="ast-l">In fulfillment</div></div>
-        <div class="art-stato-card"><div class="ast-v">0</div><div class="ast-l">In assistenza</div></div>
-        <div class="art-stato-card"><div class="ast-v">0</div><div class="ast-l">In transito</div></div>
-        <div class="art-stato-card"><div class="ast-v" style="color:#60a5fa">5</div><div class="ast-l">Tot. venduti</div></div>
-      </div>
-    </div>
-    <div class="ai ai-green" style="margin-top:0"><i class="ti ti-sparkles"></i><div><strong>Usato come nuovo</strong> — Nessun graffio visibile, schermo perfetto, batteria 97%. Accessori originali inclusi (cavo + caricatore). Provenienza: reso da cliente in perfette condizioni.</div></div>
-    <div class="kgrid k3" style="gap:10px;margin-bottom:14px">
-      <div class="kc"><div class="kc-lbl">Costo acquisto</div><div class="kc-val" style="font-size:18px">€490</div></div>
-      <div class="kc"><div class="kc-lbl">Logistica</div><div class="kc-val" style="font-size:18px;color:var(--purple)">€8</div></div>
-      <div class="kc"><div class="kc-lbl">Prezzo vendita</div><div class="kc-val" style="font-size:18px;color:var(--green)">€699</div></div>
-    </div>
-    <div class="sl">Condizione dichiarata</div>
-    <div style="background:#f0fdf4;border:1px solid #a7f3d0;border-radius:8px;padding:12px;font-size:12px;color:#065f46">
-      Nessun graffio visibile sul corpo e sullo schermo. Batteria al 97% verificata. Caricatore e cavo originali inclusi. Provenienza: reso da cliente — prodotto mai realmente utilizzato.
-    </div>`
-};
 
 // ── ORDINI: FILTRO STATO ──
 function filterOrdini(val) {
@@ -2117,373 +2326,15 @@ function selCond(el) {
   }
 }
 
-</script>
-<div class="mbg hidden" id="m-collega-acquisto">
-  <div class="modal" style="width:500px">
-    <div class="mh">
-      <div>
-        <div style="font-size:15px;font-weight:700">Collega ordine di acquisto</div>
-        <div style="font-size:12px;color:var(--text-sec);margin-top:2px">Ordine <span id="collega-ordine-label" style="font-weight:700;color:var(--blue)"></span></div>
-      </div>
-      <button class="mc" onclick="closeModal('m-collega-acquisto')"><i class="ti ti-x"></i></button>
-    </div>
-    <div class="mb">
-      <div class="ai ai-amber"><i class="ti ti-info-circle"></i><span>Associa l'acquisto fatto su piattaforma secondaria a questo ordine Amazon per tracciarne lo stato in tabella.</span></div>
-      <div class="fg" style="margin-bottom:12px">
-        <div class="fl">ID acquisto esistente</div>
-        <div style="display:flex;gap:8px">
-          <input class="fi" id="collega-acq-id" placeholder="es. ACQ-002" style="flex:1"/>
-          <button class="btn bg" onclick="nav('acquisti');closeModal('m-collega-acquisto')"><i class="ti ti-external-link"></i>Cerca</button>
-        </div>
-      </div>
-      <div style="text-align:center;font-size:11px;color:var(--text-muted);margin:8px 0">oppure crea un nuovo acquisto al volo</div>
-      <div class="fr" style="margin-bottom:12px">
-        <div class="fg" style="margin-bottom:0"><div class="fl">Piattaforma</div><select class="fi"><option>Subito.it</option><option>Vinted</option><option>eBay</option><option>Fornitore</option><option>Acquisto libero</option></select></div>
-        <div class="fg" style="margin-bottom:0"><div class="fl">Venditore</div><input class="fi" placeholder="es. techresell_it"/></div>
-      </div>
-      <div class="fr">
-        <div class="fg" style="margin-bottom:0"><div class="fl">Prezzo acquisto (€)</div><input class="fi" type="number" placeholder="0.00"/></div>
-        <div class="fg" style="margin-bottom:0"><div class="fl">Stato attuale</div><select class="fi"><option>In attesa spedizione</option><option>Spedito</option><option>In transito</option><option>Consegnato</option></select></div>
-      </div>
-    </div>
-    <div class="mf">
-      <button class="btn bg" onclick="closeModal('m-collega-acquisto')">Annulla</button>
-      <button class="btn bp" onclick="confermaCollegaAcquisto()"><i class="ti ti-link"></i>Collega</button>
-    </div>
-  </div>
-</div>
-
-<div class="mbg hidden" id="m-inserisci-tracking">
-  <div class="modal" style="width:480px">
-    <div class="mh">
-      <div>
-        <div style="font-size:15px;font-weight:700">Inserisci tracking</div>
-        <div style="font-size:12px;color:var(--text-sec);margin-top:2px">Ordine <span id="tracking-ordine-label" style="font-weight:700;color:var(--blue)"></span></div>
-      </div>
-      <button class="mc" onclick="closeModal('m-inserisci-tracking')"><i class="ti ti-x"></i></button>
-    </div>
-    <div class="mb">
-      <div class="ai ai-blue"><i class="ti ti-info-circle"></i><span>Inserendo il tracking lo stato dell'ordine passerà automaticamente da <strong>In lavorazione</strong> a <strong>Spedito</strong>.</span></div>
-      <div class="fr" style="margin-bottom:12px">
-        <div class="fg" style="margin-bottom:0">
-          <div class="fl">Corriere</div>
-          <select class="fi" id="new-tracking-corriere">
-            <option value="BRT">BRT</option>
-            <option value="GLS">GLS</option>
-            <option value="SDA">SDA</option>
-            <option value="Poste">Poste Italiane</option>
-            <option value="DHL">DHL</option>
-            <option value="UPS">UPS</option>
-            <option value="FedEx">FedEx</option>
-          </select>
-        </div>
-        <div class="fg" style="margin-bottom:0">
-          <div class="fl">Numero tracking</div>
-          <input class="fi" id="new-tracking-input" placeholder="es. BRT882944999" style="font-family:monospace"/>
-        </div>
-      </div>
-      <div class="fg" style="margin-bottom:0">
-        <div class="fl">Note spedizione (opzionale)</div>
-        <input class="fi" placeholder="es. Consegna solo in mattinata..."/>
-      </div>
-    </div>
-    <div class="mf">
-      <button class="btn bg" onclick="closeModal('m-inserisci-tracking')">Annulla</button>
-      <button class="btn bp" onclick="confermaTracking()"><i class="ti ti-check"></i>Conferma — imposta Spedito</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ MODAL: CAMBIA DESTINAZIONE ACQUISTO ═══ -->
-<div class="mbg hidden" id="m-cambia-dest">
-  <div class="modal" style="width:520px">
-    <div class="mh">
-      <div>
-        <div style="font-size:15px;font-weight:700">Imposta destinazione acquisto</div>
-        <div style="font-size:12px;color:var(--text-sec);margin-top:2px">Ordine vendita <span id="dest-ordine-label" style="font-weight:700;color:var(--blue)"></span></div>
-      </div>
-      <button class="mc" onclick="closeModal('m-cambia-dest')"><i class="ti ti-x"></i></button>
-    </div>
-    <div class="mb">
-
-      <!-- SCELTA DESTINAZIONE -->
-      <div class="fl" style="margin-bottom:10px">Scegli dove far recapitare l'acquisto</div>
-      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
-
-        <label id="dest-opt-magazzino" style="display:flex;gap:14px;padding:14px;border:2px solid var(--blue);border-radius:10px;cursor:pointer;background:var(--blue-lt);transition:all .15s" onclick="selDest('magazzino',this)">
-          <input type="radio" name="dest-radio" value="magazzino" checked style="margin-top:2px;flex-shrink:0;accent-color:var(--blue)"/>
-          <div>
-            <div style="font-size:13px;font-weight:700;color:#1e40af;display:flex;align-items:center;gap:7px"><i class="ti ti-building-warehouse" style="font-size:16px"></i>Verso il magazzino</div>
-            <div style="font-size:11px;color:#1e40af;margin-top:4px;line-height:1.5">Il prodotto arriva prima da noi. Utile se l'articolo necessita di <strong>verifica, ricondizionamento o test</strong> prima di essere spedito al cliente.</div>
-            <div style="font-size:11px;color:var(--text-sec);margin-top:6px">📍 Indirizzo magazzino: <strong>Via Torino 12, 20123 Milano</strong></div>
-          </div>
-        </label>
-
-        <label id="dest-opt-cliente" style="display:flex;gap:14px;padding:14px;border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s" onclick="selDest('cliente',this)">
-          <input type="radio" name="dest-radio" value="cliente" style="margin-top:2px;flex-shrink:0;accent-color:var(--orange)"/>
-          <div>
-            <div style="font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:7px"><i class="ti ti-user" style="font-size:16px;color:var(--orange)"></i>Verso il cliente (spedizione diretta)</div>
-            <div style="font-size:11px;color:var(--text-sec);margin-top:4px;line-height:1.5">Il venditore spedisce <strong>direttamente all'indirizzo del cliente Amazon</strong>. Più veloce, ma senza possibilità di verifica preventiva.</div>
-            <div id="dest-cliente-addr" style="font-size:11px;color:var(--text-sec);margin-top:6px">📍 Destinatario: <strong id="dest-cliente-nome">—</strong></div>
-            <div class="ai ai-amber" style="margin-top:8px;margin-bottom:0;padding:8px 10px">
-              <i class="ti ti-alert-triangle" style="font-size:13px"></i>
-              <span style="font-size:11px">Scegliendo questa opzione <strong>non puoi verificare l'articolo</strong> prima che arrivi al cliente. In caso di contestazione sarà più difficile aprire una pratica alla piattaforma.</span>
-            </div>
-          </div>
-        </label>
-
-      </div>
-
-      <!-- INDIRIZZO PERSONALIZZATO (solo verso cliente) -->
-      <div id="dest-addr-box" style="display:none">
-        <div class="fl" style="margin-bottom:6px">Conferma indirizzo di consegna cliente</div>
-        <input class="fi" id="dest-addr-input" placeholder="es. Mario Rossi — Via Roma 5, 00100 Roma"/>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:4px">L'indirizzo viene comunicato al venditore per la spedizione diretta.</div>
-      </div>
-
-    </div>
-    <div class="mf">
-      <button class="btn bg" onclick="closeModal('m-cambia-dest')">Annulla</button>
-      <button class="btn bp" onclick="confermaDest()"><i class="ti ti-map-pin"></i>Conferma destinazione</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ MODAL: INSERISCI TRACKING ACQUISTO ═══ -->
-<div class="mbg hidden" id="m-tracking-acquisto">
-  <div class="modal" style="width:460px">
-    <div class="mh">
-      <div>
-        <div style="font-size:15px;font-weight:700">Inserisci tracking acquisto</div>
-        <div style="font-size:12px;color:var(--text-sec);margin-top:2px"><span id="trk-acq-label" style="font-weight:700;color:var(--blue)"></span></div>
-      </div>
-      <button class="mc" onclick="closeModal('m-tracking-acquisto')"><i class="ti ti-x"></i></button>
-    </div>
-    <div class="mb">
-      <div class="ai ai-blue"><i class="ti ti-info-circle"></i><span>Inserendo il tracking lo stato passerà automaticamente a <strong>Verso magazzino</strong> o <strong>Verso cliente</strong> in base alla destinazione impostata.</span></div>
-      <div class="fr" style="margin-bottom:12px">
-        <div class="fg" style="margin-bottom:0">
-          <div class="fl">Corriere</div>
-          <select class="fi" id="trk-acq-corriere">
-            <option>BRT</option><option>GLS</option><option>SDA</option>
-            <option>Poste</option><option>DHL</option><option>UPS</option>
-          </select>
-        </div>
-        <div class="fg" style="margin-bottom:0">
-          <div class="fl">Numero tracking</div>
-          <input class="fi" id="trk-acq-numero" placeholder="es. BRT882944999" style="font-family:monospace"/>
-        </div>
-      </div>
-      <div class="fg" style="margin-bottom:0">
-        <div class="fl">Note (opzionale)</div>
-        <input class="fi" placeholder="es. Spedizione programmata per domani..."/>
-      </div>
-    </div>
-    <div class="mf">
-      <button class="btn bg" onclick="closeModal('m-tracking-acquisto')">Annulla</button>
-      <button class="btn bp" onclick="confermaTrackingAcquisto()"><i class="ti ti-check"></i>Salva tracking</button>
-    </div>
-  </div>
-</div>
-
-<!-- ═══ MODAL: NUOVA CONTESTAZIONE ACQUISTO ═══ -->
-<div class="mbg hidden" id="m-nuova-contestazione">
-  <div class="modal" style="width:560px">
-    <div class="mh"><div><div style="font-size:15px;font-weight:700">Apri contestazione acquisto</div><div style="font-size:12px;color:var(--text-sec);margin-top:2px">Verso il venditore su piattaforma secondaria</div></div><button class="mc" onclick="closeModal('m-nuova-contestazione')"><i class="ti ti-x"></i></button></div>
-    <div class="mb">
-      <div class="fr" style="margin-bottom:12px">
-        <div class="fg" style="margin-bottom:0"><div class="fl">Acquisto di riferimento</div><input class="fi" placeholder="es. ACQ-002"/></div>
-        <div class="fg" style="margin-bottom:0"><div class="fl">Data contestazione</div><input class="fi" type="date"/></div>
-      </div>
-      <div class="fg" style="margin-bottom:12px"><div class="fl">Prodotto</div><input class="fi" placeholder="es. Samsung S24 256GB"/></div>
-      <div class="fr" style="margin-bottom:12px">
-        <div class="fg" style="margin-bottom:0"><div class="fl">Motivo</div>
-          <select class="fi"><option>Non conforme alla descrizione</option><option>Difetto non dichiarato</option><option>Articolo diverso</option><option>Danni da trasporto</option><option>Pezzi mancanti</option><option>Altro</option></select>
-        </div>
-        <div class="fg" style="margin-bottom:0"><div class="fl">Importo contestato (€)</div><input class="fi" type="number" placeholder="0.00"/></div>
-      </div>
-      <div class="fg" style="margin-bottom:12px"><div class="fl">Descrizione</div><textarea class="fi" rows="3" style="resize:vertical" placeholder="Descrivi la non conformità..."></textarea></div>
-      <div class="fg" style="margin-bottom:0"><div class="fl">Allegati (foto, screenshot)</div>
-        <div style="border:2px dashed var(--border);border-radius:8px;padding:14px;text-align:center;cursor:pointer;background:#fafafa" onclick="document.getElementById('cont-file-new').click()">
-          <i class="ti ti-cloud-upload" style="font-size:22px;color:var(--text-muted);display:block;margin-bottom:5px"></i><div style="font-size:11px;color:var(--text-muted)">PDF, JPG, PNG</div>
-        </div>
-        <input type="file" id="cont-file-new" style="display:none" multiple/>
-      </div>
-    </div>
-    <div class="mf"><button class="btn bg" onclick="closeModal('m-nuova-contestazione')">Annulla</button><button class="btn bp"><i class="ti ti-check"></i>Apri contestazione</button></div>
-  </div>
-</div>
-
-<!-- ═══ MODAL: RESO A VENDITORE DA CONTESTAZIONE ═══ -->
-<div class="mbg hidden" id="m-reso-venditore">
-  <div class="modal" style="width:480px">
-    <div class="mh"><div><div style="font-size:15px;font-weight:700">Genera reso al venditore</div><div style="font-size:12px;color:var(--text-sec);margin-top:2px" id="reso-vend-sub">Da contestazione</div></div><button class="mc" onclick="closeModal('m-reso-venditore')"><i class="ti ti-x"></i></button></div>
-    <div class="mb">
-      <div class="fr" style="margin-bottom:12px">
-        <div class="fg" style="margin-bottom:0"><div class="fl">Corriere reso</div><select class="fi"><option>BRT</option><option>GLS</option><option>SDA</option><option>Poste</option></select></div>
-        <div class="fg" style="margin-bottom:0"><div class="fl">Data spedizione</div><input class="fi" type="date"/></div>
-      </div>
-      <div class="fg" style="margin-bottom:12px"><div class="fl">Tracking number reso</div><input class="fi" placeholder="es. BRT-RSO-000001" style="font-family:monospace"/></div>
-      <div class="fg" style="margin-bottom:0"><div class="fl">Note</div><textarea class="fi" rows="2" style="resize:vertical" placeholder="Note spedizione reso..."></textarea></div>
-    </div>
-    <div class="mf"><button class="btn bg" onclick="closeModal('m-reso-venditore')">Annulla</button><button class="btn bp"><i class="ti ti-check"></i>Registra reso</button></div>
-  </div>
-</div>
-
-<!-- ═══ MODAL: NUOVA PRATICA ASSICURATIVA ═══ -->
-<div class="mbg hidden" id="m-nuova-pratica-assic">
-  <div class="modal" style="width:560px">
-    <div class="mh"><div><div style="font-size:15px;font-weight:700">Nuova richiesta rimborso assicurativo</div><div style="font-size:12px;color:var(--text-sec);margin-top:2px">Generata da reso cliente</div></div><button class="mc" onclick="closeModal('m-nuova-pratica-assic')"><i class="ti ti-x"></i></button></div>
-    <div class="mb">
-      <div class="fr" style="margin-bottom:12px">
-        <div class="fg" style="margin-bottom:0"><div class="fl">Reso di riferimento</div><input class="fi" id="assic-reso-id" placeholder="es. RSAMZ-001"/></div>
-        <div class="fg" style="margin-bottom:0"><div class="fl">Ordine vendita</div><input class="fi" id="assic-ordine" placeholder="es. #114-8823441-1234567"/></div>
-      </div>
-      <div class="fr" style="margin-bottom:12px">
-        <div class="fg" style="margin-bottom:0"><div class="fl">Soggetto</div><select class="fi" id="assic-soggetto">
-        <optgroup label="xCover">
-        <option value="xcover" selected>xCover</option>
-      </optgroup>
-      <optgroup label="Amazon">
-        <option value="amazon-atz">Amazon A-to-Z</option>
-        <option value="amazon-rimb">Amazon — rimborso generico</option>
-      </optgroup>
-      <optgroup label="Corriere">
-        <option value="brt">Corriere BRT</option>
-        <option value="gls">Corriere GLS</option>
-        <option value="sda">Corriere SDA</option>
-        <option value="poste">Corriere Poste</option>
-        <option value="dhl">Corriere DHL</option>
-      </optgroup>
-      </select></div>
-        <div class="fg" style="margin-bottom:0"><div class="fl">Tipo sinistro</div><select class="fi"><option>Rimborso contestato</option><option selected>Danno da trasporto</option><option>Smarrimento</option><option>Furto</option><option>Altro</option></select></div>
-      </div>
-      <div class="fr" style="margin-bottom:12px">
-        <div class="fg" style="margin-bottom:0"><div class="fl">Prodotto</div><input class="fi" id="assic-prodotto" placeholder="es. iPhone 15 Pro Max 256GB"/></div>
-        <div class="fg" style="margin-bottom:0">
-          <div class="fl">Importo richiesto (€)</div>
-          <input class="fi" id="assic-importo" type="number" placeholder="0.00"/>
-          <div style="font-size:10px;color:var(--text-muted);margin-top:3px">Pre-compilato con il valore del reso — modificabile</div>
-        </div>
-      </div>
-      <div class="fg" style="margin-bottom:12px"><div class="fl">Descrizione sinistro</div><textarea class="fi" rows="3" style="resize:vertical" placeholder="Descrivi l'accaduto..."></textarea></div>
-      <div class="fg" style="margin-bottom:0"><div class="fl">Allegati (documenti, foto, tracking)</div>
-        <div style="border:2px dashed var(--border);border-radius:8px;padding:14px;text-align:center;cursor:pointer;background:#fafafa" onclick="document.getElementById('assic-file-new').click()">
-          <i class="ti ti-cloud-upload" style="font-size:22px;color:var(--text-muted);display:block;margin-bottom:5px"></i><div style="font-size:11px;color:var(--text-muted)">PDF, JPG, PNG — max 10MB</div>
-        </div>
-        <input type="file" id="assic-file-new" style="display:none" multiple/>
-      </div>
-    </div>
-    <div class="mf"><button class="btn bg" onclick="closeModal('m-nuova-pratica-assic')">Annulla</button><button class="btn bp" onclick="confermaAperturaPratica()"><i class="ti ti-check"></i>Apri pratica</button></div>
-  </div>
-</div>
-
-<!-- ═══ MODAL: CHIUDI PRATICA ASSICURATIVA ═══ -->
-<div class="mbg hidden" id="m-chiudi-pratica-assic">
-  <div class="modal" style="width:460px">
-    <div class="mh"><div><div style="font-size:15px;font-weight:700">Chiudi pratica assicurativa</div><div style="font-size:12px;color:var(--text-sec);margin-top:2px" id="chiudi-assic-sub">Indica esito e importo</div></div><button class="mc" onclick="closeModal('m-chiudi-pratica-assic')"><i class="ti ti-x"></i></button></div>
-    <div class="mb">
-      <div class="fg" style="margin-bottom:12px"><div class="fl">Esito</div>
-        <select class="fi" id="assic-esito-sel">
-          <option value="rimborsata">Rimborsata integralmente</option>
-          <option value="parziale">Rimborsata parzialmente</option>
-          <option value="rifiutata">Rifiutata</option>
-          <option value="ritirata">Ritirata</option>
-        </select>
-      </div>
-      <div class="fr" style="margin-bottom:12px">
-        <div class="fg" style="margin-bottom:0"><div class="fl">Importo rimborsato (€)</div><input class="fi" id="assic-rimb-input" type="number" placeholder="0.00"/></div>
-        <div class="fg" style="margin-bottom:0"><div class="fl">Data chiusura</div><input class="fi" type="date"/></div>
-      </div>
-      <div class="fg" style="margin-bottom:12px"><div class="fl">Note finali</div><textarea class="fi" rows="2" style="resize:vertical" placeholder="Es. Corriere ha accettato il risarcimento parziale..."></textarea></div>
-      <div class="fg" style="margin-bottom:0"><div class="fl">Documento di chiusura (opzionale)</div>
-        <div style="border:2px dashed var(--border);border-radius:8px;padding:12px;text-align:center;cursor:pointer;background:#fafafa" onclick="document.getElementById('assic-file-chiudi').click()">
-          <i class="ti ti-cloud-upload" style="font-size:18px;color:var(--text-muted);display:block;margin-bottom:4px"></i><div style="font-size:11px;color:var(--text-muted)">Allega PDF chiusura</div>
-        </div>
-        <input type="file" id="assic-file-chiudi" style="display:none"/>
-      </div>
-    </div>
-    <div class="mf"><button class="btn bg" onclick="closeModal('m-chiudi-pratica-assic')">Annulla</button><button class="btn bp" onclick="confermaChiudiAssic()"><i class="ti ti-archive"></i>Chiudi pratica</button></div>
-  </div>
-</div>
-
-<!-- ═══ MODAL: NUOVA PRATICA ASSICURATIVA DA RESO (pre-compilata) ═══ -->
-<div class="mbg hidden" id="m-nuova-pratica-assic-da-reso">
-  <div class="modal" style="width:560px">
-    <div class="mh">
-      <div>
-        <div style="font-size:15px;font-weight:700">Apri pratica assicurativa</div>
-        <div style="font-size:12px;color:var(--text-sec);margin-top:2px">Dati pre-compilati dal reso — verifica e conferma</div>
-      </div>
-      <button class="mc" onclick="closeModal('m-nuova-pratica-assic-da-reso')"><i class="ti ti-x"></i></button>
-    </div>
-    <div class="mb">
-      <div class="ai ai-amber" style="margin-bottom:14px"><i class="ti ti-info-circle"></i><span>I campi sono pre-compilati con i dati del reso. Seleziona il soggetto corretto e aggiungi gli allegati prima di inviare.</span></div>
-      <div class="fr" style="margin-bottom:12px">
-        <div class="fg" style="margin-bottom:0"><div class="fl">Reso di riferimento</div><input class="fi" id="np-reso-id" readonly style="background:#f9fafb;font-weight:700;color:var(--blue)"/></div>
-        <div class="fg" style="margin-bottom:0"><div class="fl">Ordine vendita</div><input class="fi" id="np-ordine" readonly style="background:#f9fafb"/></div>
-      </div>
-      <div class="fg" style="margin-bottom:12px"><div class="fl">Prodotto</div><input class="fi" id="np-prodotto" readonly style="background:#f9fafb"/></div>
-      <div class="fr" style="margin-bottom:12px">
-        <div class="fg" style="margin-bottom:0">
-          <div class="fl">Soggetto richiesta</div>
-          <select class="fi" id="np-soggetto">
-          <optgroup label="xCover">
-        <option value="xcover" selected>xCover</option>
-      </optgroup>
-      <optgroup label="Amazon">
-        <option value="amazon-atz">Amazon A-to-Z</option>
-        <option value="amazon-rimb">Amazon — rimborso generico</option>
-      </optgroup>
-      <optgroup label="Corriere">
-        <option value="brt">Corriere BRT</option>
-        <option value="gls">Corriere GLS</option>
-        <option value="sda">Corriere SDA</option>
-        <option value="poste">Corriere Poste</option>
-        <option value="dhl">Corriere DHL</option>
-      </optgroup>
-        </select>
-        </div>
-        <div class="fg" style="margin-bottom:0">
-          <div class="fl">Tipo sinistro</div>
-          <select class="fi" id="np-tipo">
-            <option>Rimborso contestato</option>
-            <option selected>Danno da trasporto</option>
-            <option>Smarrimento</option>
-            <option>Altro</option>
-          </select>
-        </div>
-      </div>
-      <div class="fg" style="margin-bottom:12px">
-        <div class="fl">Importo richiesto (€)</div>
-        <input class="fi" id="np-importo" type="number"/>
-        <div style="font-size:10px;color:var(--text-muted);margin-top:3px">Pre-compilato con il valore del reso — modificabile</div>
-      </div>
-      <div class="fg" style="margin-bottom:12px"><div class="fl">Descrizione sinistro</div><textarea class="fi" rows="3" style="resize:vertical" placeholder="Descrivi l'accaduto in dettaglio..."></textarea></div>
-      <div class="fg" style="margin-bottom:0">
-        <div class="fl">Allegati (tracking, foto, email corriere)</div>
-        <div style="border:2px dashed var(--border);border-radius:8px;padding:14px;text-align:center;cursor:pointer;background:#fafafa" onclick="document.getElementById('np-file').click()">
-          <i class="ti ti-cloud-upload" style="font-size:22px;color:var(--text-muted);display:block;margin-bottom:5px"></i>
-          <div style="font-size:11px;color:var(--text-muted)">PDF, JPG, PNG — max 10MB per file</div>
-        </div>
-        <input type="file" id="np-file" style="display:none" multiple/>
-      </div>
-    </div>
-    <div class="mf">
-      <button class="btn bg" onclick="closeModal('m-nuova-pratica-assic-da-reso')">Annulla</button>
-      <button class="btn bp" onclick="confermaAperturaPratica()"><i class="ti ti-shield-plus"></i>Apri pratica assicurativa</button>
-    </div>
-  </div>
-</div>
 
 // ═══════════════════════════════════════════════════════════
 //  GEMMA — LAYER API (Supabase + Vercel)
 //  Sostituisci l'URL con il tuo endpoint Vercel dopo il deploy
 // ═══════════════════════════════════════════════════════════
 
-const API_URL = 'INSERISCI_QUI_URL_VERCEL'; // es. https://gemma-backend-xxx.vercel.app
+const API_URL = 'https://gemma-warehouse-api-2026.vercel.app'; // es. https://gemma-backend-xxx.vercel.app
 
-const IS_LIVE = API_URL && !API_URL.includes('INSERISCI');
+const IS_LIVE = false; // Temporaneamente disabilitato fino a fix CORS
 
 // Chiamata generica all'API
 async function api(action, extra = {}) {
@@ -2692,8 +2543,7 @@ async function eseguiSync() {
 }
 
 // ── INIT ────────────────────────────────────────────────────
-
-nav('dashboard');
+// nav('dashboard') viene chiamato dopo il login da hideLogin()
 
 if (IS_LIVE) {
   // Carica dati reali all'avvio
@@ -2719,26 +2569,9 @@ if (IS_LIVE) {
 
 
 
-<!-- ═══ SCHERMATA LOGIN ═══ -->
-<div id="login-screen">
-  <div class="login-box">
-    <div class="login-logo">
-      <div class="login-logo-icon"><i class="ti ti-package" style="color:#fff;font-size:20px"></i></div>
-      <div><div class="login-title">GEMMA</div><div class="login-sub">Warehouse Manager</div></div>
-    </div>
-    <label class="login-label">Username</label>
-    <input class="login-input" id="login-username" type="text" placeholder="es. admin" autocomplete="username"/>
-    <label class="login-label">Password</label>
-    <input class="login-input" id="login-password" type="password" placeholder="••••••••" autocomplete="current-password"
-      onkeydown="if(event.key==='Enter') doLogin()"/>
-    <button class="login-btn" onclick="doLogin()">
-      <span id="login-btn-text">Accedi</span>
-    </button>
-    <div class="login-error" id="login-error"></div>
-  </div>
-</div>
 
-<script>
+
+
 
 // ═══════════════════════════════════════════════════════════
 //  GEMMA — AUTENTICAZIONE
@@ -2749,16 +2582,14 @@ let _authToken   = null;
 
 // Controlla se già loggato (token in sessionStorage)
 async function checkAuth() {
-  const token = sessionStorage.getItem('gemma_token');
-  if (!token) { showLogin(); return; }
-
-  if (!IS_LIVE) {
-    // Modalità demo: login automatico come admin
-    _currentUser = { username: 'admin', nome: 'Amministratore', ruolo: 'admin' };
-    _authToken   = 'demo-token';
-    hideLogin();
-    return;
-  }
+  let token = null;
+  try { token = sessionStorage.getItem('gemma_token'); } catch(e) { token = null; }
+  if (!token || token !== 'demo-token') { showLogin(); return; }
+  _currentUser = { id: 'USR-ADMIN-001', username: 'admin', nome: 'Amministratore', ruolo: 'admin' };
+  _authToken = 'demo-token';
+  hideLogin();
+  if (IS_LIVE) { loadDashboard(); loadOrdiniAmazon(); loadAcquisti(); }
+  return;
 
   try {
     const res = await fetch(API_URL + '/api/auth', {
@@ -2789,6 +2620,7 @@ function showLogin() {
 
 function hideLogin() {
   document.getElementById('login-screen').classList.add('hidden');
+  nav('dashboard');
   // Aggiorna nome utente in sidebar
   const av  = document.querySelector('.s-av');
   const usr = document.querySelector('#nav-foot .s-user > div > div:first-child');
@@ -2818,11 +2650,11 @@ async function doLogin() {
   btnText.textContent = 'Accesso in corso...';
   errEl.textContent   = '';
 
-  // Login sempre attivo (demo o live)
+  // Login sempre attivo — usa credenziali locali
   if (username === 'admin' && password === 'gemma2026') {
     _currentUser = { id: 'USR-ADMIN-001', username: 'admin', nome: 'Amministratore', ruolo: 'admin' };
     _authToken   = 'demo-token';
-    sessionStorage.setItem('gemma_token', 'demo-token');
+    try { sessionStorage.setItem('gemma_token', 'demo-token'); } catch(e) {}
     hideLogin();
     btnText.textContent = 'Accedi';
     if (IS_LIVE) { loadDashboard(); loadOrdiniAmazon(); loadAcquisti(); }
@@ -2869,17 +2701,7 @@ function doLogout() {
 }
 
 // Log ogni navigazione
-const _origNav = nav;
-nav = function(id) {
-  _origNav(id);
-  if (_currentUser && IS_LIVE && _authToken) {
-    fetch(API_URL + '/api/auth', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + _authToken },
-      body:    JSON.stringify({ action: 'logAzione', azione: 'NAVIGA', sezione: id, dettaglio: 'Apertura sezione' }),
-    }).catch(() => {});
-  }
-};
+const _origNav = {};
 
 // Aggiungi logout in sidebar
 document.getElementById('nav-foot').querySelector('.s-user').setAttribute('onclick', 'if(confirm("Vuoi uscire da GEMMA?")) doLogout()');
@@ -2889,7 +2711,6 @@ document.getElementById('nav-foot').querySelector('.s-user').style.cursor = 'poi
 // Avvia controllo autenticazione
 checkAuth();
 
-</script>
 </script>
 </body>
 </html>
