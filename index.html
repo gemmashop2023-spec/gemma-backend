@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>GEMMA — Warehouse Manager</title>
+<title>GEMMA v9964bac8 — Warehouse Manager</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css"/>
 <style>
 /* ── RESET & TOKENS ── */
@@ -185,7 +185,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 
 /* ── LOGIN ── */
 #login-screen{position:fixed;inset:0;background:var(--nav-bg);display:flex;align-items:center;justify-content:center;z-index:9999}
-#login-screen.hidden{display:none}
+
 .login-box{background:#1a2035;border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:40px;width:360px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
 .login-logo{display:flex;align-items:center;gap:12px;margin-bottom:32px}
 .login-logo-icon{width:44px;height:44px;background:var(--blue);border-radius:12px;display:flex;align-items:center;justify-content:center}
@@ -245,8 +245,8 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
   </div>
   <div id="nav-foot">
     <div class="s-user">
-      <div class="s-av">MA</div>
-      <div><div style="color:#d0d8f0;font-size:12px;font-weight:600">Marco Alberti</div><div style="color:#3a4258;font-size:11px">Administrator</div></div>
+      <div class="s-av">AM</div>
+      <div><div style="color:#d0d8f0;font-size:12px;font-weight:600">Amministratore</div><div style="color:#3a4258;font-size:11px">Administrator</div></div>
     </div>
   </div>
 </div>
@@ -1521,7 +1521,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 </div>
 
 <!-- ═══ SCHERMATA LOGIN ═══ -->
-<div id="login-screen">
+<div id="login-screen" style="display:none">
   <div class="login-box">
     <div class="login-logo">
       <div class="login-logo-icon"><i class="ti ti-package" style="color:#fff;font-size:20px"></i></div>
@@ -2567,150 +2567,84 @@ if (IS_LIVE) {
   }, 1000);
 }
 
+// ═══ AUTENTICAZIONE GEMMA ═══
 
+var _currentUser = null;
+var _authToken = null;
+var APP_V = 'v3';
 
+function showLogin() {
+  var el = document.getElementById('login-screen');
+  if (el) el.style.display = 'flex';
+  var u = document.getElementById('login-username');
+  if (u) { setTimeout(function(){ u.focus(); }, 100); }
+}
 
+function hideLogin() {
+  var el = document.getElementById('login-screen');
+  if (el) el.style.display = 'none';
+  nav('dashboard');
+  var av = document.querySelector('.s-av');
+  if (av && _currentUser) av.textContent = (_currentUser.nome||_currentUser.username||'').slice(0,2).toUpperCase();
+  var usr = document.querySelector('#nav-foot .s-user > div > div:first-child');
+  if (usr && _currentUser) usr.textContent = _currentUser.nome || _currentUser.username;
+}
 
-
-
-// ═══════════════════════════════════════════════════════════
-//  GEMMA — AUTENTICAZIONE
-// ═══════════════════════════════════════════════════════════
-
-let _currentUser = null;
-let _authToken   = null;
-
-// Controlla se già loggato (token in sessionStorage)
-async function checkAuth() {
-  let token = null;
-  try { token = sessionStorage.getItem('gemma_token'); } catch(e) { token = null; }
-  if (!token || token !== 'demo-token') { showLogin(); return; }
-  _currentUser = { id: 'USR-ADMIN-001', username: 'admin', nome: 'Amministratore', ruolo: 'admin' };
-  _authToken = 'demo-token';
-  hideLogin();
-  if (IS_LIVE) { loadDashboard(); loadOrdiniAmazon(); loadAcquisti(); }
-  return;
-
-  try {
-    const res = await fetch(API_URL + '/api/auth', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ action: 'verifyToken', token }),
-    });
-    const json = await res.json();
-    if (json.success) {
-      _currentUser = json.utente;
-      _authToken   = token;
-      hideLogin();
-      aggiornaHeaderUtente();
-    } else {
-      sessionStorage.removeItem('gemma_token');
-      showLogin();
-    }
-  } catch {
-    // Se API non raggiungibile in demo mode
+function checkAuth() {
+  var token = null, ver = null;
+  try { token = sessionStorage.getItem('gemma_token'); ver = sessionStorage.getItem('gemma_ver'); } catch(e) {}
+  if (token === 'local-ok' && ver === APP_V) {
+    _currentUser = { id:'USR-ADMIN-001', username:'admin', nome:'Amministratore', ruolo:'admin' };
+    _authToken = 'local-ok';
+    hideLogin();
+  } else {
+    try { sessionStorage.clear(); } catch(e) {}
     showLogin();
   }
 }
 
-function showLogin() {
-  document.getElementById('login-screen').classList.remove('hidden');
-  document.getElementById('login-username').focus();
-}
-
-function hideLogin() {
-  document.getElementById('login-screen').classList.add('hidden');
-  nav('dashboard');
-  // Aggiorna nome utente in sidebar
-  const av  = document.querySelector('.s-av');
-  const usr = document.querySelector('#nav-foot .s-user > div > div:first-child');
-  const rol = document.querySelector('#nav-foot .s-user > div > div:last-child');
-  if (_currentUser) {
-    if (av)  av.textContent = (_currentUser.nome || _currentUser.username).slice(0,2).toUpperCase();
-    if (usr) usr.textContent = _currentUser.nome || _currentUser.username;
-    if (rol) rol.textContent = _currentUser.ruolo;
-  }
-}
-
-function aggiornaHeaderUtente() {
-  hideLogin();
-}
-
-async function doLogin() {
-  const username = document.getElementById('login-username').value.trim();
-  const password = document.getElementById('login-password').value;
-  const errEl    = document.getElementById('login-error');
-  const btnText  = document.getElementById('login-btn-text');
-
-  if (!username || !password) {
-    errEl.textContent = 'Inserisci username e password';
-    return;
-  }
-
-  btnText.textContent = 'Accesso in corso...';
-  errEl.textContent   = '';
-
-  // Login sempre attivo — usa credenziali locali
+function doLogin() {
+  var u = document.getElementById('login-username');
+  var p = document.getElementById('login-password');
+  var errEl = document.getElementById('login-error');
+  var btnEl = document.getElementById('login-btn-text');
+  var username = u ? u.value.trim() : '';
+  var password = p ? p.value : '';
+  if (!username || !password) { if (errEl) errEl.textContent = 'Inserisci username e password'; return; }
+  if (btnEl) btnEl.textContent = 'Accesso in corso...';
+  if (errEl) errEl.textContent = '';
   if (username === 'admin' && password === 'gemma2026') {
-    _currentUser = { id: 'USR-ADMIN-001', username: 'admin', nome: 'Amministratore', ruolo: 'admin' };
-    _authToken   = 'demo-token';
-    try { sessionStorage.setItem('gemma_token', 'demo-token'); } catch(e) {}
+    _currentUser = { id:'USR-ADMIN-001', username:'admin', nome:'Amministratore', ruolo:'admin' };
+    _authToken = 'local-ok';
+    try { sessionStorage.setItem('gemma_token','local-ok'); sessionStorage.setItem('gemma_ver',APP_V); } catch(e) {}
+    if (btnEl) btnEl.textContent = 'Accedi';
     hideLogin();
-    btnText.textContent = 'Accedi';
-    if (IS_LIVE) { loadDashboard(); loadOrdiniAmazon(); loadAcquisti(); }
-    return;
-  } else if (!IS_LIVE) {
-    errEl.textContent   = 'Credenziali non valide';
-    btnText.textContent = 'Accedi';
-    return;
+  } else {
+    if (errEl) errEl.textContent = 'Credenziali non valide';
+    if (btnEl) btnEl.textContent = 'Accedi';
   }
-
-  try {
-    const res = await fetch(API_URL + '/api/auth', {
-      method:  'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify({ action: 'login', username, password }),
-    });
-    const json = await res.json();
-
-    if (json.success) {
-      _currentUser = json.utente;
-      _authToken   = json.token;
-      sessionStorage.setItem('gemma_token', json.token);
-      hideLogin();
-      aggiornaHeaderUtente();
-      // Carica dati dopo login
-      if (IS_LIVE) { loadDashboard(); loadOrdiniAmazon(); loadAcquisti(); }
-    } else {
-      errEl.textContent = json.error || 'Credenziali non valide';
-    }
-  } catch (err) {
-    errEl.textContent = 'Errore di connessione';
-  }
-
-  btnText.textContent = 'Accedi';
 }
 
 function doLogout() {
-  sessionStorage.removeItem('gemma_token');
-  _currentUser = null;
-  _authToken   = null;
+  try { sessionStorage.clear(); } catch(e) {}
+  _currentUser = null; _authToken = null;
+  var u = document.getElementById('login-username');
+  var p = document.getElementById('login-password');
+  if (u) u.value = ''; if (p) p.value = '';
   showLogin();
-  document.getElementById('login-username').value = '';
-  document.getElementById('login-password').value = '';
 }
 
-// Log ogni navigazione
-const _origNav = {};
+(function(){
+  var foot = document.getElementById('nav-foot');
+  if (!foot) return;
+  var usr = foot.querySelector('.s-user');
+  if (!usr) return;
+  usr.style.cursor = 'pointer';
+  usr.title = 'Clicca per uscire';
+  usr.onclick = function(){ if(confirm('Vuoi uscire da GEMMA?')) doLogout(); };
+})();
 
-// Aggiungi logout in sidebar
-document.getElementById('nav-foot').querySelector('.s-user').setAttribute('onclick', 'if(confirm("Vuoi uscire da GEMMA?")) doLogout()');
-document.getElementById('nav-foot').querySelector('.s-user').setAttribute('title', 'Clicca per uscire');
-document.getElementById('nav-foot').querySelector('.s-user').style.cursor = 'pointer';
-
-// Avvia controllo autenticazione
 checkAuth();
-
 </script>
 </body>
 </html>
