@@ -1520,24 +1520,6 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
   </div>
 </div>
 
-<!-- ═══ SCHERMATA LOGIN ═══ -->
-<div id="login-screen" style="display:none">
-  <div class="login-box">
-    <div class="login-logo">
-      <div class="login-logo-icon"><i class="ti ti-package" style="color:#fff;font-size:20px"></i></div>
-      <div><div class="login-title">GEMMA</div><div class="login-sub">Warehouse Manager</div></div>
-    </div>
-    <label class="login-label">Username</label>
-    <input class="login-input" id="login-username" type="text" placeholder="es. admin" autocomplete="username"/>
-    <label class="login-label">Password</label>
-    <input class="login-input" id="login-password" type="password" placeholder="••••••••" autocomplete="current-password"
-      onkeydown="if(event.key==='Enter') doLogin()"/>
-    <button class="login-btn" onclick="doLogin()">
-      <span id="login-btn-text">Accedi</span>
-    </button>
-    <div class="login-error" id="login-error"></div>
-  </div>
-</div>
 
 
 <script>
@@ -2646,5 +2628,24 @@ function doLogout() {
 
 checkAuth();
 </script>
+
+<!-- ═══ SCHERMATA LOGIN ═══ -->
+<div id="login-screen" style="display:none">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon"><i class="ti ti-package" style="color:#fff;font-size:20px"></i></div>
+      <div><div class="login-title">GEMMA</div><div class="login-sub">Warehouse Manager</div></div>
+    </div>
+    <label class="login-label">Username</label>
+    <input class="login-input" id="login-username" type="text" placeholder="es. admin" autocomplete="username"/>
+    <label class="login-label">Password</label>
+    <input class="login-input" id="login-password" type="password" placeholder="••••••••" autocomplete="current-password"
+      onkeydown="if(event.key==='Enter') doLogin()"/>
+    <button class="login-btn" onclick="doLogin()">
+      <span id="login-btn-text">Accedi</span>
+    </button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
 </body>
 </html>
