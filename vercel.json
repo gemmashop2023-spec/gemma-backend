@@ -1,7 +1,9 @@
 {
-  "rewrites": [
-    { "source": "/app", "destination": "/GEMMA_app_completa.html" },
-    { "source": "/api/(.*)", "destination": "/api/$1" }
+  "routes": [
+    { "src": "/", "dest": "/GEMMA_app_completa.html" },
+    { "src": "/api/(.*)", "dest": "/api/$1" }
   ]
 }
+  
+
 
