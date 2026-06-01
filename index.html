@@ -277,6 +277,10 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
     <div class="tb-search"><i class="ti ti-search"></i><input placeholder="Cerca ordine, SKU, cliente..."/></div>
     <button class="btn bg" style="padding:6px 10px"><i class="ti ti-bell"></i></button>
     <button class="btn bp" id="tb-action" onclick="tbAction()"><i class="ti ti-refresh" id="tb-icon"></i><span id="tb-lbl">Sincronizza</span></button>
+  <div id="sync-progress-bar" style="display:none;position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.1)">
+    <div id="sync-bar" style="height:100%;background:#3b82f6;border-radius:0;width:0%;transition:width 0.4s ease"></div>
+  </div>
+  <div id="sync-status-inline" style="display:none;position:absolute;bottom:6px;right:80px;font-size:10px;color:#9ca3af"></div>
   </div>
   <div class="subtabs" id="subtabs"></div>
   <div id="content">
@@ -2528,21 +2532,41 @@ async function eseguiSync() {
       '</div>';
     document.body.appendChild(overlay);
   }
-  overlay.style.display = 'flex';
+  var bar = document.getElementById('sync-progress-bar');
+  var barFill = document.getElementById('sync-bar');
+  var statusInline = document.getElementById('sync-status-inline');
+  if (bar) bar.style.display = 'block';
+  if (statusInline) statusInline.style.display = 'block';
+  // Keep overlay hidden
+  if (overlay) overlay.style.display = 'none';
 
   function setStatus(msg, progress) {
     var el = document.getElementById('sync-status-text');
     var bar = document.getElementById('sync-bar');
+    var statusInline = document.getElementById('sync-status-inline');
+    var btnLbl = document.getElementById('tb-lbl');
     if (el) el.textContent = msg;
     if (bar) bar.style.width = progress + '%';
+    if (statusInline) statusInline.textContent = msg;
+    if (btnLbl) btnLbl.textContent = msg;
   }
 
   function closeOverlay(success, msg) {
     if (overlay) overlay.style.display = 'none';
+    var bar = document.getElementById('sync-progress-bar');
+    var barFill = document.getElementById('sync-bar');
+    var statusInline = document.getElementById('sync-status-inline');
+    var btnLbl = document.getElementById('tb-lbl');
+    setTimeout(function() {
+      if (bar) { bar.style.display = 'none'; }
+      if (barFill) barFill.style.width = '0%';
+      if (statusInline) statusInline.style.display = 'none';
+      if (btnLbl) btnLbl.textContent = 'Sincronizza';
+    }, 1500);
     if (success) {
-      showToast('✓ ' + msg);
+      showToast('\u2713 ' + msg);
     } else {
-      showToast('⚠ ' + msg);
+      showToast('\u26a0 ' + msg);
     }
   }
 
