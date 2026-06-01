@@ -437,9 +437,9 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 
   <div class="kgrid k5">
     <div class="kc"><div class="kc-lbl">Pratiche aperte</div><div class="kc-val warn">0</div><div class="kc-sub">da completare</div></div>
-    <div class="kc"><div class="kc-lbl">In istruttoria</div><div class="kc-val" style="color:var(--blue)">1</div></div>
-    <div class="kc"><div class="kc-lbl">Rimborsi ottenuti</div><div class="kc-val up">€350</div></div>
-    <div class="kc"><div class="kc-lbl">Rimborsi attesi</div><div class="kc-val" style="color:var(--purple)">€1.688</div></div>
+    <div class="kc"><div class="kc-lbl">In istruttoria</div><div class="kc-val" style="color:var(--blue)">0</div></div>
+    <div class="kc"><div class="kc-lbl">Rimborsi ottenuti</div><div class="kc-val up">€0</div></div>
+    <div class="kc"><div class="kc-lbl">Rimborsi attesi</div><div class="kc-val" style="color:var(--purple)">€0</div></div>
     <div class="kc"><div class="kc-lbl">Pratiche chiuse</div><div class="kc-val">0</div></div>
   </div>
 
@@ -1553,9 +1553,9 @@ const pageMap = {  dashboard:    {title:'Dashboard',               action:{icon:
   rimborsi:     {title:'Rimborsi Amazon',         action:{icon:'ti-plus',label:'Nuovo rimborso'},   tabs:[]},
   cancellazioni:{title:'Cancellazioni',           action:{icon:'ti-refresh',label:'Sincronizza'},   tabs:[]},
   messaggi:     {title:'Messaggi cliente',        action:{icon:'ti-settings',label:'Impostazioni'}, tabs:[]},
-  magazzino:    {title:'Magazzino — Catalogo',    action:{icon:'ti-plus',label:'Nuovo SKU'},        tabs:[{l:'Catalogo',p:'magazzino'},{l:'Movimenti',p:'movimenti'},{l:'In assistenza',p:'assistenza',badge:'1',bclass:'badge-p'}]},
-  movimenti:    {title:'Movimenti magazzino',     action:{icon:'ti-download',label:'Export'},       tabs:[{l:'Catalogo',p:'magazzino'},{l:'Movimenti',p:'movimenti'},{l:'In assistenza',p:'assistenza',badge:'1',bclass:'badge-p'}]},
-  assistenza:   {title:'Articoli in assistenza',  action:{icon:'ti-plus',label:'Invia in assistenza',cb:'openModal(\"m-invia-assistenza\")'},tabs:[{l:'Catalogo',p:'magazzino'},{l:'Movimenti',p:'movimenti'},{l:'In assistenza',p:'assistenza',badge:'1',bclass:'badge-p'}]},
+  magazzino:    {title:'Magazzino — Catalogo',    action:{icon:'ti-plus',label:'Nuovo SKU'},        tabs:[{l:'Catalogo',p:'magazzino'},{l:'Movimenti',p:'movimenti'},{l:'In assistenza',p:'assistenza',badge:'0',bclass:'badge-p'}]},
+  movimenti:    {title:'Movimenti magazzino',     action:{icon:'ti-download',label:'Export'},       tabs:[{l:'Catalogo',p:'magazzino'},{l:'Movimenti',p:'movimenti'},{l:'In assistenza',p:'assistenza',badge:'0',bclass:'badge-p'}]},
+  assistenza:   {title:'Articoli in assistenza',  action:{icon:'ti-plus',label:'Invia in assistenza',cb:'openModal(\"m-invia-assistenza\")'},tabs:[{l:'Catalogo',p:'magazzino'},{l:'Movimenti',p:'movimenti'},{l:'In assistenza',p:'assistenza',badge:'0',bclass:'badge-p'}]},
   acquisti:     {title:'Ordini acquisto',         action:{icon:'ti-plus',label:'Nuovo acquisto',cb:'openModal(\"m-nuovo-acquisto\")'},     tabs:[{l:'Acquisti',p:'acquisti'},{l:'Fulfillment',p:'fulfillment',badge:'0',bclass:'badge-w'},{l:'Contestazioni',p:'contestazioni-acquisti',badge:'0',bclass:'badge-w'},{l:'Resi a venditori',p:'resi-venditori'}], note:'ACQUISTI'},
   fulfillment:  {title:'Fulfillment',             action:{icon:'ti-plus',label:'Nuovo fulfillment'}, tabs:[{l:'Acquisti',p:'acquisti'},{l:'Fulfillment',p:'fulfillment',badge:'0',bclass:'badge-w'},{l:'Contestazioni',p:'contestazioni-acquisti',badge:'0',bclass:'badge-w'},{l:'Resi a venditori',p:'resi-venditori'}]},
   contestazioni:{title:'Contestazioni',  action:{icon:'ti-plus',label:'Contestazioni'}, tabs:[]},
