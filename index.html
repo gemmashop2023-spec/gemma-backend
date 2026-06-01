@@ -2517,6 +2517,26 @@ async function salvaAcquistoLive(data) {
 
 // ── SINCRONIZZAZIONE MANUALE ────────────────────────────────
 
+
+function tbAction() {
+  // Determine current page and call appropriate action
+  var activePg = document.querySelector('.pg.active');
+  var pgId = activePg ? activePg.id.replace('pg-','') : 'dashboard';
+  
+  // Pages that sync with Amazon/eBay
+  var syncPages = ['dashboard','ordini-amazon','ordini-ebay','cancellazioni','rimborsi'];
+  if (syncPages.indexOf(pgId) >= 0) {
+    eseguiSync();
+    return;
+  }
+  
+  // Other pages - check pageMap for cb
+  var cfg = pageMap[pgId];
+  if (cfg && cfg.action && cfg.action.cb) {
+    try { eval(cfg.action.cb); } catch(e) {}
+  }
+}
+
 async function eseguiSync() {
   // Mostra overlay di sincronizzazione
   var overlay = document.getElementById('sync-overlay');
