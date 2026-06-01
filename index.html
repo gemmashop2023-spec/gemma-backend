@@ -2514,33 +2514,78 @@ async function salvaAcquistoLive(data) {
 // ── SINCRONIZZAZIONE MANUALE ────────────────────────────────
 
 async function eseguiSync() {
+  // Mostra overlay di sincronizzazione
+  var overlay = document.getElementById('sync-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'sync-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:8000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px';
+    overlay.innerHTML = '<div style="background:#1a2035;border-radius:16px;padding:32px 40px;text-align:center;min-width:300px;box-shadow:0 20px 60px rgba(0,0,0,0.5)">' +
+      '<div id="sync-spinner" style="width:48px;height:48px;border:4px solid rgba(255,255,255,0.1);border-top:4px solid #3b82f6;border-radius:50%;margin:0 auto 16px;animation:spin 0.8s linear infinite"></div>' +
+      '<div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:8px">Sincronizzazione in corso</div>' +
+      '<div id="sync-status-text" style="color:#9ca3af;font-size:12px">Connessione al server...</div>' +
+      '<div id="sync-progress" style="margin-top:16px;width:100%;height:4px;background:rgba(255,255,255,0.1);border-radius:2px"><div id="sync-bar" style="height:100%;background:#3b82f6;border-radius:2px;width:0%;transition:width 0.5s"></div></div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+  }
+  overlay.style.display = 'flex';
+
+  function setStatus(msg, progress) {
+    var el = document.getElementById('sync-status-text');
+    var bar = document.getElementById('sync-bar');
+    if (el) el.textContent = msg;
+    if (bar) bar.style.width = progress + '%';
+  }
+
+  function closeOverlay(success, msg) {
+    if (overlay) overlay.style.display = 'none';
+    if (success) {
+      showToast('✓ ' + msg);
+    } else {
+      showToast('⚠ ' + msg);
+    }
+  }
+
   if (!IS_LIVE) {
-    showToast('⚠ Configura API_URL per sincronizzare dati reali');
+    setTimeout(function() { closeOverlay(false, 'Modalità demo — configura API per dati reali'); }, 1000);
     return;
   }
-  // aggiorna UI
-  ['sync-btn','sync-btn-settings'].forEach(id => { const b=document.getElementById(id); if(b) b.disabled=true; });
-  ['sync-icon','sync-icon-settings'].forEach(id => { const i=document.getElementById(id); if(i) i.style.animation='spin 0.8s linear infinite'; });
-  ['sync-label','sync-label-settings'].forEach(id => { const s=document.getElementById(id); if(s) s.textContent='Controllo in corso...'; });
 
-  const result = await api('syncAll');
-
-  // ripristina UI
-  ['sync-btn','sync-btn-settings'].forEach(id => { const b=document.getElementById(id); if(b) b.disabled=false; });
-  ['sync-icon','sync-icon-settings'].forEach(id => { const i=document.getElementById(id); if(i) i.style.animation=''; });
-  ['sync-label','sync-label-settings'].forEach(id => { const s=document.getElementById(id); if(s) s.textContent='Sincronizza ora'; });
-
-  if (result) {
-    const amz = result.amazon || {};
-    const eb  = result.ebay   || {};
-    const msg = `✓ Amazon: ${amz.nuovi||0} nuovi, ${amz.aggiornati||0} aggiornati | eBay: ${eb.nuovi||0} nuovi`;
-    showToast(msg);
-    const ls = document.getElementById('sync-last');
-    if (ls) ls.textContent = 'Ultima sync: ' + new Date().toLocaleTimeString('it-IT');
-    // Ricarica ordini
-    await loadOrdiniAmazon();
-    await loadDashboard();
+  try {
+    setStatus('Connessione ad Amazon SP-API...', 20);
+    
+    const result = await api('syncAll');
+    
+    setStatus('Aggiornamento dati...', 80);
+    
+    if (result) {
+      const amz = result.amazon || {};
+      const eb  = result.ebay  || {};
+      
+      setStatus('Completato!', 100);
+      
+      setTimeout(async function() {
+        closeOverlay(true, 
+          'Amazon: ' + (amz.nuovi||0) + ' nuovi, ' + (amz.aggiornati||0) + ' aggiornati | ' +
+          'eBay: ' + (eb.nuovi||0) + ' nuovi'
+        );
+        var ls = document.getElementById('sync-last');
+        if (ls) ls.textContent = 'Ultima sync: ' + new Date().toLocaleTimeString('it-IT');
+        await loadOrdiniAmazon();
+        await loadDashboard();
+      }, 800);
+      
+    } else {
+      closeOverlay(false, 'Nessuna risposta dal server');
+    }
+    
+  } catch(err) {
+    closeOverlay(false, 'Errore: ' + err.message);
   }
+
+  // Ripristina bottoni
+  ['sync-btn','sync-btn-settings'].forEach(function(id) { var b=document.getElementById(id); if(b) b.disabled=false; });
+  ['sync-label','sync-label-settings'].forEach(function(id) { var s=document.getElementById(id); if(s) s.textContent='Sincronizza ora'; });
 }
 
 // ── INIT ────────────────────────────────────────────────────
