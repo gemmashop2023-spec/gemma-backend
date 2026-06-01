@@ -1,0 +1,12 @@
+{
+  "name": "gemma-backend",
+  "version": "1.0.1",
+  "description": "GEMMA Warehouse Manager API",
+  "type": "module",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.43.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
