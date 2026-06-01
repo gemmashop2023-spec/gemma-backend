@@ -1,9 +1,1 @@
-{
-  "routes": [
-    { "src": "/", "dest": "/GEMMA_app_completa.html" },
-    { "src": "/api/(.*)", "dest": "/api/$1" }
-  ]
-}
-  
-
-
+{}
