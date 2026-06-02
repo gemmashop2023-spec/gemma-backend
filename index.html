@@ -3328,6 +3328,165 @@ function giorniLavorativi(dataInizio, dataFine) {
 //  PRATICHE ASSICURATIVE
 // ═══════════════════════════════════════════════════════
 
+
+// ═══════════════════════════════════════════════════════
+//  MAGAZZINO — CARICO/SCARICO MANUALE
+// ═══════════════════════════════════════════════════════
+
+function apriCaricoManuale() {
+  // Reset form
+  ['carico-nome','carico-sku','carico-prezzo-acq','carico-prezzo-vend','carico-posizione','carico-note'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  var el;
+  el = document.getElementById('carico-qty'); if (el) el.value = '1';
+  el = document.getElementById('carico-categoria'); if (el) el.value = 'smartphone';
+  el = document.getElementById('carico-condizione'); if (el) el.value = 'usato-ottimo';
+  // Genera SKU automatico
+  var skuEl = document.getElementById('carico-sku');
+  if (skuEl) skuEl.value = 'SKU-' + Date.now().toString(36).toUpperCase();
+  openModal('m-carico-magazzino');
+}
+
+function salvaCarico() {
+  var nome      = (document.getElementById('carico-nome')        ||{}).value||'';
+  var sku       = (document.getElementById('carico-sku')         ||{}).value||'';
+  var categoria = (document.getElementById('carico-categoria')   ||{}).value||'altro';
+  var condizione= (document.getElementById('carico-condizione')  ||{}).value||'usato-ottimo';
+  var qty       = parseInt((document.getElementById('carico-qty')||{}).value||'1');
+  var prezzoAcq = parseFloat((document.getElementById('carico-prezzo-acq') ||{}).value||'0');
+  var prezzoVend= parseFloat((document.getElementById('carico-prezzo-vend')||{}).value||'0');
+  var posizione = (document.getElementById('carico-posizione')   ||{}).value||'';
+  var note      = (document.getElementById('carico-note')        ||{}).value||'';
+
+  if (!nome) { showToast('⚠ Inserisci il nome del prodotto'); return; }
+
+  var prodId = 'PROD-' + Date.now();
+  var now    = new Date().toISOString();
+
+  var prodotto = {
+    id: prodId, nome: nome, sku: sku, categoria: categoria,
+    condizione: condizione, stock: qty,
+    prezzo_acquisto: prezzoAcq, prezzo_vendita: prezzoVend,
+    posizione: posizione, note: note, creato_il: now
+  };
+
+  // Aggiungi alla tabella catalogo
+  var tbody = document.getElementById('catalogo-tbody');
+  if (tbody) {
+    var tr = document.createElement('tr');
+    tr.id = 'prod-' + prodId;
+    tr.dataset.prodotto = prodId;
+    tr.innerHTML =
+      '<td class="mono" style="color:var(--blue)">' + sku + '</td>' +
+      '<td><strong>' + nome + '</strong>' + (note ? '<div style="font-size:11px;color:var(--text-sec)">' + note + '</div>' : '') + '</td>' +
+      '<td><span class="chip c-blue">' + qty + ' u.</span></td>' +
+      '<td><span class="chip">' + condizione.replace(/-/g,' ') + '</span></td>' +
+      '<td>' + posizione + '</td>' +
+      '<td>€' + prezzoAcq.toFixed(2) + '</td>' +
+      '<td>€' + prezzoVend.toFixed(2) + '</td>' +
+      '<td class="rg"><button class="btn bg bxs" onclick="apriScaricoManuale(\''+prodId+'\',\''+nome+'\','+prezzoVend+')" style="font-size:11px"><i class="ti ti-arrow-down"></i> Scarica</button></td>';
+    tbody.appendChild(tr);
+  }
+
+  // Salva su Supabase se live
+  if (IS_LIVE) {
+    api('caricoProdotto', prodotto).catch(function(){});
+  }
+
+  // Log movimento
+  aggiungiMovimento(prodId, sku, nome, 'carico', qty, prezzoAcq, 'Carico manuale');
+
+  showToast('✓ Prodotto caricato in magazzino');
+  closeModal('m-carico-magazzino');
+}
+
+function apriScaricoManuale(prodId, nomeProd, prezzoVend) {
+  var el;
+  el = document.getElementById('scarico-prod-id');   if (el) el.value = prodId;
+  el = document.getElementById('scarico-prod-nome'); if (el) el.value = nomeProd;
+  el = document.getElementById('scarico-prezzo');    if (el) el.value = prezzoVend || '';
+  el = document.getElementById('scarico-qty');       if (el) el.value = '1';
+  el = document.getElementById('scarico-cliente');   if (el) el.value = '';
+  el = document.getElementById('scarico-note');      if (el) el.value = '';
+  openModal('m-scarico-magazzino');
+}
+
+function salvaScarico() {
+  var prodId   = (document.getElementById('scarico-prod-id')  ||{}).value||'';
+  var nome     = (document.getElementById('scarico-prod-nome')||{}).value||'';
+  var qty      = parseInt((document.getElementById('scarico-qty')    ||{}).value||'1');
+  var prezzo   = parseFloat((document.getElementById('scarico-prezzo')||{}).value||'0');
+  var cliente  = (document.getElementById('scarico-cliente')  ||{}).value||'';
+  var pagamento= (document.getElementById('scarico-pagamento')||{}).value||'contanti';
+  var note     = (document.getElementById('scarico-note')     ||{}).value||'';
+
+  if (!prodId) { showToast('⚠ Prodotto non selezionato'); return; }
+
+  var vendId = 'VB-' + Date.now();
+  var now    = new Date().toISOString();
+
+  // Scala stock nella tabella
+  var prodRow = document.getElementById('prod-' + prodId);
+  if (prodRow) {
+    var stockCell = prodRow.querySelector('td:nth-child(3) .chip');
+    if (stockCell) {
+      var cur = parseInt(stockCell.textContent) || 0;
+      var nuovo = Math.max(0, cur - qty);
+      stockCell.textContent = nuovo + ' u.';
+      if (nuovo === 0) stockCell.className = 'chip c-red';
+    }
+  }
+
+  // Aggiungi a Vendita al Banco
+  var vbTbody = document.getElementById('vb-tbody') || document.querySelector('#pg-vendita-banco tbody');
+  if (vbTbody) {
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td class="mono" style="color:var(--green)">' + vendId + '</td>' +
+      '<td>' + new Date().toLocaleDateString('it-IT') + '</td>' +
+      '<td><strong>' + nome + '</strong></td>' +
+      '<td>' + qty + '</td>' +
+      '<td>€' + prezzo.toFixed(2) + '</td>' +
+      '<td>' + (cliente||'—') + '</td>' +
+      '<td><span class="chip c-' + (pagamento==='contanti'?'green':pagamento==='carta'?'blue':'amber') + '">' + pagamento + '</span></td>' +
+      '<td>' + (note||'—') + '</td>';
+    vbTbody.insertBefore(tr, vbTbody.firstChild);
+  }
+
+  // Salva su Supabase se live
+  if (IS_LIVE) {
+    api('vendita_banco', {
+      id: vendId, prodotto_id: prodId, prodotto: nome,
+      qty: qty, prezzo: prezzo, cliente: cliente,
+      pagamento: pagamento, note: note, data: now
+    }).catch(function(){});
+  }
+
+  // Log movimento
+  aggiungiMovimento(prodId, '', nome, 'scarico-banco', qty, prezzo, 'Vendita al banco' + (cliente ? ' — ' + cliente : ''));
+
+  showToast('✓ Vendita al banco registrata — €' + (prezzo * qty).toFixed(2));
+  closeModal('m-scarico-magazzino');
+}
+
+function aggiungiMovimento(prodId, sku, nome, tipo, qty, valore, note) {
+  var tbody = document.getElementById('mov-tbody');
+  if (!tbody) return;
+  var tr = document.createElement('tr');
+  var colore = tipo.indexOf('carico') >= 0 ? 'green' : 'red';
+  var segno  = tipo.indexOf('carico') >= 0 ? '+' : '−';
+  tr.innerHTML =
+    '<td>' + new Date().toLocaleDateString('it-IT',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) + '</td>' +
+    '<td class="mono">' + (sku||prodId) + '</td>' +
+    '<td><strong>' + nome + '</strong></td>' +
+    '<td><span class="chip c-' + colore + '">' + tipo.replace(/-/g,' ') + '</span></td>' +
+    '<td style="color:var(--' + colore + ');font-weight:700">' + segno + qty + '</td>' +
+    '<td>€' + parseFloat(valore||0).toFixed(2) + '</td>' +
+    '<td>' + (note||'—') + '</td>';
+  tbody.insertBefore(tr, tbody.firstChild);
+}
+
 function apriNuovaPratica(opts) {
   opts = opts || {};
   // Pre-compila modal nuova pratica
@@ -3504,6 +3663,114 @@ checkAuth();
 
 
 
+
+
+<!-- ═══ MODAL CARICO MAGAZZINO ═══ -->
+<div class="mbg hidden" id="m-carico-magazzino">
+  <div class="modal" style="width:520px">
+    <div class="mh">
+      <div><div style="font-size:15px;font-weight:700">Carico Magazzino</div>
+      <div style="font-size:12px;color:var(--text-sec);margin-top:2px">Aggiungi prodotto all'inventario</div></div>
+      <button class="mc" onclick="closeModal('m-carico-magazzino')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="mb" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="grid-column:1/-1">
+        <label class="fl">Nome prodotto *</label>
+        <input class="fi" id="carico-nome" type="text" placeholder="es. iPhone 13 128GB Nero"/>
+      </div>
+      <div>
+        <label class="fl">SKU</label>
+        <input class="fi" id="carico-sku" type="text" placeholder="Auto-generato"/>
+      </div>
+      <div>
+        <label class="fl">Quantità</label>
+        <input class="fi" id="carico-qty" type="number" value="1" min="1"/>
+      </div>
+      <div>
+        <label class="fl">Categoria</label>
+        <select class="fi" id="carico-categoria">
+          <option value="smartphone">Smartphone</option>
+          <option value="tablet">Tablet</option>
+          <option value="pc">PC / Laptop</option>
+          <option value="audio">Audio</option>
+          <option value="accessori">Accessori</option>
+          <option value="altro">Altro</option>
+        </select>
+      </div>
+      <div>
+        <label class="fl">Condizione</label>
+        <select class="fi" id="carico-condizione">
+          <option value="nuovo">Nuovo</option>
+          <option value="ricondizionato">Ricondizionato</option>
+          <option value="usato-ottimo" selected>Usato ottimo</option>
+          <option value="usato-buono">Usato buono</option>
+          <option value="usato-accettabile">Usato accettabile</option>
+        </select>
+      </div>
+      <div>
+        <label class="fl">Prezzo acquisto (€)</label>
+        <input class="fi" id="carico-prezzo-acq" type="number" placeholder="0.00" min="0" step="0.01"/>
+      </div>
+      <div>
+        <label class="fl">Prezzo vendita (€)</label>
+        <input class="fi" id="carico-prezzo-vend" type="number" placeholder="0.00" min="0" step="0.01"/>
+      </div>
+      <div>
+        <label class="fl">Posizione magazzino</label>
+        <input class="fi" id="carico-posizione" type="text" placeholder="es. A1-S3"/>
+      </div>
+      <div>
+        <label class="fl">Note / Difetti</label>
+        <input class="fi" id="carico-note" type="text" placeholder="es. Graffi sul retro"/>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn bg" onclick="closeModal('m-carico-magazzino')">Annulla</button>
+      <button class="btn bp" onclick="salvaCarico()"><i class="ti ti-plus"></i> Carica in magazzino</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL SCARICO / VENDITA AL BANCO ═══ -->
+<div class="mbg hidden" id="m-scarico-magazzino">
+  <div class="modal" style="width:480px">
+    <div class="mh">
+      <div><div style="font-size:15px;font-weight:700">Vendita al Banco</div>
+      <div style="font-size:12px;color:var(--text-sec);margin-top:2px">Scarico magazzino + registrazione vendita</div></div>
+      <button class="mc" onclick="closeModal('m-scarico-magazzino')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="mb">
+      <input type="hidden" id="scarico-prod-id"/>
+      <label class="fl">Prodotto</label>
+      <input class="fi" id="scarico-prod-nome" type="text" readonly style="opacity:.7"/>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:4px">
+        <div>
+          <label class="fl">Quantità</label>
+          <input class="fi" id="scarico-qty" type="number" value="1" min="1"/>
+        </div>
+        <div>
+          <label class="fl">Prezzo vendita (€)</label>
+          <input class="fi" id="scarico-prezzo" type="number" placeholder="0.00" step="0.01"/>
+        </div>
+      </div>
+      <label class="fl">Cliente (opzionale)</label>
+      <input class="fi" id="scarico-cliente" type="text" placeholder="Nome o telefono cliente"/>
+      <label class="fl">Pagamento</label>
+      <select class="fi" id="scarico-pagamento">
+        <option value="contanti">Contanti</option>
+        <option value="carta">Carta</option>
+        <option value="bonifico">Bonifico</option>
+        <option value="satispay">Satispay</option>
+      </select>
+      <label class="fl">Note</label>
+      <input class="fi" id="scarico-note" type="text" placeholder="Note sulla vendita..."/>
+    </div>
+    <div class="mf">
+      <button class="btn bg" onclick="closeModal('m-scarico-magazzino')">Annulla</button>
+      <button class="btn bp" onclick="salvaScarico()" style="background:#22c55e"><i class="ti ti-cash"></i> Registra vendita</button>
+    </div>
+  </div>
+</div>
 
 <!-- ═══ MODAL NUOVA PRATICA ASSICURATIVA ═══ -->
 <div class="mbg hidden" id="m-nuova-pratica">
