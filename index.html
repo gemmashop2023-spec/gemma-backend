@@ -2210,13 +2210,83 @@ function confermaChiudiAssic() {
 function _buildOrdineBtn(ord) {
   if (ord.stato === 'da-acquistare') {
     var p = (ord.prodotto||'').replace(/'/g,'').replace(/"/g,'').substring(0,50);
-    return '<button class="btn bxs" style="background:#ef4444;color:#fff;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600" onclick="apriModalAcquisto(\'' + ord.numero_ordine + '\',\'' + p + '\',\'' + (ord.totale||0) + '\')"><i class=\"ti ti-shopping-cart\"></i> Acquista</button>';
+    var tel = (ord.telefono||'').replace(/\D/g,'');
+    var waBtn = tel ? 
+      '<button class="btn bxs" style="background:#25d366;color:#fff;border:none;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600;margin-right:4px" onclick="apriWhatsAppOrdine(\'' + ord.numero_ordine + '\',\'' + tel + '\',\'' + p + '\',\'' + (ord.condizione||'usato') + '\')" title="Invia WhatsApp al cliente"><i class=\"ti ti-brand-whatsapp\"></i></button>' : '';
+    var waSent = ord.wa_inviato ? '<span style="font-size:10px;color:#25d366;margin-right:4px" title="WhatsApp inviato il ' + (ord.wa_data||'') + '">✓WA</span>' : '';
+    return waSent + waBtn + '<button class="btn bxs" style="background:#ef4444;color:#fff;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600" onclick="apriModalAcquisto(\'' + ord.numero_ordine + '\',\'' + p + '\',\'' + (ord.totale||0) + '\')"><i class=\"ti ti-shopping-cart\"></i> Acquista</button>';
+  }
+  if (ord.stato === 'attesa-risposta') {
+    var tel2 = (ord.telefono||'').replace(/\D/g,'');
+    var p2 = (ord.prodotto||'').replace(/'/g,'').substring(0,50);
+    var waBtn2 = tel2 ? '<button class="btn bxs" style="background:#25d366;color:#fff;border:none;padding:5px 8px;border-radius:6px;cursor:pointer;font-size:11px" onclick="apriWhatsAppOrdine(\'' + ord.numero_ordine + '\',\'' + tel2 + '\',\'' + p2 + '\',\'\')"><i class=\"ti ti-brand-whatsapp\"></i></button> ' : '';
+    return '<span style="font-size:10px;color:#f59e0b;margin-right:4px">⏳ Attesa</span>' + waBtn2 + '<button class="btn bxs" style="background:#ef4444;color:#fff;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600" onclick="apriModalAcquisto(\'' + ord.numero_ordine + '\',\'' + p2 + '\',\'' + (ord.totale||0) + '\')"><i class=\"ti ti-shopping-cart\"></i> Acquista</button>';
   }
   return '<button class="btn bg bxs" onclick="openModal(\'' + 'm-inserisci-tracking' + '\',\'' + ord.numero_ordine + '\')"><i class=\"ti ti-scan\"></i>Tracking</button>';
 }
 
 
 // ── RICERCA MAGAZZINO ───────────────────────────────────
+
+
+// ── WHATSAPP CLIENTE ─────────────────────────────────────
+
+function apriWhatsAppOrdine(numeroOrdine, telefono, prodotto, condizione) {
+  var tel = telefono.replace(/\D/g, '');
+  if (!tel) { showToast('⚠ Numero telefono non disponibile'); return; }
+  
+  // Testo messaggio standard
+  var testo = 'Gentile cliente, la contatto in merito al suo ordine Amazon ' + numeroOrdine + '.\n\n' +
+    'Ha acquistato: *' + prodotto + '*\n' +
+    'Condizione articolo: *' + (condizione || 'Usato') + '*\n\n' +
+    'Volevo assicurarmi che sia a conoscenza che il prodotto è usato/ricondizionato. ' +
+    'Conferma di aver letto la descrizione e di accettare le condizioni dell\'articolo?\n\n' +
+    'In caso di dubbi sono a sua disposizione. Grazie!';
+  
+  var url = 'https://wa.me/39' + tel + '?text=' + encodeURIComponent(testo);
+  window.open(url, '_blank');
+  
+  // Mostra dialog per segnare come inviato
+  var modal = document.getElementById('m-wa-inviato');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'm-wa-inviato';
+    modal.className = 'mbg';
+    modal.innerHTML = '<div class="modal" style="width:380px">' +
+      '<div class="mh"><div><div style="font-size:15px;font-weight:700">WhatsApp aperto</div>' +
+      '<div style="font-size:12px;color:var(--text-sec);margin-top:2px">Ordine ' + numeroOrdine + '</div></div>' +
+      '<button class="mc" onclick="closeModal(\'m-wa-inviato\')"><i class="ti ti-x"></i></button></div>' +
+      '<div class="mb" style="text-align:center;padding:24px">' +
+      '<div style="font-size:40px;margin-bottom:12px">💬</div>' +
+      '<div style="font-size:14px;color:var(--text);margin-bottom:8px">Hai inviato il messaggio su WhatsApp?</div>' +
+      '<div style="font-size:12px;color:var(--text-sec);margin-bottom:20px">Segna come inviato per tracciare l\'attesa risposta</div>' +
+      '<div style="display:flex;gap:8px;justify-content:center">' +
+      '<button onclick="closeModal(\'m-wa-inviato\')" class="btn bg">Non ancora</button>' +
+      '<button onclick="segnaWaInviato(\''+numeroOrdine+'\');closeModal(\'m-wa-inviato\')" class="btn bp" style="background:#25d366">✓ Sì, inviato</button>' +
+      '</div></div></div>';
+    document.body.appendChild(modal);
+  }
+  setTimeout(function() { openModal('m-wa-inviato'); }, 1500);
+}
+
+function segnaWaInviato(numeroOrdine) {
+  var now = new Date().toLocaleString('it-IT');
+  // Aggiorna riga nella tabella ordini
+  var row = document.querySelector('[data-ordine="' + numeroOrdine + '"]') ||
+            document.getElementById('row-' + numeroOrdine);
+  if (row) {
+    row.dataset.waInviato = '1';
+    row.dataset.waData = now;
+  }
+  // Aggiorna via API se live
+  if (IS_LIVE) {
+    api('aggiornaOrdine', { id: numeroOrdine, wa_inviato: true, wa_data: now, stato: 'attesa-risposta' })
+      .catch(function() {});
+  }
+  showToast('✓ WhatsApp segnato come inviato — ordine in attesa risposta');
+  // Ricarica tabella
+  if (IS_LIVE) loadOrdiniAmazon();
+}
 
 function cercaInMagazzino(nomeProdotto) {
   var risultati = { esatto: [], simile: [] };
