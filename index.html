@@ -276,7 +276,8 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
     <div class="tb-title" id="tb-title">Dashboard</div>
     <div class="tb-search"><i class="ti ti-search"></i><input placeholder="Cerca ordine, SKU, cliente..."/></div>
     <button class="btn bg" style="padding:6px 10px"><i class="ti ti-bell"></i></button>
-    <button class="btn bp" id="tb-action" onclick="tbAction()"><i class="ti ti-refresh" id="tb-icon"></i><span id="tb-lbl">Sincronizza</span></button>
+    <button class="btn bg bxs" onclick="apriReportUrgente()" title="Report urgente" style="margin-right:6px"><i class="ti ti-alert-triangle"></i><span class="label" style="display:none">Urgente</span></button>
+  <button class="btn bp" id="tb-action" onclick="tbAction()"><i class="ti ti-refresh" id="tb-icon"></i><span id="tb-lbl">Sincronizza</span></button>
   <div id="sync-progress-bar" style="display:none;position:absolute;bottom:0;left:0;right:0;height:3px;background:rgba(255,255,255,0.1)">
     <div id="sync-bar" style="height:100%;background:#3b82f6;border-radius:0;width:0%;transition:width 0.4s ease"></div>
   </div>
@@ -2975,10 +2976,207 @@ function hideLogin() {
   var el = document.getElementById('login-screen');
   if (el) el.style.display = 'none';
   nav('dashboard');
+  avviaReportAutomatico();
   var av = document.querySelector('.s-av');
   if (av && _currentUser) av.textContent = (_currentUser.nome||_currentUser.username||'').slice(0,2).toUpperCase();
   var usr = document.querySelector('#nav-foot .s-user > div > div:first-child');
   if (usr && _currentUser) usr.textContent = _currentUser.nome || _currentUser.username;
+}
+
+
+// ═══════════════════════════════════════════════════════
+//  REPORT URGENTE
+// ═══════════════════════════════════════════════════════
+
+var _reportInterval = null;
+
+function avviaReportAutomatico() {
+  // Apri subito dopo 5 secondi dal login, poi ogni ora
+  setTimeout(function() {
+    aggiornaReportBadge();
+  }, 5000);
+  
+  _reportInterval = setInterval(function() {
+    apriReportUrgente();
+  }, 60 * 60 * 1000); // ogni ora
+}
+
+function aggiornaReportBadge() {
+  var items = raccogliItemsUrgenti();
+  var totale = items.reduce(function(acc, cat) { return acc + cat.items.length; }, 0);
+  // Aggiorna badge sul pulsante report
+  var btn = document.querySelector('[onclick="apriReportUrgente()"]');
+  if (btn && totale > 0) {
+    btn.style.background = '#ef4444';
+    btn.title = totale + ' elementi urgenti';
+  }
+}
+
+function raccogliItemsUrgenti() {
+  var now = new Date();
+  var categorie = [];
+
+  // 1. MESSAGGI AMAZON IN SCADENZA < 9 ORE
+  var msgUrgenti = [];
+  document.querySelectorAll('#ordini-tbody tr').forEach(function(row) {
+    var msgScad = row.dataset.msgScadenza;
+    if (msgScad) {
+      var diff = new Date(msgScad) - now;
+      var ore = diff / (1000 * 60 * 60);
+      if (ore > 0 && ore < 9) {
+        msgUrgenti.push({
+          id: row.dataset.ordine || row.id,
+          label: (row.querySelector('td') || {}).textContent || '',
+          dettaglio: 'Risposta entro ' + Math.round(ore) + 'h',
+          urgenza: ore < 3 ? 'alta' : 'media'
+        });
+      }
+    }
+  });
+  if (msgUrgenti.length > 0) {
+    categorie.push({ titolo: '💬 Messaggi in scadenza di risposta', colore: '#ef4444', items: msgUrgenti });
+  }
+
+  // 2. ORDINI DA SPEDIRE ENTRO DOMANI
+  var spedUrgenti = [];
+  document.querySelectorAll('#ordini-tbody tr').forEach(function(row) {
+    if (row.dataset.stato !== 'da-spedire') return;
+    var scad = row.dataset.scadenza;
+    if (scad) {
+      var diff = new Date(scad) - now;
+      var ore = diff / (1000 * 60 * 60);
+      if (ore < 36) {
+        var cells = row.querySelectorAll('td');
+        spedUrgenti.push({
+          id: row.dataset.ordine || row.id,
+          label: cells[0] ? cells[0].textContent : '',
+          dettaglio: ore < 0 ? '⚠ SCADUTO' : 'Scade in ' + Math.round(ore) + 'h',
+          urgenza: ore < 0 ? 'alta' : ore < 12 ? 'alta' : 'media'
+        });
+      }
+    }
+  });
+  if (spedUrgenti.length > 0) {
+    categorie.push({ titolo: '📦 Ordini da spedire in scadenza', colore: '#f59e0b', items: spedUrgenti });
+  }
+
+  // 3. RESI DA VALUTARE
+  var resiUrgenti = [];
+  document.querySelectorAll('#resi-clienti-tbody tr').forEach(function(row) {
+    if (row.dataset.stato === 'da-valutare' || row.dataset.stato === 'aperto') {
+      var cells = row.querySelectorAll('td');
+      resiUrgenti.push({
+        id: row.id,
+        label: cells[0] ? cells[0].textContent : '',
+        dettaglio: cells[1] ? cells[1].textContent : '',
+        urgenza: 'media'
+      });
+    }
+  });
+  if (resiUrgenti.length > 0) {
+    categorie.push({ titolo: '↩ Resi da valutare', colore: '#8b5cf6', items: resiUrgenti });
+  }
+
+  // 4. RECLAMI APERTI
+  var reclamiUrgenti = [];
+  document.querySelectorAll('#contestazioni-tbody tr').forEach(function(row) {
+    if (row.dataset.stato !== 'chiuso' && row.dataset.stato !== 'risolto') {
+      var cells = row.querySelectorAll('td');
+      reclamiUrgenti.push({
+        id: row.id,
+        label: cells[0] ? cells[0].textContent : '',
+        dettaglio: 'Contestazione aperta',
+        urgenza: 'alta'
+      });
+    }
+  });
+  if (reclamiUrgenti.length > 0) {
+    categorie.push({ titolo: '⚡ Reclami aperti', colore: '#ef4444', items: reclamiUrgenti });
+  }
+
+  // 5. ORDINI IN ATTESA RISPOSTA CLIENTE (WhatsApp inviato)
+  var atteseUrgenti = [];
+  document.querySelectorAll('#ordini-tbody tr').forEach(function(row) {
+    if (row.dataset.stato === 'attesa-risposta') {
+      var cells = row.querySelectorAll('td');
+      atteseUrgenti.push({
+        id: row.dataset.ordine || row.id,
+        label: cells[0] ? cells[0].textContent : '',
+        dettaglio: 'In attesa risposta cliente',
+        urgenza: 'media'
+      });
+    }
+  });
+  if (atteseUrgenti.length > 0) {
+    categorie.push({ titolo: '⏳ Ordini in attesa risposta cliente', colore: '#3b82f6', items: atteseUrgenti });
+  }
+
+  // 6. VERIFICA 24H SCADUTA
+  var verifica24 = [];
+  document.querySelectorAll('#ordini-tbody tr').forEach(function(row) {
+    if (row.dataset.stato !== 'consegnato') return;
+    var consData = row.dataset.dataConsegna;
+    if (consData) {
+      var diff = now - new Date(consData);
+      var ore = diff / (1000 * 60 * 60);
+      if (ore > 24 && !row.dataset.verificato24h) {
+        var cells = row.querySelectorAll('td');
+        verifica24.push({
+          id: row.dataset.ordine || row.id,
+          label: cells[0] ? cells[0].textContent : '',
+          dettaglio: 'Consegnato ' + Math.round(ore) + 'h fa — verifica non confermata',
+          urgenza: 'media'
+        });
+      }
+    }
+  });
+  if (verifica24.length > 0) {
+    categorie.push({ titolo: '🔍 Verifica 24h scaduta', colore: '#f59e0b', items: verifica24 });
+  }
+
+  return categorie;
+}
+
+function apriReportUrgente() {
+  var categorie = raccogliItemsUrgenti();
+  var body = document.getElementById('report-body');
+  var ts = document.getElementById('report-timestamp');
+  
+  if (ts) ts.textContent = 'Aggiornato: ' + new Date().toLocaleTimeString('it-IT');
+
+  if (categorie.length === 0) {
+    body.innerHTML = '<div style="text-align:center;padding:40px">' +
+      '<div style="font-size:40px;margin-bottom:12px">✅</div>' +
+      '<div style="font-size:15px;font-weight:700;color:var(--text)">Tutto in ordine!</div>' +
+      '<div style="font-size:12px;color:var(--text-sec);margin-top:4px">Nessun elemento urgente da gestire</div>' +
+      '</div>';
+  } else {
+    var html = '';
+    categorie.forEach(function(cat) {
+      html += '<div style="margin-bottom:16px">' +
+        '<div style="font-size:12px;font-weight:700;color:' + cat.colore + ';margin-bottom:8px;display:flex;align-items:center;gap:6px">' +
+        cat.titolo + ' <span style="background:' + cat.colore + ';color:#fff;border-radius:10px;padding:1px 7px;font-size:11px">' + cat.items.length + '</span></div>' +
+        '<div style="background:rgba(255,255,255,0.04);border-radius:8px;overflow:hidden">';
+      cat.items.forEach(function(item) {
+        var urgColor = item.urgenza === 'alta' ? '#ef4444' : '#f59e0b';
+        html += '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.05)">' +
+          '<div>' +
+          '<div style="font-size:12px;font-weight:700;color:var(--text)">' + item.label + '</div>' +
+          '<div style="font-size:11px;color:var(--text-sec)">' + item.dettaglio + '</div>' +
+          '</div>' +
+          '<span style="font-size:10px;font-weight:700;color:' + urgColor + ';text-transform:uppercase">' + item.urgenza + '</span>' +
+          '</div>';
+      });
+      html += '</div></div>';
+    });
+    body.innerHTML = html;
+  }
+
+  openModal('m-report-urgente');
+  
+  // Reset badge
+  var btn = document.querySelector('[onclick="apriReportUrgente()"]');
+  if (btn) btn.style.background = '';
 }
 
 function checkAuth() {
@@ -3038,6 +3236,27 @@ function doLogout() {
 checkAuth();
 </script>
 
+
+
+<!-- ═══ MODAL REPORT URGENTE ═══ -->
+<div class="mbg hidden" id="m-report-urgente">
+  <div class="modal" style="width:580px;max-height:80vh;display:flex;flex-direction:column">
+    <div class="mh" style="flex-shrink:0">
+      <div>
+        <div style="font-size:15px;font-weight:700">📋 Report Urgente</div>
+        <div style="font-size:11px;color:var(--text-sec);margin-top:2px" id="report-timestamp"></div>
+      </div>
+      <button class="mc" onclick="closeModal('m-report-urgente')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="mb" id="report-body" style="overflow-y:auto;flex:1;padding:16px">
+      <div style="text-align:center;color:var(--text-muted);padding:20px">Caricamento...</div>
+    </div>
+    <div class="mf" style="flex-shrink:0">
+      <button class="btn bg" onclick="closeModal('m-report-urgente')">Chiudi</button>
+      <button class="btn bp" onclick="apriReportUrgente()"><i class="ti ti-refresh"></i> Aggiorna</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
