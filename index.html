@@ -2977,6 +2977,7 @@ function hideLogin() {
   if (el) el.style.display = 'none';
   nav('dashboard');
   avviaReportAutomatico();
+  caricaImpostazioniCommissioni();
   var av = document.querySelector('.s-av');
   if (av && _currentUser) av.textContent = (_currentUser.nome||_currentUser.username||'').slice(0,2).toUpperCase();
   var usr = document.querySelector('#nav-foot .s-user > div > div:first-child');
@@ -3356,6 +3357,301 @@ function haPermesso(sezione) {
   if (ruolo === 'sola_lettura') return false;
   var p = _permessi[ruolo] || {};
   return p[sezione] === true;
+}
+
+
+// ═══════════════════════════════════════════════════════
+//  IMPOSTAZIONI COMMISSIONI
+// ═══════════════════════════════════════════════════════
+
+var _commissioni = {
+  amazon: {
+    a: { perc: 7, fissa: 1, iva: true, label: 'Standard (7%+1€)' },
+    b: { perc: 12, fissa: 1, iva: true, label: 'Media (12%+1€)' }
+  },
+  ebay: {
+    a: { perc: 0, fissa: 0, iva: true, label: 'eBay A' },
+    b: { perc: 0, fissa: 0, iva: true, label: 'eBay B' }
+  }
+};
+
+var IVA_RATE = 0.22;
+
+function calcolaCommissione(prezzo, piattaforma, aliquota) {
+  aliquota = aliquota || 'a';
+  var cfg = (_commissioni[piattaforma] || _commissioni.amazon)[aliquota];
+  if (!cfg) return 0;
+  var base = (prezzo * cfg.perc / 100) + cfg.fissa;
+  if (cfg.iva) base = base * (1 + IVA_RATE);
+  return Math.round(base * 100) / 100;
+}
+
+function calcolaUtileLordo(prezzoVendita, prezzoAcquisto, piattaforma, aliquota) {
+  var comm = calcolaCommissione(prezzoVendita, piattaforma, aliquota);
+  return Math.round((prezzoVendita - prezzoAcquisto - comm) * 100) / 100;
+}
+
+function caricaImpostazioniCommissioni() {
+  // Carica da localStorage o Supabase
+  try {
+    var saved = localStorage.getItem('gemma_commissioni');
+    if (saved) _commissioni = JSON.parse(saved);
+  } catch(e) {}
+  renderImpostazioniCommissioni();
+}
+
+function salvaImpostazioniCommissioni() {
+  var update = {
+    amazon: {
+      a: {
+        perc:  parseFloat(document.getElementById('comm-amz-a-perc').value) || 7,
+        fissa: parseFloat(document.getElementById('comm-amz-a-fissa').value) || 1,
+        iva:   document.getElementById('comm-amz-a-iva').checked,
+        label: document.getElementById('comm-amz-a-label').value || 'Standard'
+      },
+      b: {
+        perc:  parseFloat(document.getElementById('comm-amz-b-perc').value) || 12,
+        fissa: parseFloat(document.getElementById('comm-amz-b-fissa').value) || 1,
+        iva:   document.getElementById('comm-amz-b-iva').checked,
+        label: document.getElementById('comm-amz-b-label').value || 'Media'
+      }
+    },
+    ebay: {
+      a: {
+        perc:  parseFloat(document.getElementById('comm-ebay-a-perc').value) || 0,
+        fissa: parseFloat(document.getElementById('comm-ebay-a-fissa').value) || 0,
+        iva:   document.getElementById('comm-ebay-a-iva').checked,
+        label: document.getElementById('comm-ebay-a-label').value || 'eBay A'
+      },
+      b: {
+        perc:  parseFloat(document.getElementById('comm-ebay-b-perc').value) || 0,
+        fissa: parseFloat(document.getElementById('comm-ebay-b-fissa').value) || 0,
+        iva:   document.getElementById('comm-ebay-b-iva').checked,
+        label: document.getElementById('comm-ebay-b-label').value || 'eBay B'
+      }
+    }
+  };
+  _commissioni = update;
+  try { localStorage.setItem('gemma_commissioni', JSON.stringify(_commissioni)); } catch(e) {}
+  showToast('✓ Commissioni salvate');
+}
+
+function renderImpostazioniCommissioni() {
+  var pairs = [
+    ['amz-a', _commissioni.amazon.a],
+    ['amz-b', _commissioni.amazon.b],
+    ['ebay-a', _commissioni.ebay.a],
+    ['ebay-b', _commissioni.ebay.b]
+  ];
+  pairs.forEach(function(pair) {
+    var key = pair[0], cfg = pair[1];
+    var el;
+    el = document.getElementById('comm-' + key + '-perc');  if (el) el.value = cfg.perc;
+    el = document.getElementById('comm-' + key + '-fissa'); if (el) el.value = cfg.fissa;
+    el = document.getElementById('comm-' + key + '-iva');   if (el) el.checked = cfg.iva;
+    el = document.getElementById('comm-' + key + '-label'); if (el) el.value = cfg.label;
+  });
+}
+
+// ═══════════════════════════════════════════════════════
+//  REPORT MENSILE
+// ═══════════════════════════════════════════════════════
+
+var _reportArchivio = {};
+
+function caricaReport() {
+  try {
+    var saved = localStorage.getItem('gemma_report_archivio');
+    if (saved) _reportArchivio = JSON.parse(saved);
+  } catch(e) {}
+
+  // Imposta mese corrente
+  var now = new Date();
+  var meseEl = document.getElementById('report-mese-sel');
+  if (meseEl) {
+    // Popola select con ultimi 12 mesi
+    meseEl.innerHTML = '';
+    for (var i = 0; i < 12; i++) {
+      var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      var key = d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0');
+      var label = d.toLocaleDateString('it-IT', {month:'long', year:'numeric'});
+      var opt = document.createElement('option');
+      opt.value = key;
+      opt.textContent = label.charAt(0).toUpperCase() + label.slice(1);
+      if (i === 0) opt.selected = true;
+      meseEl.appendChild(opt);
+    }
+  }
+  aggiornaReport();
+}
+
+function aggiornaReport() {
+  var meseEl = document.getElementById('report-mese-sel');
+  var mese = meseEl ? meseEl.value : new Date().toISOString().slice(0,7);
+  renderReport(mese);
+}
+
+function raccogliDatiMese(mese) {
+  // Raccoglie dati dalle tabelle HTML per il mese selezionato
+  var dati = {
+    mese: mese,
+    vendite: { fatturato: 0, ordini: 0, commissioni: 0 },
+    acquisti: { totale: 0, ordini: 0 },
+    resi: { num: 0, importo: 0 },
+    pratiche: { aperte: 0, recuperato: 0, esposto: 0 },
+    magazzino: { prodotti: 0, valore: 0 },
+    vendita_banco: { fatturato: 0, ordini: 0 }
+  };
+
+  // Ordini Amazon del mese
+  document.querySelectorAll('#ordini-tbody tr').forEach(function(row) {
+    var data = row.dataset.data || '';
+    if (!data.startsWith(mese)) return;
+    var cells = row.querySelectorAll('td');
+    var totale = parseFloat(row.dataset.totale || 0);
+    var piattaforma = row.dataset.piattaforma || 'amazon';
+    var acqPrezzo = parseFloat(row.dataset.prezzoAcquisto || 0);
+    var aliquota = row.dataset.aliquota || 'a';
+    dati.vendite.fatturato += totale;
+    dati.vendite.ordini++;
+    dati.vendite.commissioni += calcolaCommissione(totale, piattaforma, aliquota);
+    dati.acquisti.totale += acqPrezzo;
+    if (acqPrezzo > 0) dati.acquisti.ordini++;
+  });
+
+  // Stock magazzino
+  document.querySelectorAll('#catalogo-tbody tr').forEach(function(row) {
+    var cells = row.querySelectorAll('td');
+    var stock = parseInt((cells[2] ? cells[2].textContent : '0')) || 0;
+    var prezzo = parseFloat((cells[5] ? cells[5].textContent.replace('€','') : '0')) || 0;
+    dati.magazzino.prodotti += stock;
+    dati.magazzino.valore += stock * prezzo;
+  });
+
+  // Resi del mese
+  document.querySelectorAll('#resi-clienti-tbody tr').forEach(function(row) {
+    var data = row.dataset.data || '';
+    if (!data.startsWith(mese)) return;
+    dati.resi.num++;
+    dati.resi.importo += parseFloat(row.dataset.importo || 0);
+  });
+
+  // Vendita al banco
+  document.querySelectorAll('#pg-vendita-banco tbody tr').forEach(function(row) {
+    var cells = row.querySelectorAll('td');
+    var data = cells[1] ? cells[1].textContent : '';
+    // Check if date matches month
+    var prezzo = parseFloat((cells[4] ? cells[4].textContent.replace('€','') : '0')) || 0;
+    dati.vendita_banco.fatturato += prezzo;
+    dati.vendita_banco.ordini++;
+  });
+
+  dati.utile = dati.vendite.fatturato + dati.vendita_banco.fatturato
+             - dati.acquisti.totale
+             - dati.vendite.commissioni
+             - dati.resi.importo;
+
+  return dati;
+}
+
+function renderReport(mese) {
+  var container = document.getElementById('report-container');
+  if (!container) return;
+
+  var dati = raccogliDatiMese(mese);
+
+  // Salva nell'archivio
+  _reportArchivio[mese] = dati;
+  try { localStorage.setItem('gemma_report_archivio', JSON.stringify(_reportArchivio)); } catch(e) {}
+
+  // Calcola patrimoniale cumulativo
+  var patrimonio = 0;
+  Object.values(_reportArchivio).forEach(function(d) { patrimonio += (d.utile || 0); });
+  patrimonio += dati.magazzino.valore;
+
+  var html = '';
+
+  // Saldo patrimoniale unico
+  html += '<div style="background:linear-gradient(135deg,#1a2035,#0d1117);border:1px solid rgba(59,130,246,0.3);border-radius:12px;padding:20px;margin-bottom:20px">' +
+    '<div style="font-size:11px;font-weight:700;color:#3b82f6;text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Patrimonio Netto Cumulativo</div>' +
+    '<div style="font-size:32px;font-weight:800;color:' + (patrimonio >= 0 ? '#22c55e' : '#ef4444') + '">€' + patrimonio.toFixed(2) + '</div>' +
+    '<div style="font-size:11px;color:var(--text-sec);margin-top:4px">Stock + utili cumulativi da inizio attività</div>' +
+    '</div>';
+
+  // Saldi per area
+  var aree = [
+    {
+      titolo: '🛒 Vendite Amazon & eBay', colore: '#f59e0b',
+      righe: [
+        { label: 'Fatturato', val: dati.vendite.fatturato, tipo: 'entrata' },
+        { label: 'Commissioni', val: -dati.vendite.commissioni, tipo: 'uscita' },
+        { label: 'Ordini elaborati', val: dati.vendite.ordini, tipo: 'num' }
+      ],
+      saldo: dati.vendite.fatturato - dati.vendite.commissioni
+    },
+    {
+      titolo: '🏪 Vendita al Banco', colore: '#22c55e',
+      righe: [
+        { label: 'Fatturato banco', val: dati.vendita_banco.fatturato, tipo: 'entrata' },
+        { label: 'Vendite effettuate', val: dati.vendita_banco.ordini, tipo: 'num' }
+      ],
+      saldo: dati.vendita_banco.fatturato
+    },
+    {
+      titolo: '📦 Acquisti', colore: '#3b82f6',
+      righe: [
+        { label: 'Totale speso', val: -dati.acquisti.totale, tipo: 'uscita' },
+        { label: 'Acquisti effettuati', val: dati.acquisti.ordini, tipo: 'num' }
+      ],
+      saldo: -dati.acquisti.totale
+    },
+    {
+      titolo: '↩ Resi', colore: '#8b5cf6',
+      righe: [
+        { label: 'Importo rimborsato', val: -dati.resi.importo, tipo: 'uscita' },
+        { label: 'N° resi', val: dati.resi.num, tipo: 'num' }
+      ],
+      saldo: -dati.resi.importo
+    },
+    {
+      titolo: '📊 Magazzino (stock attuale)', colore: '#06b6d4',
+      righe: [
+        { label: 'Pezzi a stock', val: dati.magazzino.prodotti, tipo: 'num' },
+        { label: 'Valore stock', val: dati.magazzino.valore, tipo: 'entrata' }
+      ],
+      saldo: dati.magazzino.valore
+    }
+  ];
+
+  html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px">';
+  aree.forEach(function(area) {
+    html += '<div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:14px">' +
+      '<div style="font-size:12px;font-weight:700;color:' + area.colore + ';margin-bottom:10px">' + area.titolo + '</div>';
+    area.righe.forEach(function(riga) {
+      var valStr = riga.tipo === 'num' ? String(riga.val) : (riga.val >= 0 ? '+' : '') + '€' + Math.abs(riga.val).toFixed(2);
+      var valColor = riga.tipo === 'num' ? 'var(--text)' : riga.val >= 0 ? '#22c55e' : '#ef4444';
+      html += '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid rgba(255,255,255,0.05)">' +
+        '<span style="font-size:11px;color:var(--text-sec)">' + riga.label + '</span>' +
+        '<span style="font-size:12px;font-weight:700;color:' + valColor + '">' + valStr + '</span>' +
+        '</div>';
+    });
+    var saldoColor = area.saldo >= 0 ? '#22c55e' : '#ef4444';
+    html += '<div style="display:flex;justify-content:space-between;padding:8px 0 2px;margin-top:4px">' +
+      '<span style="font-size:11px;font-weight:700;color:var(--text)">Saldo area</span>' +
+      '<span style="font-size:13px;font-weight:800;color:' + saldoColor + '">' + (area.saldo >= 0 ? '+' : '') + '€' + area.saldo.toFixed(2) + '</span>' +
+      '</div></div>';
+  });
+  html += '</div>';
+
+  // Utile mensile
+  var utileColor = dati.utile >= 0 ? '#22c55e' : '#ef4444';
+  html += '<div style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:16px;display:flex;justify-content:space-between;align-items:center">' +
+    '<div><div style="font-size:13px;font-weight:700;color:var(--text)">Utile lordo mensile</div>' +
+    '<div style="font-size:11px;color:var(--text-sec);margin-top:2px">Fatturato − Acquisti − Commissioni − Resi</div></div>' +
+    '<div style="font-size:28px;font-weight:800;color:' + utileColor + '">€' + dati.utile.toFixed(2) + '</div>' +
+    '</div>';
+
+  container.innerHTML = html;
 }
 
 function caricaUtenti() {
