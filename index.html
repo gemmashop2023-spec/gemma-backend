@@ -2245,7 +2245,27 @@ function apriWhatsAppOrdine(numeroOrdine, telefono, prodotto, condizione) {
   
   var url = 'https://wa.me/39' + tel + '?text=' + encodeURIComponent(testo);
   window.open(url, '_blank');
-  
+
+  // Invia automaticamente anche via Amazon Messaging
+  if (IS_LIVE) {
+    var testoAmazon = 'Gentile cliente, la contatto in merito al suo ordine ' + numeroOrdine + '.\n\n' +
+      'Ha acquistato: ' + prodotto + '\n' +
+      'Condizione articolo: ' + (condizione || 'Usato') + '\n\n' +
+      'Volevo assicurarmi che sia a conoscenza che il prodotto è usato/ricondizionato. ' +
+      'Conferma di aver letto la descrizione e di accettare le condizioni dell\'articolo?\n\n' +
+      'In caso di dubbi sono a sua disposizione. Grazie!';
+    
+    api('inviaMessaggioAmazon', { orderId: numeroOrdine, testo: testoAmazon })
+      .then(function(r) {
+        if (r && r.success) {
+          showToast('✓ Messaggio inviato anche via Amazon');
+        } else {
+          console.warn('Amazon messaging:', r && r.error);
+        }
+      })
+      .catch(function() {});
+  }
+
   // Mostra dialog per segnare come inviato
   var modal = document.getElementById('m-wa-inviato');
   if (!modal) {
