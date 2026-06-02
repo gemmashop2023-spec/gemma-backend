@@ -1142,9 +1142,15 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
       </div>
 
     </div>
-    <div class="mf">
+    <div style="padding:12px 0 4px;border-top:1px solid rgba(255,255,255,0.06);margin-top:4px">
+    <label style="display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none">
+      <input type="checkbox" id="acq-flag-msg-venditore" style="width:16px;height:16px;accent-color:#f59e0b;cursor:pointer"/>
+      <span style="font-size:12px;color:#f59e0b;font-weight:600">⚠ Ricorda: invia messaggio al venditore</span>
+    </label>
+  </div>
+  <div class="mf">
       <button class="btn bg" onclick="closeModal('m-nuovo-acquisto')">Annulla</button>
-      <button class="btn bp" onclick="salvaAcquisto()"><i class="ti ti-check"></i>Crea acquisto</button>
+      <button class="btn bp" onclick="salvaAcquistoConFlag()"><i class="ti ti-check"></i>Crea acquisto</button>
     </div>
   </div>
 </div>
@@ -1989,6 +1995,19 @@ function selStatoSped(el) {
   el.style.color       = color;
 }
 
+
+function salvaAcquistoConFlag() {
+  var flagEl = document.getElementById('acq-flag-msg-venditore');
+  var flagChecked = flagEl && flagEl.checked;
+  salvaAcquisto();
+  if (!flagChecked) {
+    // Remind user to send message
+    setTimeout(function() {
+      showToast('⚠ Ricordati di inviare il messaggio al venditore!');
+    }, 500);
+  }
+}
+
 function salvaAcquisto() {
   closeModal('m-nuovo-acquisto');
   showToast('✓ Acquisto creato e collegato all\'ordine');
@@ -2430,6 +2449,9 @@ function apriModalAcquisto(numeroOrdine, prodotto, totale, condizione) {
       '<div style="display:flex;gap:6px;flex-wrap:wrap">' + links + '</div>';
     sugEl.style.display = 'block';
   }
+  // Auto-spunta il flag promemoria messaggio venditore
+  var flagEl = document.getElementById('acq-flag-msg-venditore');
+  if (flagEl) flagEl.checked = false;
   openModal('m-nuovo-acquisto');
 }
 
