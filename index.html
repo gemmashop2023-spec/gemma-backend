@@ -1018,6 +1018,12 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
       <button class="mc" onclick="closeModal('m-nuovo-acquisto')"><i class="ti ti-x"></i></button>
     </div>
     <div class="mb">
+      <!-- Ordine vendita collegato -->
+      <div class="ai ai-blue" id="acq-ordine-info" style="margin-bottom:12px;display:none">
+        <i class="ti ti-link"></i><span>Acquisto collegato all'ordine <strong id="acq-ordine-label"></strong></span>
+      </div>
+      <div id="acq-suggerimenti" style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:8px;padding:12px;margin-bottom:12px;display:none"></div>
+      <input type="hidden" id="acq-ordine-vendita"/>
 
       <!-- PIATTAFORMA + ORDINE VENDITA -->
       <div class="fr" style="margin-bottom:12px">
@@ -2196,6 +2202,43 @@ function confermaChiudiAssic() {
   closeModal('m-chiudi-pratica-assic');
 }
 
+
+// ── FLUSSO DA ACQUISTARE ─────────────────────────────────
+
+
+function _buildOrdineBtn(ord) {
+  if (ord.stato === 'da-acquistare') {
+    var p = (ord.prodotto||'').replace(/'/g,'').replace(/"/g,'').substring(0,50);
+    return '<button class="btn bxs" style="background:#ef4444;color:#fff;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px;font-weight:600" onclick="apriModalAcquisto(\'' + ord.numero_ordine + '\',\'' + p + '\',\'' + (ord.totale||0) + '\')"><i class=\"ti ti-shopping-cart\"></i> Acquista</button>';
+  }
+  return '<button class="btn bg bxs" onclick="openModal(\'' + 'm-inserisci-tracking' + '\',\'' + ord.numero_ordine + '\')"><i class=\"ti ti-scan\"></i>Tracking</button>';
+}
+
+function apriModalAcquisto(numeroOrdine, prodotto, totale) {
+  // Pre-compila il modal nuovo acquisto con i dati dell'ordine
+  var fields = {
+    'acq-ordine-vendita': numeroOrdine,
+    'acq-prodotto': prodotto,
+  };
+  Object.entries(fields).forEach(function(kv) {
+    var el = document.getElementById(kv[0]);
+    if (el) el.value = kv[1];
+  });
+  // Mostra suggerimenti piattaforme
+  var sugEl = document.getElementById('acq-suggerimenti');
+  if (sugEl) {
+    sugEl.innerHTML = 
+      '<div style="font-size:11px;color:#9ca3af;margin-bottom:8px">Cerca su:</div>' +
+      '<div style="display:flex;gap:8px;flex-wrap:wrap">' +
+      '<a href="https://www.subito.it/cerca/?q=' + encodeURIComponent(prodotto) + '" target="_blank" class="btn bg bxs" style="font-size:11px"><i class="ti ti-external-link"></i>Subito.it</a>' +
+      '<a href="https://www.vinted.it/catalog?search_text=' + encodeURIComponent(prodotto) + '" target="_blank" class="btn bg bxs" style="font-size:11px"><i class="ti ti-external-link"></i>Vinted</a>' +
+      '<a href="https://www.ebay.it/sch/i.html?_nkw=' + encodeURIComponent(prodotto) + '" target="_blank" class="btn bg bxs" style="font-size:11px"><i class="ti ti-external-link"></i>eBay</a>' +
+      '</div>';
+    sugEl.style.display = 'block';
+  }
+  openModal('m-nuovo-acquisto');
+}
+
 function filterAcquisti(val) {
   document.querySelectorAll('#acquisti-tbody tr').forEach(tr => {
     tr.style.display = (!val || tr.dataset.statoAcq === val) ? '' : 'none';
@@ -2420,7 +2463,7 @@ async function loadOrdiniAmazon() {
       <td style="text-align:center"><span id="flag-verif-icon-${ord.id}" class="${flagV}" onclick="toggleFlagLive('${ord.id}','verifica')" style="cursor:pointer"><i class="ti ti-eye-check" style="font-size:15px"></i></span></td>
       <td>${ord.acq_id ? `<span class="arrow-link" onclick="navTo('acquisto','${ord.acq_id}')" style="font-size:11px"><i class="ti ti-shopping-cart"></i>${ord.acq_id}</span><div style="font-size:10px;color:var(--text-muted)">${ord.acq_piattaforma||''} · ${ord.acq_venditore||''}</div>` : '<span style="color:var(--text-muted);font-size:11px">—</span>'}</td>
       <td>${ord.acq_stato ? `<span class="chip c-${ord.acq_stato==='consegnato'?'green':ord.acq_stato==='non-spedito'?'gray':'blue'}" style="font-size:10px">${ord.acq_stato}</span>` : '<span style="color:var(--text-muted)">—</span>'}</td>
-      <td><button class="btn bg bxs" onclick="openModal('m-inserisci-tracking','${ord.numero_ordine}')"><i class="ti ti-scan"></i>Tracking</button></td>`;
+      <td>${_buildOrdineBtn(ord)}</td>`;
     tbody.appendChild(tr);
   });
   aggiornaKpiOrdini();
@@ -2632,6 +2675,13 @@ async function eseguiSync() {
   ['sync-label','sync-label-settings'].forEach(function(id) { var s=document.getElementById(id); if(s) s.textContent='Sincronizza ora'; });
 }
 
+
+// ── ALERT ORDINI DA ACQUISTARE ──────────────────────────
+function checkOrdiniDaAcquistare() {
+  if (!IS_LIVE) return;
+  var badge = document.querySelector('#nav-ordini-amazon .nb');
+  // Already shown via KPI
+}
 // ── INIT ────────────────────────────────────────────────────
 // nav('dashboard') viene chiamato dopo il login da hideLogin()
 
