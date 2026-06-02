@@ -2308,6 +2308,41 @@ function apriWhatsAppOrdine(numeroOrdine, telefono, prodotto, condizione) {
   setTimeout(function() { openModal('m-wa-inviato'); }, 1500);
 }
 
+
+// ── MESSAGGIO VERIFICA CONSEGNA ──────────────────────────
+
+function inviaMessaggioConsegna(orderId) {
+  // Trova dati ordine dalla riga
+  var row = document.getElementById('row-' + orderId);
+  var tel = row ? (row.dataset.telefono || '') : '';
+  tel = tel.replace(/\D/g, '');
+
+  var testo = 'Gentile cliente, il suo ordine ' + orderId + ' è stato consegnato.\n\n' +
+    'La invitiamo a verificare il prodotto entro 24 ore dalla ricezione.\n' +
+    'In caso di danni da trasporto o difformità, la preghiamo di segnalarcelo immediatamente ' +
+    'per poter aprire una pratica assicurativa a sua tutela.\n\n' +
+    'Grazie per aver scelto il nostro negozio!';
+
+  // Invia via Amazon automaticamente
+  if (IS_LIVE) {
+    api('inviaMessaggioAmazon', { orderId: orderId, testo: testo })
+      .then(function(r) {
+        if (r && r.success) showToast('✓ Messaggio verifica inviato via Amazon');
+      }).catch(function() {});
+  }
+
+  // Apri WhatsApp se numero disponibile
+  if (tel) {
+    var url = 'https://wa.me/39' + tel + '?text=' + encodeURIComponent(testo);
+    // Mostra dialog prima di aprire WhatsApp
+    if (confirm('Ordine ' + orderId + ' consegnato!\n\nAprire WhatsApp per inviare il messaggio di verifica al cliente?')) {
+      window.open(url, '_blank');
+    }
+  } else {
+    showToast('⚠ Messaggio Amazon inviato — numero WhatsApp non disponibile');
+  }
+}
+
 function segnaWaInviato(numeroOrdine) {
   var now = new Date().toLocaleString('it-IT');
   // Aggiorna riga nella tabella ordini
