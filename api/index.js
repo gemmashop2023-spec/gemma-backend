@@ -275,3 +275,52 @@ function calcolaCosti(acquisti) {
     })
     .reduce((s, a) => s + (parseFloat(a.prezzo) || 0), 0);
 }
+  // ── INVIA MESSAGGIO AMAZON ──────────────────────────────
+  if (action === 'inviaMessaggioAmazon') {
+    try {
+      const { orderId, testo } = body;
+      if (!orderId || !testo) {
+        return res.status(400).json({ success: false, error: 'orderId e testo richiesti' });
+      }
+      
+      // Get fresh access token
+      const tokenRes = await fetch('https://api.amazon.com/auth/o2/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: process.env.AMAZON_REFRESH_TOKEN,
+          client_id: process.env.AMAZON_CLIENT_ID,
+          client_secret: process.env.AMAZON_CLIENT_SECRET,
+        })
+      });
+      const tokenData = await tokenRes.json();
+      const accessToken = tokenData.access_token;
+      
+      if (!accessToken) {
+        return res.status(401).json({ success: false, error: 'Token Amazon non ottenuto' });
+      }
+
+      const { inviaMessaggioAcquirente } = await import('../lib/amazon.js');
+      const result = await inviaMessaggioAcquirente(orderId, testo, accessToken);
+      
+      // Log in Supabase
+      if (result.success) {
+        await supabase.from('messaggi_clienti').insert({
+          id: 'MSG-' + Date.now(),
+          ordine_id: orderId,
+          canale: 'Amazon',
+          direzione: 'uscita',
+          testo: testo,
+          stato: 'inviato',
+          creato_il: new Date().toISOString()
+        }).catch(() => {});
+      }
+      
+      return res.json(result);
+    } catch (err) {
+      return res.status(500).json({ success: false, error: err.message });
+    }
+  }
+
+  
