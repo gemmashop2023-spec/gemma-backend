@@ -365,7 +365,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
   <div class="tw"><table><thead><tr>
     <th>Ordine</th>
     <th>Prodotto</th>
-    <th>Cliente</th><th>Mkt</th><th>Totale</th><th>Scadenza</th>
+    <th>Cliente</th><th>Mkt</th><th>Totale</th><th>Utile lordo</th><th>Scadenza</th>
     <th>Stato</th>
     <th>Tracking</th>
     <th style="text-align:center;white-space:nowrap">🚚 Spedito</th>
@@ -2227,6 +2227,27 @@ function confermaChiudiAssic() {
 // ── FLUSSO DA ACQUISTARE ─────────────────────────────────
 
 
+
+function _buildUtileTd(ord) {
+  var prezzoVendita = parseFloat(ord.totale || 0);
+  var prezzoAcquisto = parseFloat(ord.prezzo_acquisto || ord.acq_prezzo || 0);
+  
+  if (!prezzoAcquisto) {
+    return '<span style="color:var(--text-muted);font-size:11px">—</span>';
+  }
+  
+  var piattaforma = (ord.marketplace||'').toLowerCase().indexOf('ebay') >= 0 ? 'ebay' : 'amazon';
+  var aliquota = ord.commissione_aliquota || 'a';
+  var comm = calcolaCommissione(prezzoVendita, piattaforma, aliquota);
+  var utile = prezzoVendita - prezzoAcquisto - comm;
+  var perc = prezzoVendita > 0 ? ((utile / prezzoVendita) * 100).toFixed(1) : 0;
+  var colore = utile > 0 ? '#22c55e' : utile < 0 ? '#ef4444' : '#9ca3af';
+  
+  return '<div style="font-weight:700;color:' + colore + '">€' + utile.toFixed(2) + '</div>' +
+         '<div style="font-size:10px;color:' + colore + '">' + perc + '%</div>' +
+         '<div style="font-size:10px;color:var(--text-muted)">comm:€' + comm.toFixed(2) + '</div>';
+}
+
 function _buildOrdineBtn(ord) {
   if (ord.stato === 'da-acquistare') {
     var p = (ord.prodotto||'').replace(/'/g,'').replace(/"/g,'').substring(0,50);
@@ -2632,7 +2653,7 @@ function selCond(el) {
 //  Sostituisci l'URL con il tuo endpoint Vercel dopo il deploy
 // ═══════════════════════════════════════════════════════════
 
-const API_URL = 'https://gemma-warehouse-api-2026.vercel.app'; // es. https://gemma-backend-xxx.vercel.app
+const API_URL = ''; // es. https://gemma-backend-xxx.vercel.app
 
 const IS_LIVE = true;
 
