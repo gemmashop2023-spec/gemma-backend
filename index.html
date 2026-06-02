@@ -1022,6 +1022,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
       <div class="ai ai-blue" id="acq-ordine-info" style="margin-bottom:12px;display:none">
         <i class="ti ti-link"></i><span>Acquisto collegato all'ordine <strong id="acq-ordine-label"></strong></span>
       </div>
+      <div id="acq-magazzino-check" style="display:none"></div>
       <div id="acq-suggerimenti" style="background:rgba(59,130,246,0.1);border:1px solid rgba(59,130,246,0.3);border-radius:8px;padding:12px;margin-bottom:12px;display:none"></div>
       <input type="hidden" id="acq-ordine-vendita"/>
 
@@ -2214,6 +2215,59 @@ function _buildOrdineBtn(ord) {
   return '<button class="btn bg bxs" onclick="openModal(\'' + 'm-inserisci-tracking' + '\',\'' + ord.numero_ordine + '\')"><i class=\"ti ti-scan\"></i>Tracking</button>';
 }
 
+
+// ── RICERCA MAGAZZINO ───────────────────────────────────
+
+function cercaInMagazzino(nomeProdotto) {
+  var risultati = { esatto: [], simile: [] };
+  if (!nomeProdotto) return risultati;
+  
+  // Cerca nel catalogo locale (tabella HTML) o nei dati caricati
+  var rows = document.querySelectorAll('#catalogo-tbody tr');
+  var nome = nomeProdotto.toLowerCase().trim();
+  // Parole chiave principali (brand + modello)
+  var keywords = nome.split(/\s+/).filter(function(w) { return w.length > 3; });
+  
+  rows.forEach(function(row) {
+    var cells = row.querySelectorAll('td');
+    if (cells.length < 3) return;
+    var rowNome = (cells[1] ? cells[1].textContent : '').toLowerCase();
+    var rowSku  = cells[0] ? cells[0].textContent.trim() : '';
+    var rowStock = parseInt(cells[2] ? cells[2].textContent : '0') || 0;
+    if (rowStock <= 0) return; // solo se disponibile
+    
+    var item = { id: row.id || rowSku, nome: cells[1] ? cells[1].textContent.trim() : '', sku: rowSku, stock: rowStock };
+    
+    if (rowNome === nome) {
+      risultati.esatto.push(item);
+    } else {
+      // Match parziale: almeno 2 keyword corrispondono
+      var matches = keywords.filter(function(k) { return rowNome.indexOf(k) >= 0; });
+      if (matches.length >= 2) risultati.simile.push(item);
+    }
+  });
+  
+  // Limita a 3 risultati per categoria
+  risultati.esatto = risultati.esatto.slice(0, 3);
+  risultati.simile = risultati.simile.slice(0, 3);
+  return risultati;
+}
+
+function usaProdottoDaMagazzino(prodottoId, numeroOrdine) {
+  // Collega il prodotto dal magazzino all'ordine
+  if (IS_LIVE) {
+    api('collegaProdottoOrdine', { prodotto_id: prodottoId, ordine_id: numeroOrdine })
+      .then(function() {
+        showToast('✓ Prodotto collegato all\'ordine ' + numeroOrdine);
+        closeModal('m-nuovo-acquisto');
+        loadOrdiniAmazon();
+      });
+  } else {
+    showToast('✓ Prodotto collegato (modalità demo)');
+    closeModal('m-nuovo-acquisto');
+  }
+}
+
 function apriModalAcquisto(numeroOrdine, prodotto, totale, condizione) {
   // Pre-compila i campi del modal
   var el;
@@ -2225,6 +2279,38 @@ function apriModalAcquisto(numeroOrdine, prodotto, totale, condizione) {
   var labelEl = document.getElementById('acq-ordine-label');
   if (infoEl) infoEl.style.display = 'flex';
   if (labelEl) labelEl.textContent = numeroOrdine;
+
+  // ── VERIFICA MAGAZZINO ──────────────────────────────────
+  var magEl = document.getElementById('acq-magazzino-check');
+  if (magEl) {
+    var risultati = cercaInMagazzino(prodotto);
+    if (risultati.esatto.length > 0) {
+      // Prodotto esatto disponibile
+      var items = risultati.esatto.map(function(p) {
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06)">' +
+          '<div><div style="font-size:12px;font-weight:700;color:#fff">' + p.nome + '</div>' +
+          '<div style="font-size:11px;color:#9ca3af">SKU: ' + p.sku + ' · Stock: ' + p.stock + ' u.</div></div>' +
+          '<button data-act="magazzino" onclick="usaProdottoDaMagazzino(this)" class="btn bxs" style="background:#22c55e;color:#fff;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">✓ Usa questo</button>' +
+          '</div>';
+      }).join('');
+      magEl.innerHTML = '<div style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.4);border-radius:8px;padding:12px;margin-bottom:12px">' +
+        '<div style="font-size:12px;font-weight:700;color:#22c55e;margin-bottom:8px">✓ Disponibile in magazzino</div>' + items + '</div>';
+    } else if (risultati.simile.length > 0) {
+      // Prodotti simili disponibili
+      var items2 = risultati.simile.map(function(p) {
+        return '<div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06)">' +
+          '<div><div style="font-size:12px;font-weight:700;color:#fff">' + p.nome + '</div>' +
+          '<div style="font-size:11px;color:#9ca3af">SKU: ' + p.sku + ' · Stock: ' + p.stock + ' u.</div></div>' +
+          '<button data-act="magazzino" onclick="usaProdottoDaMagazzino(this)" class="btn bxs" style="background:#f59e0b;color:#fff;border:none;padding:5px 10px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer">Proponi</button>' +
+          '</div>';
+      }).join('');
+      magEl.innerHTML = '<div style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.4);border-radius:8px;padding:12px;margin-bottom:12px">' +
+        '<div style="font-size:12px;font-weight:700;color:#f59e0b;margin-bottom:8px">⚡ Prodotto simile disponibile — proponi al cliente?</div>' + items2 + '</div>';
+    } else {
+      magEl.innerHTML = '<div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:10px;margin-bottom:12px;font-size:12px;color:#ef4444">✗ Non disponibile in magazzino — cerca online</div>';
+    }
+    magEl.style.display = 'block';
+  }
 
   // Determina se USATO o NUOVO
   var isUsato = condizione === 'usato' || (prodotto||'').toLowerCase().indexOf('ricondizionato') >= 0;
