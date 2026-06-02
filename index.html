@@ -3134,7 +3134,153 @@ function raccogliItemsUrgenti() {
     categorie.push({ titolo: '🔍 Verifica 24h scaduta', colore: '#f59e0b', items: verifica24 });
   }
 
+  // 7. RESI IN TRANSITO > 5 GIORNI LAVORATIVI
+  var resiTransito = [];
+  document.querySelectorAll('#resi-clienti-tbody tr').forEach(function(row) {
+    if (row.dataset.stato !== 'in-transito') return;
+    var trackingData = row.dataset.trackingData;
+    if (trackingData) {
+      var gg = giorniLavorativi(trackingData, now);
+      if (gg >= 5) {
+        var cells = row.querySelectorAll('td');
+        resiTransito.push({
+          id: row.id,
+          label: cells[0] ? cells[0].textContent : '',
+          dettaglio: 'In transito da ' + gg + ' giorni lavorativi — apri pratica assicurativa',
+          urgenza: 'alta'
+        });
+      }
+    }
+  });
+  if (resiTransito.length > 0) {
+    categorie.push({ titolo: '📬 Resi in transito scaduti', colore: '#ef4444', items: resiTransito });
+  }
+
   return categorie;
+}
+
+
+// ═══════════════════════════════════════════════════════
+//  GESTIONE RESI
+// ═══════════════════════════════════════════════════════
+
+function apriSchedaReso(resoId) {
+  var row = document.getElementById('row-reso-' + resoId) || document.querySelector('[data-reso="' + resoId + '"]');
+  var modal = document.getElementById('m-gestione-reso');
+  if (!modal) return;
+  
+  // Popola modal con dati del reso
+  document.getElementById('reso-id-label').textContent = resoId;
+  document.getElementById('reso-msg-testo').value = '';
+  
+  // Controlla flag ATTENZIONE
+  var attenzione = row && row.dataset.attenzione === '1';
+  var attenzioneEl = document.getElementById('reso-attenzione-banner');
+  if (attenzioneEl) attenzioneEl.style.display = attenzione ? 'flex' : 'none';
+  
+  openModal('m-gestione-reso');
+}
+
+function toggleAttenzioneReso(resoId) {
+  var row = document.getElementById('row-reso-' + resoId) || document.querySelector('[data-reso="' + resoId + '"]');
+  if (!row) return;
+  var current = row.dataset.attenzione === '1';
+  row.dataset.attenzione = current ? '0' : '1';
+  
+  // Aggiorna visuale sulla riga
+  var badge = document.getElementById('attenzione-badge-' + resoId);
+  if (badge) {
+    badge.style.display = current ? 'none' : 'inline-flex';
+  }
+  
+  if (IS_LIVE) {
+    api('aggiornaReso', { id: resoId, attenzione: !current }).catch(function(){});
+  }
+  showToast(current ? 'Flag ATTENZIONE rimosso' : '⚠ ATTENZIONE attivato');
+}
+
+function inviaMessaggioReso(resoId) {
+  var testo = document.getElementById('reso-msg-testo').value.trim();
+  if (!testo) { showToast('⚠ Scrivi il messaggio prima di inviare'); return; }
+  
+  var row = document.querySelector('[data-reso="' + resoId + '"]');
+  var ordineId = row ? row.dataset.ordine : resoId;
+  
+  // Invia via Amazon
+  if (IS_LIVE) {
+    api('inviaMessaggioAmazon', { orderId: ordineId, testo: testo })
+      .then(function(r) {
+        if (r && r.success) showToast('✓ Messaggio inviato via Amazon');
+        else showToast('⚠ Errore invio Amazon: ' + (r && r.error || 'sconosciuto'));
+      }).catch(function(){});
+  }
+  
+  // Apri WhatsApp
+  var tel = row ? (row.dataset.telefono || '').replace(/\D/g,'') : '';
+  if (tel) {
+    if (confirm('Aprire anche WhatsApp?')) {
+      window.open('https://wa.me/39' + tel + '?text=' + encodeURIComponent(testo), '_blank');
+    }
+  }
+  
+  // Salva messaggio nel log
+  if (IS_LIVE) {
+    api('logMessaggio', { reso_id: resoId, testo: testo, canale: 'Amazon+WhatsApp' }).catch(function(){});
+  }
+  
+  document.getElementById('reso-msg-testo').value = '';
+  showToast('✓ Messaggio inviato');
+}
+
+function aggiornaStatoReso(resoId, nuovoStato) {
+  var row = document.querySelector('[data-reso="' + resoId + '"]');
+  if (row) row.dataset.stato = nuovoStato;
+  
+  if (IS_LIVE) {
+    api('aggiornaReso', { id: resoId, stato: nuovoStato }).catch(function(){});
+  }
+  
+  var labels = {
+    'accettato': '✓ Reso accettato',
+    'rimborso-parziale': '✓ Rimborso parziale proposto',
+    'omaggio': '✓ Omaggio/sconto proposto',
+    'rifiutato': '✓ Reso rifiutato',
+    'pacco-ricevuto': '✓ Pacco ricevuto',
+    'chiuso': '✓ Reso chiuso'
+  };
+  showToast(labels[nuovoStato] || '✓ Stato aggiornato');
+  closeModal('m-gestione-reso');
+}
+
+function inserisciTrackingReso(resoId) {
+  var tracking = document.getElementById('reso-tracking-input').value.trim();
+  if (!tracking) { showToast('⚠ Inserisci il codice tracking'); return; }
+  
+  var now = new Date().toISOString();
+  var row = document.querySelector('[data-reso="' + resoId + '"]');
+  if (row) {
+    row.dataset.trackingReso = tracking;
+    row.dataset.trackingData = now;
+  }
+  
+  if (IS_LIVE) {
+    api('aggiornaReso', { id: resoId, tracking_rientro: tracking, tracking_data: now, stato: 'in-transito' }).catch(function(){});
+  }
+  showToast('✓ Tracking reso inserito');
+}
+
+// Calcola giorni lavorativi tra due date
+function giorniLavorativi(dataInizio, dataFine) {
+  var d1 = new Date(dataInizio);
+  var d2 = new Date(dataFine);
+  var giorni = 0;
+  var cur = new Date(d1);
+  while (cur < d2) {
+    var day = cur.getDay();
+    if (day !== 0 && day !== 6) giorni++;
+    cur.setDate(cur.getDate() + 1);
+  }
+  return giorni;
 }
 
 function apriReportUrgente() {
@@ -3237,6 +3383,67 @@ checkAuth();
 </script>
 
 
+
+
+<!-- ═══ MODAL GESTIONE RESO ═══ -->
+<div class="mbg hidden" id="m-gestione-reso">
+  <div class="modal" style="width:560px;max-height:85vh;display:flex;flex-direction:column">
+    <div class="mh" style="flex-shrink:0">
+      <div>
+        <div style="font-size:15px;font-weight:700">Gestione Reso <span id="reso-id-label" style="color:var(--blue)"></span></div>
+      </div>
+      <button class="mc" onclick="closeModal('m-gestione-reso')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="mb" style="overflow-y:auto;flex:1">
+      <!-- Banner ATTENZIONE -->
+      <div id="reso-attenzione-banner" style="display:none;background:rgba(239,68,68,0.15);border:1px solid #ef4444;border-radius:8px;padding:10px 14px;margin-bottom:14px;align-items:center;gap:10px">
+        <i class="ti ti-alert-triangle" style="color:#ef4444;font-size:18px"></i>
+        <span style="color:#ef4444;font-weight:700;font-size:13px">⚠ ATTENZIONE — Cliente a rischio recensione negativa</span>
+      </div>
+
+      <!-- Azioni reso -->
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Azione sul reso</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button onclick="aggiornaStatoReso(document.getElementById('reso-id-label').textContent,'accettato')" class="btn bxs" style="background:#22c55e;color:#fff;border:none;padding:7px 12px;border-radius:6px;font-size:12px;cursor:pointer"><i class="ti ti-check"></i> Accetta</button>
+          <button onclick="aggiornaStatoReso(document.getElementById('reso-id-label').textContent,'rimborso-parziale')" class="btn bxs" style="background:#3b82f6;color:#fff;border:none;padding:7px 12px;border-radius:6px;font-size:12px;cursor:pointer"><i class="ti ti-coin"></i> Rimborso parziale</button>
+          <button onclick="aggiornaStatoReso(document.getElementById('reso-id-label').textContent,'omaggio')" class="btn bxs" style="background:#f59e0b;color:#fff;border:none;padding:7px 12px;border-radius:6px;font-size:12px;cursor:pointer"><i class="ti ti-gift"></i> Omaggio/sconto</button>
+          <button onclick="aggiornaStatoReso(document.getElementById('reso-id-label').textContent,'rifiutato')" class="btn bxs" style="background:#ef4444;color:#fff;border:none;padding:7px 12px;border-radius:6px;font-size:12px;cursor:pointer"><i class="ti ti-x"></i> Rifiuta</button>
+        </div>
+      </div>
+
+      <!-- Messaggio libero -->
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Messaggio al cliente</div>
+        <textarea id="reso-msg-testo" placeholder="Scrivi il messaggio personalizzato..." style="width:100%;min-height:100px;background:#0d1117;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:13px;padding:10px;resize:vertical;box-sizing:border-box"></textarea>
+        <button onclick="inviaMessaggioReso(document.getElementById('reso-id-label').textContent)" class="btn bp bxs" style="margin-top:8px;width:100%"><i class="ti ti-send"></i> Invia via Amazon + WhatsApp</button>
+      </div>
+
+      <!-- Tracking rientro -->
+      <div style="margin-bottom:16px">
+        <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Tracking rientro pacco</div>
+        <div style="display:flex;gap:8px">
+          <input id="reso-tracking-input" type="text" placeholder="Codice tracking corriere..." style="flex:1;background:#0d1117;border:1px solid rgba(255,255,255,.1);border-radius:8px;color:#fff;font-size:13px;padding:8px 12px"/>
+          <button onclick="inserisciTrackingReso(document.getElementById('reso-id-label').textContent)" class="btn bp bxs"><i class="ti ti-scan"></i> Salva</button>
+        </div>
+      </div>
+
+      <!-- Pacco ricevuto / condizioni -->
+      <div>
+        <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Pacco ricevuto</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <button onclick="aggiornaStatoReso(document.getElementById('reso-id-label').textContent,'pacco-ricevuto-integro')" class="btn bxs" style="background:#22c55e;color:#fff;border:none;padding:7px 12px;border-radius:6px;font-size:12px;cursor:pointer">✓ Integro → magazzino</button>
+          <button onclick="aggiornaStatoReso(document.getElementById('reso-id-label').textContent,'pacco-ricevuto-danneggiato')" class="btn bxs" style="background:#ef4444;color:#fff;border:none;padding:7px 12px;border-radius:6px;font-size:12px;cursor:pointer">⚠ Danneggiato → pratica</button>
+          <button onclick="aggiornaStatoReso(document.getElementById('reso-id-label').textContent,'pacco-ricevuto-mancante')" class="btn bxs" style="background:#8b5cf6;color:#fff;border:none;padding:7px 12px;border-radius:6px;font-size:12px;cursor:pointer">✗ Mancante → pratica</button>
+        </div>
+      </div>
+    </div>
+    <div class="mf" style="flex-shrink:0">
+      <button class="btn bg" onclick="closeModal('m-gestione-reso')">Chiudi</button>
+      <button onclick="aggiornaStatoReso(document.getElementById('reso-id-label').textContent,'chiuso')" class="btn bxs" style="background:#6b7280;color:#fff;border:none;padding:8px 16px;border-radius:8px;font-size:13px;cursor:pointer">Chiudi reso</button>
+    </div>
+  </div>
+</div>
 
 <!-- ═══ MODAL REPORT URGENTE ═══ -->
 <div class="mbg hidden" id="m-report-urgente">
