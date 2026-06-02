@@ -3134,6 +3134,46 @@ function raccogliItemsUrgenti() {
     categorie.push({ titolo: '🔍 Verifica 24h scaduta', colore: '#f59e0b', items: verifica24 });
   }
 
+  // 8. SPEDIZIONI BLOCCATE > 10 GIORNI LAVORATIVI
+  var spedBloccate = [];
+  // Controlla ordini vendita con tracking inserito
+  document.querySelectorAll('#ordini-tbody tr').forEach(function(row) {
+    if (row.dataset.stato === 'consegnato' || row.dataset.stato === 'completato') return;
+    var trackingData = row.dataset.trackingData;
+    if (trackingData) {
+      var gg = giorniLavorativi(trackingData, now);
+      if (gg >= 10) {
+        var cells = row.querySelectorAll('td');
+        spedBloccate.push({
+          id: row.dataset.ordine || row.id,
+          label: cells[0] ? cells[0].textContent.trim() : '',
+          dettaglio: 'Tracking inserito da ' + gg + ' giorni lavorativi — apri pratica entro 30gg',
+          urgenza: gg >= 20 ? 'alta' : 'media'
+        });
+      }
+    }
+  });
+  // Controlla anche resi in transito
+  document.querySelectorAll('#resi-clienti-tbody tr').forEach(function(row) {
+    if (row.dataset.stato === 'pacco-ricevuto-integro' || row.dataset.stato === 'chiuso') return;
+    var trackingData = row.dataset.trackingData;
+    if (trackingData) {
+      var gg = giorniLavorativi(trackingData, now);
+      if (gg >= 10) {
+        var cells = row.querySelectorAll('td');
+        spedBloccate.push({
+          id: row.id,
+          label: 'RESO ' + (cells[0] ? cells[0].textContent.trim() : ''),
+          dettaglio: 'Tracking reso inserito da ' + gg + ' giorni lavorativi',
+          urgenza: 'alta'
+        });
+      }
+    }
+  });
+  if (spedBloccate.length > 0) {
+    categorie.push({ titolo: '🚨 Spedizioni bloccate (+10gg lavorativi)', colore: '#ef4444', items: spedBloccate });
+  }
+
   // 7. RESI IN TRANSITO > 5 GIORNI LAVORATIVI
   var resiTransito = [];
   document.querySelectorAll('#resi-clienti-tbody tr').forEach(function(row) {
@@ -3283,6 +3323,85 @@ function giorniLavorativi(dataInizio, dataFine) {
   return giorni;
 }
 
+
+// ═══════════════════════════════════════════════════════
+//  PRATICHE ASSICURATIVE
+// ═══════════════════════════════════════════════════════
+
+function apriNuovaPratica(opts) {
+  opts = opts || {};
+  // Pre-compila modal nuova pratica
+  var el;
+  el = document.getElementById('pratica-ordine-id');    if (el) el.value = opts.ordineId || '';
+  el = document.getElementById('pratica-tipo');          if (el) el.value = opts.tipo || 'xcover';
+  el = document.getElementById('pratica-importo');       if (el) el.value = opts.importo || '';
+  el = document.getElementById('pratica-motivo');        if (el) el.value = opts.motivo || '';
+  el = document.getElementById('pratica-reso-id');       if (el) el.value = opts.resoId || '';
+  openModal('m-nuova-pratica');
+}
+
+
+function aggiornaMotivoCustom(val) {
+  var labels = {
+    'danno-trasporto': 'Danno durante il trasporto',
+    'non-consegnato': 'Spedizione non consegnata dopo 10 giorni lavorativi',
+    'reso-danneggiato': 'Reso ricevuto in condizioni danneggiate',
+    'reso-mancante': 'Reso ricevuto incompleto o con parti mancanti',
+    'reso-non-rientrato': 'Reso non rientrato dopo 5 giorni lavorativi dal tracking',
+    'danno-acquisto': 'Acquisto ricevuto danneggiato',
+    'altro': ''
+  };
+  var el = document.getElementById('pratica-motivo');
+  if (el) el.value = labels[val] || '';
+}
+
+function salvaPratica() {
+  var ordineId  = (document.getElementById('pratica-ordine-id')  || {}).value || '';
+  var tipo      = (document.getElementById('pratica-tipo')        || {}).value || 'xcover';
+  var importo   = (document.getElementById('pratica-importo')     || {}).value || '0';
+  var motivo    = (document.getElementById('pratica-motivo')      || {}).value || '';
+  var resoId    = (document.getElementById('pratica-reso-id')     || {}).value || '';
+
+  if (!motivo) { showToast('⚠ Inserisci il motivo della pratica'); return; }
+
+  var praticaId = 'PRAT-' + Date.now();
+  var now = new Date().toISOString();
+
+  if (IS_LIVE) {
+    api('creaPratica', {
+      id: praticaId,
+      ordine_id: ordineId,
+      reso_id: resoId,
+      tipo: tipo,
+      importo: parseFloat(importo) || 0,
+      motivo: motivo,
+      stato: 'aperta',
+      data_apertura: now
+    }).then(function() {
+      showToast('✓ Pratica ' + praticaId + ' aperta');
+      closeModal('m-nuova-pratica');
+    }).catch(function(e) {
+      showToast('⚠ Errore salvataggio: ' + e.message);
+    });
+  } else {
+    showToast('✓ Pratica ' + praticaId + ' aperta (demo)');
+    closeModal('m-nuova-pratica');
+  }
+}
+
+function aggiornaStatoPratica(praticaId, nuovoStato, importoRicevuto) {
+  if (IS_LIVE) {
+    var upd = { id: praticaId, stato: nuovoStato };
+    if (importoRicevuto) upd.importo_ricevuto = parseFloat(importoRicevuto);
+    if (nuovoStato === 'chiusa') upd.data_chiusura = new Date().toISOString();
+    api('aggiornaPratica', upd).then(function() {
+      showToast('✓ Pratica aggiornata: ' + nuovoStato);
+    }).catch(function(){});
+  } else {
+    showToast('✓ Stato pratica aggiornato (demo)');
+  }
+}
+
 function apriReportUrgente() {
   var categorie = raccogliItemsUrgenti();
   var body = document.getElementById('report-body');
@@ -3385,6 +3504,59 @@ checkAuth();
 
 
 
+
+<!-- ═══ MODAL NUOVA PRATICA ASSICURATIVA ═══ -->
+<div class="mbg hidden" id="m-nuova-pratica">
+  <div class="modal" style="width:500px">
+    <div class="mh">
+      <div>
+        <div style="font-size:15px;font-weight:700">Apri Pratica Assicurativa</div>
+        <div style="font-size:12px;color:var(--text-sec);margin-top:2px">Compila i dati della pratica</div>
+      </div>
+      <button class="mc" onclick="closeModal('m-nuova-pratica')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="mb">
+      <input type="hidden" id="pratica-reso-id"/>
+
+      <label class="fl">Ordine / Spedizione collegata</label>
+      <input class="fi" id="pratica-ordine-id" type="text" placeholder="es. #114-XXXXXXX-XXXXXXX"/>
+
+      <label class="fl">Tipo pratica</label>
+      <select class="fi" id="pratica-tipo">
+        <option value="xcover">xCover</option>
+        <option value="amazon-atz">Amazon A-to-Z</option>
+        <option value="brt">Corriere BRT</option>
+        <option value="gls">Corriere GLS</option>
+        <option value="sda">Corriere SDA</option>
+        <option value="poste">Poste Italiane</option>
+        <option value="dhl">DHL</option>
+      </select>
+
+      <label class="fl">Motivo</label>
+      <select class="fi" id="pratica-motivo-tipo" onchange="aggiornaMotivoCustom(this.value)">
+        <option value="danno-trasporto">Danno durante il trasporto</option>
+        <option value="non-consegnato">Spedizione non consegnata (+10gg)</option>
+        <option value="reso-danneggiato">Reso ricevuto danneggiato</option>
+        <option value="reso-mancante">Reso ricevuto incompleto/mancante</option>
+        <option value="reso-non-rientrato">Reso non rientrato (+5gg lavorativi)</option>
+        <option value="danno-acquisto">Acquisto ricevuto danneggiato</option>
+        <option value="altro">Altro</option>
+      </select>
+      <input class="fi" id="pratica-motivo" type="text" placeholder="Descrizione dettagliata..." style="margin-top:6px"/>
+
+      <label class="fl">Importo richiesto (€)</label>
+      <input class="fi" id="pratica-importo" type="number" placeholder="0.00" min="0" step="0.01"/>
+
+      <label class="fl">Note aggiuntive</label>
+      <textarea class="fi" id="pratica-note" placeholder="Inserisci eventuali note..." style="min-height:70px;resize:vertical"></textarea>
+    </div>
+    <div class="mf">
+      <button class="btn bg" onclick="closeModal('m-nuova-pratica')">Annulla</button>
+      <button class="btn bp" onclick="salvaPratica()"><i class="ti ti-shield-plus"></i> Apri pratica</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══ MODAL GESTIONE RESO ═══ -->
 <div class="mbg hidden" id="m-gestione-reso">
   <div class="modal" style="width:560px;max-height:85vh;display:flex;flex-direction:column">
@@ -3433,8 +3605,8 @@ checkAuth();
         <div style="font-size:11px;font-weight:700;color:var(--text-sec);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px">Pacco ricevuto</div>
         <div style="display:flex;gap:8px;flex-wrap:wrap">
           <button onclick="aggiornaStatoReso(document.getElementById('reso-id-label').textContent,'pacco-ricevuto-integro')" class="btn bxs" style="background:#22c55e;color:#fff;border:none;padding:7px 12px;border-radius:6px;font-size:12px;cursor:pointer">✓ Integro → magazzino</button>
-          <button onclick="aggiornaStatoReso(document.getElementById('reso-id-label').textContent,'pacco-ricevuto-danneggiato')" class="btn bxs" style="background:#ef4444;color:#fff;border:none;padding:7px 12px;border-radius:6px;font-size:12px;cursor:pointer">⚠ Danneggiato → pratica</button>
-          <button onclick="aggiornaStatoReso(document.getElementById('reso-id-label').textContent,'pacco-ricevuto-mancante')" class="btn bxs" style="background:#8b5cf6;color:#fff;border:none;padding:7px 12px;border-radius:6px;font-size:12px;cursor:pointer">✗ Mancante → pratica</button>
+          <button onclick="var rid=document.getElementById('reso-id-label').textContent;aggiornaStatoReso(rid,'pacco-ricevuto-danneggiato');apriNuovaPratica({resoId:rid,motivo:'Reso ricevuto in condizioni danneggiate',tipo:'xcover'})" class="btn bxs" style="background:#ef4444;color:#fff;border:none;padding:7px 12px;border-radius:6px;font-size:12px;cursor:pointer">⚠ Danneggiato → pratica</button>
+          <button onclick="var rid=document.getElementById('reso-id-label').textContent;aggiornaStatoReso(rid,'pacco-ricevuto-mancante');apriNuovaPratica({resoId:rid,motivo:'Reso ricevuto incompleto o con parti mancanti',tipo:'xcover'})" class="btn bxs" style="background:#8b5cf6;color:#fff;border:none;padding:7px 12px;border-radius:6px;font-size:12px;cursor:pointer">✗ Mancante → pratica</button>
         </div>
       </div>
     </div>
