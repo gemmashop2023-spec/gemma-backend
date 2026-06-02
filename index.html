@@ -3333,6 +3333,193 @@ function giorniLavorativi(dataInizio, dataFine) {
 //  MAGAZZINO — CARICO/SCARICO MANUALE
 // ═══════════════════════════════════════════════════════
 
+
+// ═══════════════════════════════════════════════════════
+//  GESTIONE UTENTI
+// ═══════════════════════════════════════════════════════
+
+// Utenti locali (demo + quelli creati)
+var _utentiLocali = [
+  { id: 'USR-ADMIN-001', username: 'admin', nome: 'Amministratore', ruolo: 'admin', attivo: true, ultimo_accesso: null }
+];
+
+var _permessi = {
+  admin:        { tutto: true },
+  operatore:    { ordini: true, magazzino: true, resi: true, acquisti: true, vendita_banco: true, report: false, utenti: false, impostazioni: false },
+  sola_lettura: { tutto: false, lettura: true }
+};
+
+function haPermesso(sezione) {
+  if (!_currentUser) return false;
+  var ruolo = _currentUser.ruolo || 'operatore';
+  if (ruolo === 'admin') return true;
+  if (ruolo === 'sola_lettura') return false;
+  var p = _permessi[ruolo] || {};
+  return p[sezione] === true;
+}
+
+function caricaUtenti() {
+  var tbody = document.getElementById('utenti-tbody');
+  if (!tbody) return;
+
+  if (IS_LIVE) {
+    api('getUtenti').then(function(data) {
+      if (data && data.data) {
+        _utentiLocali = data.data;
+        renderUtenti(_utentiLocali, tbody);
+      }
+    }).catch(function() {
+      renderUtenti(_utentiLocali, tbody);
+    });
+  } else {
+    renderUtenti(_utentiLocali, tbody);
+  }
+}
+
+function renderUtenti(utenti, tbody) {
+  tbody.innerHTML = '';
+  utenti.forEach(function(u) {
+    var tr = document.createElement('tr');
+    var ruoloColor = { admin: 'purple', operatore: 'blue', sola_lettura: 'gray' }[u.ruolo] || 'gray';
+    tr.innerHTML =
+      '<td class="mono">' + u.username + '</td>' +
+      '<td><strong>' + (u.nome||u.username) + '</strong></td>' +
+      '<td><span class="chip c-' + ruoloColor + '">' + (u.ruolo||'operatore') + '</span></td>' +
+      '<td><span class="chip c-' + (u.attivo ? 'green' : 'red') + '">' + (u.attivo ? 'Attivo' : 'Disabilitato') + '</span></td>' +
+      '<td style="font-size:11px;color:var(--text-sec)">' + (u.ultimo_accesso ? new Date(u.ultimo_accesso).toLocaleString('it-IT') : '—') + '</td>' +
+      '<td class="rg">' +
+        (u.id !== 'USR-ADMIN-001' ? '<button class="btn bg bxs" onclick="modificaUtente(\''+u.id+'\')"><i class="ti ti-edit"></i></button> ' +
+        '<button class="btn bxs" style="background:' + (u.attivo ? '#ef4444' : '#22c55e') + ';color:#fff;border:none;padding:5px 8px;border-radius:6px;cursor:pointer" onclick="toggleUtenteAttivo(\''+u.id+'\','+(!u.attivo)+')">' +
+        (u.attivo ? '<i class="ti ti-user-off"></i>' : '<i class="ti ti-user-check"></i>') + '</button>' : '<span style="font-size:11px;color:var(--text-muted)">—</span>') +
+      '</td>';
+    tbody.appendChild(tr);
+  });
+}
+
+function apriNuovoUtente() {
+  if (_currentUser && _currentUser.ruolo !== 'admin') {
+    showToast('⚠ Solo gli amministratori possono creare utenti');
+    return;
+  }
+  ['nuovo-utente-username','nuovo-utente-nome','nuovo-utente-password'].forEach(function(id) {
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  var el = document.getElementById('nuovo-utente-ruolo');
+  if (el) el.value = 'operatore';
+  openModal('m-nuovo-utente');
+}
+
+function salvaNuovoUtente() {
+  var username = (document.getElementById('nuovo-utente-username')||{}).value||'';
+  var nome     = (document.getElementById('nuovo-utente-nome')    ||{}).value||'';
+  var password = (document.getElementById('nuovo-utente-password')||{}).value||'';
+  var ruolo    = (document.getElementById('nuovo-utente-ruolo')   ||{}).value||'operatore';
+
+  if (!username) { showToast('⚠ Username obbligatorio'); return; }
+  if (!password || password.length < 6) { showToast('⚠ Password minimo 6 caratteri'); return; }
+
+  // Check duplicati
+  var exists = _utentiLocali.some(function(u) { return u.username === username.toLowerCase(); });
+  if (exists) { showToast('⚠ Username già esistente'); return; }
+
+  var nuovoUtente = {
+    id: 'USR-' + Date.now(),
+    username: username.toLowerCase(),
+    nome: nome || username,
+    ruolo: ruolo,
+    attivo: true,
+    ultimo_accesso: null,
+    password: password // solo per demo locale
+  };
+
+  if (IS_LIVE) {
+    api('creaUtente', { username: username, password: password, nome: nome || username, ruolo: ruolo })
+      .then(function() {
+        showToast('✓ Utente ' + username + ' creato');
+        closeModal('m-nuovo-utente');
+        caricaUtenti();
+      }).catch(function(e) {
+        showToast('⚠ Errore: ' + e.message);
+      });
+  } else {
+    _utentiLocali.push(nuovoUtente);
+    showToast('✓ Utente ' + username + ' creato');
+    closeModal('m-nuovo-utente');
+    caricaUtenti();
+  }
+}
+
+function modificaUtente(utenteId) {
+  var u = _utentiLocali.find(function(x) { return x.id === utenteId; });
+  if (!u) return;
+  document.getElementById('modifica-utente-id').value    = u.id;
+  document.getElementById('modifica-utente-nome').value  = u.nome || '';
+  document.getElementById('modifica-utente-ruolo').value = u.ruolo || 'operatore';
+  document.getElementById('modifica-utente-password').value = '';
+  document.getElementById('modifica-utente-label').textContent = u.username;
+  openModal('m-modifica-utente');
+}
+
+function salvaModificaUtente() {
+  var id       = (document.getElementById('modifica-utente-id')      ||{}).value||'';
+  var nome     = (document.getElementById('modifica-utente-nome')    ||{}).value||'';
+  var ruolo    = (document.getElementById('modifica-utente-ruolo')   ||{}).value||'operatore';
+  var password = (document.getElementById('modifica-utente-password')||{}).value||'';
+
+  var upd = { id: id, nome: nome, ruolo: ruolo };
+  if (password && password.length >= 6) upd.password = password;
+
+  if (IS_LIVE) {
+    api('aggiornaUtente', upd).then(function() {
+      showToast('✓ Utente aggiornato');
+      closeModal('m-modifica-utente');
+      caricaUtenti();
+    }).catch(function(e) { showToast('⚠ Errore: ' + e.message); });
+  } else {
+    var u = _utentiLocali.find(function(x) { return x.id === id; });
+    if (u) { u.nome = nome; u.ruolo = ruolo; }
+    showToast('✓ Utente aggiornato');
+    closeModal('m-modifica-utente');
+    caricaUtenti();
+  }
+}
+
+function toggleUtenteAttivo(utenteId, attivo) {
+  if (IS_LIVE) {
+    api('aggiornaUtente', { id: utenteId, attivo: attivo })
+      .then(function() {
+        showToast(attivo ? '✓ Utente riattivato' : '✓ Utente disabilitato');
+        caricaUtenti();
+      }).catch(function(){});
+  } else {
+    var u = _utentiLocali.find(function(x) { return x.id === utenteId; });
+    if (u) u.attivo = attivo;
+    showToast(attivo ? '✓ Utente riattivato' : '✓ Utente disabilitato');
+    caricaUtenti();
+  }
+}
+
+function caricaLogAttivita() {
+  var tbody = document.getElementById('log-tbody');
+  if (!tbody) return;
+  if (IS_LIVE) {
+    api('getLog', { limit: 100 }).then(function(data) {
+      if (!data || !data.data) return;
+      tbody.innerHTML = '';
+      data.data.forEach(function(log) {
+        var tr = document.createElement('tr');
+        tr.innerHTML =
+          '<td style="font-size:11px">' + new Date(log.data).toLocaleString('it-IT') + '</td>' +
+          '<td><strong>' + (log.username||'—') + '</strong></td>' +
+          '<td><span class="chip">' + (log.sezione||'—') + '</span></td>' +
+          '<td>' + (log.azione||'—') + '</td>' +
+          '<td style="font-size:11px;color:var(--text-sec)">' + (log.dettaglio||'—') + '</td>';
+        tbody.appendChild(tr);
+      });
+    }).catch(function(){});
+  }
+}
+
 function apriCaricoManuale() {
   // Reset form
   ['carico-nome','carico-sku','carico-prezzo-acq','carico-prezzo-vend','carico-posizione','carico-note'].forEach(function(id) {
@@ -3664,6 +3851,65 @@ checkAuth();
 
 
 
+
+
+<!-- ═══ MODAL NUOVO UTENTE ═══ -->
+<div class="mbg hidden" id="m-nuovo-utente">
+  <div class="modal" style="width:440px">
+    <div class="mh">
+      <div><div style="font-size:15px;font-weight:700">Nuovo Utente</div></div>
+      <button class="mc" onclick="closeModal('m-nuovo-utente')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="mb">
+      <label class="fl">Username *</label>
+      <input class="fi" id="nuovo-utente-username" type="text" placeholder="es. mario.rossi" autocomplete="off"/>
+      <label class="fl">Nome visualizzato</label>
+      <input class="fi" id="nuovo-utente-nome" type="text" placeholder="es. Mario Rossi"/>
+      <label class="fl">Password * (min. 6 caratteri)</label>
+      <input class="fi" id="nuovo-utente-password" type="password" placeholder="••••••••" autocomplete="new-password"/>
+      <label class="fl">Ruolo</label>
+      <select class="fi" id="nuovo-utente-ruolo">
+        <option value="admin">Admin — accesso completo</option>
+        <option value="operatore" selected>Operatore — gestione ordini/magazzino</option>
+        <option value="sola_lettura">Sola lettura — solo visualizzazione</option>
+      </select>
+    </div>
+    <div class="mf">
+      <button class="btn bg" onclick="closeModal('m-nuovo-utente')">Annulla</button>
+      <button class="btn bp" onclick="salvaNuovoUtente()"><i class="ti ti-user-plus"></i> Crea utente</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ MODAL MODIFICA UTENTE ═══ -->
+<div class="mbg hidden" id="m-modifica-utente">
+  <div class="modal" style="width:440px">
+    <div class="mh">
+      <div>
+        <div style="font-size:15px;font-weight:700">Modifica Utente</div>
+        <div style="font-size:12px;color:var(--blue);margin-top:2px" id="modifica-utente-label"></div>
+      </div>
+      <button class="mc" onclick="closeModal('m-modifica-utente')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="mb">
+      <input type="hidden" id="modifica-utente-id"/>
+      <label class="fl">Nome visualizzato</label>
+      <input class="fi" id="modifica-utente-nome" type="text"/>
+      <label class="fl">Nuova password (lascia vuoto per non cambiare)</label>
+      <input class="fi" id="modifica-utente-password" type="password" placeholder="••••••••" autocomplete="new-password"/>
+      <label class="fl">Ruolo</label>
+      <select class="fi" id="modifica-utente-ruolo">
+        <option value="admin">Admin</option>
+        <option value="operatore">Operatore</option>
+        <option value="sola_lettura">Sola lettura</option>
+      </select>
+    </div>
+    <div class="mf">
+      <button class="btn bg" onclick="closeModal('m-modifica-utente')">Annulla</button>
+      <button class="btn bp" onclick="salvaModificaUtente()"><i class="ti ti-check"></i> Salva</button>
+    </div>
+  </div>
+</div>
 
 <!-- ═══ MODAL CARICO MAGAZZINO ═══ -->
 <div class="mbg hidden" id="m-carico-magazzino">
