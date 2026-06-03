@@ -1617,7 +1617,7 @@ function nav(id) {
   document.getElementById('tb-lbl').textContent = cfg.action.label;
   document.getElementById('tb-action').onclick = cfg.action.cb
     ? () => eval(cfg.action.cb)
-    : () => {};
+    : () => tbAction();
 
   // sub tabs
   const st = document.getElementById('subtabs');
