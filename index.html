@@ -199,6 +199,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 .login-error{color:#ef4444;font-size:12px;margin-top:8px;text-align:center;min-height:18px}
 .login-user-info{display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(255,255,255,.06);border-radius:8px;cursor:pointer}
 .login-user-info:hover{background:rgba(255,255,255,.1)}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -2868,42 +2869,50 @@ async function eseguiSync() {
       '</div>';
     document.body.appendChild(overlay);
   }
-  var bar = document.getElementById('sync-progress-bar');
-  var barFill = document.getElementById('sync-bar');
-  var statusInline = document.getElementById('sync-status-inline');
-  if (bar) bar.style.display = 'block';
-  if (statusInline) statusInline.style.display = 'block';
-  // Keep overlay hidden
-  if (overlay) overlay.style.display = 'none';
+  // Crea/aggiorna il pannello di stato sync fisso in basso a destra
+  var panel = document.getElementById('sync-panel');
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.id = 'sync-panel';
+    panel.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1e293b;color:#fff;' +
+      'border-radius:12px;padding:14px 18px;min-width:280px;box-shadow:0 8px 32px rgba(0,0,0,0.4);' +
+      'z-index:9999;font-family:inherit;transition:opacity 0.3s';
+    panel.innerHTML =
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">' +
+        '<div id="sync-panel-spinner" style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.2);' +
+          'border-top:2px solid #3b82f6;border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0"></div>' +
+        '<div style="font-size:13px;font-weight:700">Sincronizzazione Amazon</div>' +
+      '</div>' +
+      '<div id="sync-panel-msg" style="font-size:12px;color:#94a3b8;margin-bottom:10px">Connessione al server...</div>' +
+      '<div style="width:100%;height:4px;background:rgba(255,255,255,0.1);border-radius:2px">' +
+        '<div id="sync-panel-bar" style="height:100%;width:0%;background:#3b82f6;border-radius:2px;transition:width 0.4s"></div>' +
+      '</div>';
+    document.body.appendChild(panel);
+  }
+  panel.style.opacity = '1';
+  panel.style.display = 'block';
 
   function setStatus(msg, progress) {
-    var el = document.getElementById('sync-status-text');
-    var bar = document.getElementById('sync-bar');
-    var statusInline = document.getElementById('sync-status-inline');
+    var el = document.getElementById('sync-panel-msg');
+    var bar = document.getElementById('sync-panel-bar');
     var btnLbl = document.getElementById('tb-lbl');
     if (el) el.textContent = msg;
     if (bar) bar.style.width = progress + '%';
-    if (statusInline) statusInline.textContent = msg;
-    if (btnLbl) btnLbl.textContent = msg;
+    if (btnLbl) btnLbl.textContent = progress < 100 ? 'Sync...' : 'Sincronizza';
   }
 
   function closeOverlay(success, msg) {
-    if (overlay) overlay.style.display = 'none';
-    var bar = document.getElementById('sync-progress-bar');
-    var barFill = document.getElementById('sync-bar');
-    var statusInline = document.getElementById('sync-status-inline');
+    var spinner = document.getElementById('sync-panel-spinner');
+    var bar = document.getElementById('sync-panel-bar');
     var btnLbl = document.getElementById('tb-lbl');
+    if (spinner) { spinner.style.animation = 'none'; spinner.style.borderTopColor = success ? '#22c55e' : '#ef4444'; }
+    if (bar) bar.style.background = success ? '#22c55e' : '#ef4444';
+    if (btnLbl) btnLbl.textContent = 'Sincronizza';
     setTimeout(function() {
-      if (bar) { bar.style.display = 'none'; }
-      if (barFill) barFill.style.width = '0%';
-      if (statusInline) statusInline.style.display = 'none';
-      if (btnLbl) btnLbl.textContent = 'Sincronizza';
-    }, 1500);
-    if (success) {
-      showToast('\u2713 ' + msg);
-    } else {
-      showToast('\u26a0 ' + msg);
-    }
+      var p = document.getElementById('sync-panel');
+      if (p) { p.style.opacity = '0'; setTimeout(function(){ p.style.display='none'; }, 300); }
+    }, 3000);
+    showToast((success ? '✓ ' : '⚠ ') + msg);
   }
 
   if (!IS_LIVE) {
