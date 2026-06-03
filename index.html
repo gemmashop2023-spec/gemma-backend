@@ -269,7 +269,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
       <div><div style="color:#d0d8f0;font-size:12px;font-weight:600">Amministratore</div><div style="color:#3a4258;font-size:11px">Administrator</div></div>
     </div>
   </div>
-<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v2.9</div>
+<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v3.0</div>
 </div>
 
 <!-- ── MAIN ── -->
@@ -2728,12 +2728,21 @@ async function loadDashboard() {
   }
 }
 
-async function loadOrdiniAmazon() {
+async function loadOrdiniAmazon(giorni) {
   if (!IS_LIVE) return;
-  const ordini = await api('getAll', { table: 'ordini_amazon' });
-  if (!ordini || !ordini.length) return;
+  var allOrdini = await api('getAll', { table: 'ordini_amazon' });
+  if (!allOrdini || !allOrdini.length) return;
+  var ordini = allOrdini;
+  if (giorni && parseInt(giorni) < 3650) {
+    var cutoff = new Date(Date.now() - parseInt(giorni) * 24 * 60 * 60 * 1000);
+    ordini = allOrdini.filter(function(o) { return !o.data_ordine || new Date(o.data_ordine) >= cutoff; });
+  }
   const tbody = document.getElementById('ordini-tbody');
   if (!tbody) return;
+  if (!ordini.length) {
+    tbody.innerHTML = '<tr><td colspan="15" style="text-align:center;color:var(--text-muted);padding:20px">Nessun ordine nel periodo selezionato</td></tr>';
+    aggiornaKpiOrdini(); return;
+  }
   tbody.innerHTML = '';
   ordini.forEach(ord => {
     const scadenza = ord.scadenza_evasione ? new Date(ord.scadenza_evasione) : null;
