@@ -3,10 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
-<meta http-equiv="Pragma" content="no-cache"/>
-<meta http-equiv="Expires" content="0"/>
-<title>GEMMA vc64fd0f9 — Warehouse Manager</title>
+<title>GEMMA v9964bac8 — Warehouse Manager</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css"/>
 <style>
 /* ── RESET & TOKENS ── */
@@ -55,9 +52,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .s-user{display:flex;align-items:center;gap:10px}
 .s-av{width:32px;height:32px;border-radius:50%;background:#1e3a5f;display:flex;align-items:center;justify-content:center;color:#60a5fa;font-size:11px;font-weight:700;flex-shrink:0}
 /* ── MAIN ── */
-#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;width:0}
 /* ── TOPBAR ── */
-#topbar{height:54px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 22px;gap:10px;flex-shrink:0}.tb-menu-btn{display:none;background:none;border:none;cursor:pointer;padding:4px 8px;color:var(--text);font-size:20px;border-radius:6px}.tb-menu-btn:hover{background:var(--bg)}
+#topbar{height:54px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 22px;gap:10px;flex-shrink:0}
 .tb-title{font-size:15px;font-weight:700;color:var(--text);flex:1}
 .tb-search{display:flex;align-items:center;gap:7px;background:#f5f6f8;border:1px solid var(--border);border-radius:8px;padding:6px 12px;width:210px}
 .tb-search input{background:none;border:none;outline:none;font-size:12px;color:var(--text);width:100%}
@@ -71,10 +68,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .stab .badge-w{background:#f59e0b}
 .stab .badge-p{background:#8b5cf6}
 /* ── CONTENT ── */
-#content{flex:1;overflow:auto;padding:22px;scrollbar-width:thin;scrollbar-color:#ddd transparent}
-.pg{display:none;min-width:0}.pg.active{display:block}
+#content{flex:1;overflow-y:auto;overflow-x:auto;padding:22px;scrollbar-width:thin;scrollbar-color:#ddd transparent}
+.pg{display:none;min-width:0}.pg.active{display:block;min-width:max-content;width:100%}
 /* ── SHARED COMPONENTS ── */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:16px;min-width:0}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:16px}
 .card-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
 .card-ttl{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:7px}
 .kgrid{display:grid;gap:12px;margin-bottom:18px}
@@ -88,7 +85,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .kc-val{font-size:22px;font-weight:800;color:var(--text);line-height:1}
 .kc-sub{font-size:11px;color:var(--text-sec);margin-top:4px}
 .up{color:#10b981}.dn{color:#ef4444}.warn{color:#f59e0b}
-.tw{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 260px);border-radius:8px;border:1px solid var(--border-light);-webkit-overflow-scrolling:touch}
+.tw{overflow-x:auto;border-radius:8px;border:1px solid var(--border-light);-webkit-overflow-scrolling:touch}
 table{width:100%;min-width:max-content;border-collapse:collapse;font-size:12px}
 th{text-align:left;padding:9px 12px;color:var(--text-sec);font-weight:700;background:#f9fafb;border-bottom:1px solid var(--border-light);font-size:11px;white-space:nowrap}
 td{padding:9px 12px;border-bottom:1px solid var(--border-light);color:var(--text);vertical-align:middle}
@@ -202,36 +199,6 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 .login-error{color:#ef4444;font-size:12px;margin-top:8px;text-align:center;min-height:18px}
 .login-user-info{display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(255,255,255,.06);border-radius:8px;cursor:pointer}
 .login-user-info:hover{background:rgba(255,255,255,.1)}
-
-  
-  .s-sections {
-    flex-direction: column !important;
-    overflow-y: auto !important;
-    overflow-x: hidden !important;
-  }
-  
-  .nav-section { flex-direction: column !important; }
-  
-  #app { flex-direction: row !important; }
-}
-.tbl-outer{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;max-width:100%}.tbl{min-width:800px;width:100%;border-collapse:collapse}
-/* ── RESPONSIVE ── */
-@media (max-width: 768px) {
-  #sidebar { display: none; }
-  #sidebar.mobile-open { display: flex; position: fixed; z-index: 300; height: 100vh; top: 0; left: 0; }
-  #main { width: 100vw; }
-  #content { padding: 12px; }
-  .kgrid.k2, .kgrid.k3, .kgrid.k4, .kgrid.k5 { grid-template-columns: repeat(2,1fr); }
-  .tw { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-  .toolbar { flex-wrap: wrap; gap: 6px; }
-  #topbar { padding: 0 12px; }
-  .tb-menu-btn { display: flex !important; }
-  .modal { width: 95vw !important; max-width: 95vw !important; }
-}
-@media (max-width: 480px) {
-  .kgrid.k2, .kgrid.k3, .kgrid.k4, .kgrid.k5 { grid-template-columns: 1fr; }
-}
-@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -305,7 +272,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 
 <!-- ── MAIN ── -->
 <div id="main">
-  <div id="topbar"><button class="tb-menu-btn" onclick="toggleSidebar()" title="Menu"><i class="ti ti-menu-2"></i></button>
+  <div id="topbar">
     <div class="tb-title" id="tb-title">Dashboard</div>
     <div class="tb-search"><i class="ti ti-search"></i><input placeholder="Cerca ordine, SKU, cliente..."/></div>
     <button class="btn bg" style="padding:6px 10px"><i class="ti ti-bell"></i></button>
@@ -859,30 +826,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 <!-- PLACEHOLDER PAGES -->
 <div class="pg" id="pg-ordini-ebay"><div class="ai ai-blue"><i class="ti ti-info-circle"></i><span>Ordini eBay — struttura identica agli ordini Amazon, sincronizzazione via eBay REST API. <button class="btn bg bxs" onclick="nav('impostazioni')">Configura eBay API</button></span></div></div>
 <div class="pg" id="pg-banco"><div class="card"><div class="card-ttl">Vendita al Banco</div><div style="margin-top:10px;color:var(--text-sec);font-size:12px">Modulo POS per vendite dirette, carico cliente, metodo pagamento, scarico stock automatico.</div></div></div>
-<div class="pg" id="pg-rimborsi">
-  <div class="kgrid k4" id="kpi-rimborsi-amz">
-    <div class="kc"><div class="kc-lbl">Da classificare</div><div class="kc-val warn" id="rimb-kpi-class">0</div></div>
-    <div class="kc"><div class="kc-lbl">RIMB.CLI</div><div class="kc-val dn" id="rimb-kpi-cli">0</div></div>
-    <div class="kc"><div class="kc-lbl">RIMB.ASS</div><div class="kc-val" style="color:var(--purple)" id="rimb-kpi-ass">0</div></div>
-    <div class="kc"><div class="kc-lbl">Totale rimborsi</div><div class="kc-val" id="rimb-kpi-tot">€0</div></div>
-  </div>
-  <div class="toolbar">
-    <select class="fi" style="width:200px" onchange="filterRimborsiAmazon(this.value)">
-      <option value="">Tutti gli stati</option>
-      <option value="da-classificare">Da classificare</option>
-      <option value="RIMB.CLI">RIMB.CLI</option>
-      <option value="RIMB.ASS">RIMB.ASS</option>
-      <option value="RECLAMO">Reclamo</option>
-      <option value="chiuso">Chiuso</option>
-    </select>
-    <div class="ml"><button class="btn bp bxs" onclick="loadRimborsiAmazon()"><i class="ti ti-refresh"></i>Aggiorna</button></div>
-  </div>
-  <div class="tw"><table><thead><tr>
-    <th>ID</th><th>Ordine</th><th>Data</th><th>Importo</th><th>Motivo</th><th>Tipo</th><th>Stato</th><th></th>
-  </tr></thead><tbody id="rimborsi-amz-tbody">
-    <tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:20px">Caricamento...</td></tr>
-  </tbody></table></div>
-<div class="card"><div class="card-ttl">Rimborsi Amazon</div><div style="margin-top:10px;color:var(--text-sec);font-size:12px">Gestione rimborsi anomali con flag RIMB.ASS / RIMB.CLI / RECLAMO / PERDITA.</div></div></div>
+<div class="pg" id="pg-rimborsi"><div class="card"><div class="card-ttl">Rimborsi Amazon</div><div style="margin-top:10px;color:var(--text-sec);font-size:12px">Gestione rimborsi anomali con flag RIMB.ASS / RIMB.CLI / RECLAMO / PERDITA.</div></div></div>
 <div class="pg" id="pg-cancellazioni"><div class="card"><div class="card-ttl">Cancellazioni</div><div style="margin-top:10px;color:var(--text-sec);font-size:12px">Rilevamento cancellazioni ordini e blocco a cascata su fulfillment/acquisti/messaggi.</div></div></div>
 <div class="pg" id="pg-messaggi"><div class="card"><div class="card-ttl">Messaggi cliente</div><div style="margin-top:10px;color:var(--text-sec);font-size:12px">Template Amazon BSM + WhatsApp post-consegna.</div></div></div>
 <div class="pg" id="pg-fulfillment"><div class="card"><div class="card-ttl">Fulfillment</div><div style="margin-top:10px;color:var(--text-sec);font-size:12px">Gestione approvvigionamento ordini — tracking, 48h, sostitutive.</div></div></div>
@@ -1653,14 +1597,6 @@ function nav(id) {
     if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + id + "'")) n.classList.add('active');
   });
 
-  // Carica dati quando si naviga alla pagina
-  if (id === 'ordini-amazon' && IS_LIVE) loadOrdiniAmazon();
-  else if (id === 'acquisti' && IS_LIVE) loadAcquisti();
-  else if (id === 'rimborsi' && IS_LIVE) loadRimborsiAmazon();
-  else if (id === 'dashboard' && IS_LIVE) loadDashboard();
-  else if (id === 'magazzino' && IS_LIVE) loadCatalogo();
-  else if (id === 'resi-clienti' && IS_LIVE) loadResiClienti();
-  else if (id === 'rimborsi-assicurativi' && IS_LIVE) loadPratiche();
   const cfg = pageMap[id] || {title:id, action:{icon:'ti-refresh',label:'Azione'}, tabs:[]};
 
   // topbar title with section badge
@@ -2732,7 +2668,7 @@ async function api(action, extra = {}) {
     });
     const json = await res.json();
     if (!json.success) throw new Error(json.error);
-    return json.data !== undefined ? json.data : json;
+    return json.data;
   } catch (err) {
     showToast('⚠ Errore API: ' + err.message);
     return null;
@@ -2740,135 +2676,6 @@ async function api(action, extra = {}) {
 }
 
 // ── CARICAMENTO DATI LIVE ────────────────────────────────────
-
-
-async function loadRimborsiAmazon() {
-  if (!IS_LIVE) return;
-  var data = await api('getAll', { table: 'rimborsi_amazon' });
-  var tbody = document.getElementById('rimborsi-amz-tbody');
-  if (!tbody) return;
-  if (!data || !data.length) {
-    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:20px">Nessun rimborso Amazon trovato</td></tr>';
-    return;
-  }
-  tbody.innerHTML = '';
-  var totale = 0, nClass = 0, nCli = 0, nAss = 0;
-  data.forEach(function(r) {
-    var tr = document.createElement('tr');
-    var imp = parseFloat(r.importo || 0);
-    totale += imp;
-    if (r.stato === 'da-classificare') nClass++;
-    else if (r.stato === 'RIMB.CLI') nCli++;
-    else if (r.stato === 'RIMB.ASS') nAss++;
-    var chipColor = r.stato === 'da-classificare' ? 'c-amber' : r.stato === 'RIMB.CLI' ? 'c-red' : r.stato === 'RIMB.ASS' ? 'c-purple' : r.stato === 'chiuso' ? 'c-green' : 'c-gray';
-    tr.innerHTML =
-      '<td class="mono" style="color:var(--purple)">' + (r.id||'—') + '</td>' +
-      '<td class="mono">' + (r.ordine_id||'—') + '</td>' +
-      '<td>' + new Date(r.data||Date.now()).toLocaleDateString('it-IT') + '</td>' +
-      '<td style="font-weight:700;color:var(--red)">€' + imp.toFixed(2) + '</td>' +
-      '<td>' + (r.motivo||'—') + '</td>' +
-      '<td>' + (r.tipo||'—') + '</td>' +
-      '<td><span class="chip ' + chipColor + '">' + (r.stato||'—') + '</span></td>' +
-      '<td class="rg"><button class="btn bg bxs" onclick="classificaRimborso('' + r.id + '')"><i class="ti ti-tag"></i>Classifica</button></td>';
-    tbody.appendChild(tr);
-  });
-  var setEl = function(id, v) { var e = document.getElementById(id); if(e) e.textContent = v; };
-  setEl('rimb-kpi-class', nClass);
-  setEl('rimb-kpi-cli', nCli);
-  setEl('rimb-kpi-ass', nAss);
-  setEl('rimb-kpi-tot', '€' + totale.toFixed(2));
-}
-
-function filterRimborsiAmazon(val) {
-  document.querySelectorAll('#rimborsi-amz-tbody tr').forEach(function(tr) {
-    tr.style.display = (!val || tr.querySelector('.chip')?.textContent === val) ? '' : 'none';
-  });
-}
-
-function classificaRimborso(id) {
-  var tipo = prompt('Classifica il rimborso:\n1. RIMB.CLI (rimborso cliente legittimo)\n2. RIMB.ASS (apertura pratica assicurativa)\n3. RECLAMO (contestazione)\n4. PERDITA\n\nDigita la classificazione:');
-  if (!tipo) return;
-  api('upsert', { table: 'rimborsi_amazon', record: { id: id, stato: tipo.trim().toUpperCase(), classificato_il: new Date().toISOString() } })
-    .then(function() { showToast('✓ Rimborso ' + id + ' classificato: ' + tipo); loadRimborsiAmazon(); });
-}
-
-
-async function loadCatalogo() {
-  if (!IS_LIVE) return;
-  var data = await api('getAll', { table: 'magazzino' });
-  var tbody = document.getElementById('catalogo-tbody');
-  if (!tbody || !data) return;
-  tbody.innerHTML = '';
-  data.forEach(function(p) {
-    var tr = document.createElement('tr');
-    tr.dataset.condizione = p.condizione || '';
-    var stato = parseInt(p.quantita) <= 0 ? 'critico' : parseInt(p.quantita) <= (p.soglia||2) ? 'basso' : 'ok';
-    var statoChip = stato === 'critico' ? '<span class="chip c-red">Critico</span>' : stato === 'basso' ? '<span class="chip c-amber">Basso</span>' : '<span class="chip c-green">Ok</span>';
-    tr.innerHTML =
-      '<td class="mono">' + (p.sku||'—') + '</td>' +
-      '<td><strong>' + (p.nome||p.prodotto||'—') + '</strong></td>' +
-      '<td><span class="chip">' + (p.condizione||'—') + '</span></td>' +
-      '<td style="font-weight:700">' + (p.quantita||0) + '</td>' +
-      '<td>' + (p.soglia||'—') + '</td>' +
-      '<td>' + (p.posizione||'—') + '</td>' +
-      '<td>' + statoChip + '</td>' +
-      '<td>' + (p.in_assistenza||0) + '</td>' +
-      '<td>€' + parseFloat(p.costo_acquisto||0).toFixed(2) + '</td>' +
-      '<td></td><td></td><td>€' + parseFloat(p.prezzo_vendita||0).toFixed(2) + '</td>' +
-      '<td class="rg"><button class="btn bg bxs"><i class="ti ti-eye"></i></button></td>';
-    tbody.appendChild(tr);
-  });
-}
-
-async function loadResiClienti() {
-  if (!IS_LIVE) return;
-  var data = await api('getAll', { table: 'resi_clienti' });
-  var tbody = document.getElementById('resi-clienti-tbody');
-  if (!tbody || !data) return;
-  tbody.innerHTML = '';
-  (data || []).forEach(function(r) {
-    var tr = document.createElement('tr');
-    tr.dataset.reso = r.id;
-    tr.dataset.stato = r.stato || '';
-    tr.innerHTML = '<td class="mono" style="color:var(--purple)">' + (r.id||'—') + '</td>' +
-      '<td>' + (r.numero_ordine||'—') + '</td>' +
-      '<td>' + (r.prodotto||'—') + '</td>' +
-      '<td>' + (r.cliente||'—') + '</td>' +
-      '<td><span class="chip">' + (r.motivo||'—') + '</span></td>' +
-      '<td>€' + parseFloat(r.importo||0).toFixed(2) + '</td>' +
-      '<td><span class="chip c-' + (r.stato==='chiuso'?'green':r.stato==='da-valutare'?'amber':'blue') + '">' + (r.stato||'—') + '</span></td>' +
-      '<td class="rg"><button class="btn bg bxs" onclick="apriSchedaReso(\'' + r.id + '\')" style="font-size:11px"><i class="ti ti-eye"></i></button></td>';
-    tbody.appendChild(tr);
-  });
-}
-
-async function loadPratiche() {
-  if (!IS_LIVE) return;
-  var data = await api('getAll', { table: 'pratiche_assicurative' });
-  if (!data) return;
-  var tbody = document.getElementById('rimb-assic-tbody');
-  if (!tbody) return;
-  tbody.innerHTML = '';
-  data.forEach(function(p) {
-    var tr = document.createElement('tr');
-    tr.dataset.statoAssic = p.stato || '';
-    var chipColor = p.stato === 'chiusa' ? 'c-teal' : p.stato === 'approvata' ? 'c-green' : p.stato === 'istruttoria' ? 'c-amber' : 'c-blue';
-    tr.innerHTML =
-      '<td class="mono" style="color:var(--purple);font-weight:700">' + (p.id||'—') + '</td>' +
-      '<td>' + (p.data_apertura ? new Date(p.data_apertura).toLocaleDateString('it-IT') : '—') + '</td>' +
-      '<td>' + (p.reso_id ? '<span class="arrow-link" onclick="nav('resi-clienti')">' + p.reso_id + '</span>' : '—') + '</td>' +
-      '<td>' + (p.ordine_id||'—') + '</td>' +
-      '<td><strong>' + (p.prodotto||'—') + '</strong></td>' +
-      '<td><span class="chip c-purple">' + (p.soggetto||'—') + '</span></td>' +
-      '<td><span class="chip c-amber">' + (p.tipo_sinistro||'—') + '</span></td>' +
-      '<td style="font-weight:700">€' + parseFloat(p.importo_richiesto||0).toFixed(2) + '</td>' +
-      '<td style="color:var(--green)">' + (p.importo_rimborsato > 0 ? '€'+parseFloat(p.importo_rimborsato).toFixed(2) : '—') + '</td>' +
-      '<td><span class="chip ' + chipColor + '">' + (p.stato||'—') + '</span></td>' +
-      '<td style="color:var(--text-muted);font-size:11px">' + (p.allegati ? 'Sì' : 'Nessun allegato') + '</td>' +
-      '<td class="rg"><button class="btn bg bxs"><i class="ti ti-eye"></i>Dettaglio</button></td>';
-    tbody.appendChild(tr);
-  });
-}
 
 async function loadDashboard() {
   if (!IS_LIVE) return;
@@ -2921,7 +2728,6 @@ async function loadOrdiniAmazon() {
       <td><div style="font-weight:700;color:${colorProd}">${ord.prodotto || '—'}</div><div style="font-size:10px;margin-top:2px;color:${colorProd}">${ord.sku || ''}</div></td>
       <td>${ord.cliente || '—'}</td><td>${ord.marketplace || 'IT'}</td>
       <td>€${parseFloat(ord.totale||0).toFixed(2)}</td>
-      <td>${_buildUtileTd(ord)}</td>
       <td style="${scadStyle}">${scadStr}</td>
       <td id="stato-${ord.id}">${statoChip}</td>
       <td id="tracking-${ord.id}" class="mono" style="color:var(--blue);font-size:11px">${ord.tracking || '<span style="color:var(--text-muted)">—</span>'}</td>
@@ -3029,86 +2835,117 @@ async function salvaAcquistoLive(data) {
 
 
 function tbAction() {
-  eseguiSync();
+  // Determine current page and call appropriate action
+  var activePg = document.querySelector('.pg.active');
+  var pgId = activePg ? activePg.id.replace('pg-','') : 'dashboard';
+  
+  // Pages that sync with Amazon/eBay
+  var syncPages = ['dashboard','ordini-amazon','ordini-ebay','cancellazioni','rimborsi'];
+  if (syncPages.indexOf(pgId) >= 0) {
+    eseguiSync();
+    return;
+  }
+  
+  // Other pages - check pageMap for cb
+  var cfg = pageMap[pgId];
+  if (cfg && cfg.action && cfg.action.cb) {
+    try { eval(cfg.action.cb); } catch(e) {}
+  }
 }
 
 async function eseguiSync() {
-  // Mostra barra progresso visibile
-  var existing = document.getElementById('sync-progress-modal');
-  if (existing) existing.remove();
-  
-  var modal = document.createElement('div');
-  modal.id = 'sync-progress-modal';
-  modal.style.cssText = 'position:fixed;bottom:20px;right:20px;background:#1a2035;border:1px solid rgba(59,130,246,0.5);border-radius:12px;padding:16px 20px;min-width:280px;z-index:9998;box-shadow:0 8px 32px rgba(0,0,0,0.5)';
-  modal.innerHTML = '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">' +
-    '<div id="sync-spinner-el" style="width:18px;height:18px;border:2px solid rgba(255,255,255,0.2);border-top:2px solid #3b82f6;border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0"></div>' +
-    '<div style="color:#fff;font-size:13px;font-weight:700">Sincronizzazione in corso</div></div>' +
-    '<div id="sync-progress-bar-outer" style="width:100%;height:4px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden">' +
-    '<div id="sync-progress-bar-inner" style="height:100%;background:#3b82f6;width:0%;transition:width 0.5s;border-radius:2px"></div></div>' +
-    '<div id="sync-status-msg" style="color:#9ca3af;font-size:11px;margin-top:8px">Connessione al server...</div>';
-  document.body.appendChild(modal);
+  // Mostra overlay di sincronizzazione
+  var overlay = document.getElementById('sync-overlay');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'sync-overlay';
+    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:8000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px';
+    overlay.innerHTML = '<div style="background:#1a2035;border-radius:16px;padding:32px 40px;text-align:center;min-width:300px;box-shadow:0 20px 60px rgba(0,0,0,0.5)">' +
+      '<div id="sync-spinner" style="width:48px;height:48px;border:4px solid rgba(255,255,255,0.1);border-top:4px solid #3b82f6;border-radius:50%;margin:0 auto 16px;animation:spin 0.8s linear infinite"></div>' +
+      '<div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:8px">Sincronizzazione in corso</div>' +
+      '<div id="sync-status-text" style="color:#9ca3af;font-size:12px">Connessione al server...</div>' +
+      '<div id="sync-progress" style="margin-top:16px;width:100%;height:4px;background:rgba(255,255,255,0.1);border-radius:2px"><div id="sync-bar" style="height:100%;background:#3b82f6;border-radius:2px;width:0%;transition:width 0.5s"></div></div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+  }
+  var bar = document.getElementById('sync-progress-bar');
+  var barFill = document.getElementById('sync-bar');
+  var statusInline = document.getElementById('sync-status-inline');
+  if (bar) bar.style.display = 'block';
+  if (statusInline) statusInline.style.display = 'block';
+  // Keep overlay hidden
+  if (overlay) overlay.style.display = 'none';
 
-  function setProgress(pct, msg) {
-    var bar = document.getElementById('sync-progress-bar-inner');
-    var txt = document.getElementById('sync-status-msg');
-    if (bar) bar.style.width = pct + '%';
-    if (txt) txt.textContent = msg;
+  function setStatus(msg, progress) {
+    var el = document.getElementById('sync-status-text');
+    var bar = document.getElementById('sync-bar');
+    var statusInline = document.getElementById('sync-status-inline');
+    var btnLbl = document.getElementById('tb-lbl');
+    if (el) el.textContent = msg;
+    if (bar) bar.style.width = progress + '%';
+    if (statusInline) statusInline.textContent = msg;
+    if (btnLbl) btnLbl.textContent = msg;
   }
 
-  function closeProgress(success, msg) {
-    var m = document.getElementById('sync-progress-modal');
-    if (!m) return;
-    var spinner = document.getElementById('sync-spinner-el');
-    if (spinner) spinner.style.animation = 'none';
-    if (spinner) spinner.style.borderTopColor = success ? '#22c55e' : '#ef4444';
-    setProgress(100, msg);
-    setTimeout(function() { if (m && m.parentNode) m.parentNode.removeChild(m); }, 3000);
+  function closeOverlay(success, msg) {
+    if (overlay) overlay.style.display = 'none';
+    var bar = document.getElementById('sync-progress-bar');
+    var barFill = document.getElementById('sync-bar');
+    var statusInline = document.getElementById('sync-status-inline');
+    var btnLbl = document.getElementById('tb-lbl');
+    setTimeout(function() {
+      if (bar) { bar.style.display = 'none'; }
+      if (barFill) barFill.style.width = '0%';
+      if (statusInline) statusInline.style.display = 'none';
+      if (btnLbl) btnLbl.textContent = 'Sincronizza';
+    }, 1500);
+    if (success) {
+      showToast('\u2713 ' + msg);
+    } else {
+      showToast('\u26a0 ' + msg);
+    }
   }
-
-  var btnLbl = document.getElementById('tb-lbl');
-  var btnIcon = document.getElementById('tb-icon');
-  if (btnLbl) btnLbl.textContent = 'Sync...';
-  if (btnIcon) btnIcon.style.animation = 'spin 0.8s linear infinite';
 
   if (!IS_LIVE) {
-    setProgress(100, 'Modalità demo — nessuna API');
-    closeProgress(false, 'Modalità demo — configura API');
-    if (btnLbl) btnLbl.textContent = 'Sincronizza';
-    if (btnIcon) btnIcon.style.animation = '';
+    setTimeout(function() { closeOverlay(false, 'Modalità demo — configura API per dati reali'); }, 1000);
     return;
   }
 
   try {
-    setProgress(20, 'Connesso — recupero ordini Amazon...');
+    setStatus('Connessione ad Amazon SP-API...', 20);
     
-    const result = await fetch(API_URL + '/api/index', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'syncAll' })
-    }).then(r => r.json());
-
-    setProgress(80, 'Aggiornamento dati...');
-
-    if (result && result.success !== false) {
-      var nuovi = result.nuovi || 0;
-      var aggiornati = result.aggiornati || 0;
-      var msg = 'Amazon: ' + nuovi + ' nuovi, ' + aggiornati + ' aggiornati';
-      setProgress(100, msg);
-      closeProgress(true, '✓ ' + msg);
-      showToast('✓ ' + msg);
+    const result = await api('syncAll');
+    
+    setStatus('Aggiornamento dati...', 80);
+    
+    if (result) {
+      const amz = result.amazon || {};
+      const eb  = result.ebay  || {};
       
-      // Ricarica dati
-      if (typeof loadOrdiniAmazon === 'function') await loadOrdiniAmazon();
-      if (typeof loadDashboard === 'function') await loadDashboard();
+      setStatus('Completato!', 100);
+      
+      setTimeout(async function() {
+        closeOverlay(true, 
+          'Amazon: ' + (amz.nuovi||0) + ' nuovi, ' + (amz.aggiornati||0) + ' aggiornati | ' +
+          'eBay: ' + (eb.nuovi||0) + ' nuovi'
+        );
+        var ls = document.getElementById('sync-last');
+        if (ls) ls.textContent = 'Ultima sync: ' + new Date().toLocaleTimeString('it-IT');
+        await loadOrdiniAmazon();
+        await loadDashboard();
+      }, 800);
+      
     } else {
-      closeProgress(false, '⚠ Errore: ' + (result && result.error || 'risposta non valida'));
+      closeOverlay(false, 'Nessuna risposta dal server');
     }
+    
   } catch(err) {
-    closeProgress(false, '⚠ Errore: ' + err.message);
+    closeOverlay(false, 'Errore: ' + err.message);
   }
 
-  if (btnLbl) btnLbl.textContent = 'Sincronizza';
-  if (btnIcon) btnIcon.style.animation = '';
+  // Ripristina bottoni
+  ['sync-btn','sync-btn-settings'].forEach(function(id) { var b=document.getElementById(id); if(b) b.disabled=false; });
+  ['sync-label','sync-label-settings'].forEach(function(id) { var s=document.getElementById(id); if(s) s.textContent='Sincronizza ora'; });
 }
 
 
@@ -3156,54 +2993,12 @@ function showLogin() {
   if (u) { setTimeout(function(){ u.focus(); }, 100); }
 }
 
-
-function toggleSidebar() {
-  var sb = document.getElementById('sidebar');
-  sb.classList.toggle('mobile-open');
-}
-
 function hideLogin() {
   var el = document.getElementById('login-screen');
   if (el) el.style.display = 'none';
   nav('dashboard');
   avviaReportAutomatico();
   caricaImpostazioniCommissioni();
-  // Carica tutti i dati live
-  if (IS_LIVE) {
-    loadDashboard();
-    loadOrdiniAmazon();
-    loadAcquisti();
-    // Carica anche resi e rimborsi
-    setTimeout(function() {
-      api('getAll', { table: 'resi_clienti' }).then(function(data) {
-        if (!data) return;
-        var tbody = document.getElementById('resi-clienti-tbody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        (data || []).forEach(function(r) {
-          var tr = document.createElement('tr');
-          tr.dataset.reso = r.id;
-          tr.dataset.stato = r.stato || '';
-          tr.dataset.ordine = r.numero_ordine || '';
-          tr.dataset.importo = r.importo || 0;
-          tr.innerHTML = '<td class="mono" style="color:var(--purple)">' + (r.id||'—') + '</td>' +
-            '<td>' + (r.numero_ordine||'—') + '</td>' +
-            '<td>' + (r.prodotto||'—') + '</td>' +
-            '<td>' + (r.cliente||'—') + '</td>' +
-            '<td><span class="chip">' + (r.motivo||'—') + '</span></td>' +
-            '<td>€' + parseFloat(r.importo||0).toFixed(2) + '</td>' +
-            '<td><span class="chip c-' + (r.stato==='chiuso'?'green':r.stato==='da-valutare'?'amber':'blue') + '">' + (r.stato||'—') + '</span></td>' +
-            '<td class="rg"><button class="btn bg bxs" onclick="apriSchedaReso(\''+r.id+'\')" style="font-size:11px"><i class="ti ti-eye"></i></button>' +
-            (r.attenzione ? ' <span style="color:#ef4444;font-weight:700;font-size:11px">⚠ ATTENZIONE</span>' : '') + '</td>';
-          tbody.appendChild(tr);
-        });
-      }).catch(function(){});
-      
-      loadRimborsiAmazon();
-      loadPratiche();
-// rimborsi_amazon: gestiti da loadRimborsiAmazon() nella sezione dedicata
-    }, 1000);
-  }
   var av = document.querySelector('.s-av');
   if (av && _currentUser) av.textContent = (_currentUser.nome||_currentUser.username||'').slice(0,2).toUpperCase();
   var usr = document.querySelector('#nav-foot .s-user > div > div:first-child');
