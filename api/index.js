@@ -1,17 +1,28 @@
+import express from 'express';
 import { createClient } from '@supabase/supabase-js';
 import { syncAmazon } from '../lib/amazon.js';
+
+const app = express();
+app.use(express.json());
 
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY
 );
 
-export default async function handler(req, res) {
+app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
+  next();
+});
 
+app.post('/api/index', handler);
+app.get('/api/index', (req, res) => res.json({ success: true, status: 'GEMMA API online' }));
+app.get('/', (req, res) => res.json({ success: true, status: 'GEMMA API online' }));
+
+async function handler(req, res) {
   try {
     const body = req.body || {};
     const { action } = body;
@@ -20,10 +31,9 @@ export default async function handler(req, res) {
       return res.status(400).json({ success: false, error: 'Azione non specificata' });
     }
 
-    // ── DASHBOARD ──────────────────────────────────────────
     if (action === 'getDashboard') {
       const { data: ordini } = await supabase.from('ordini_amazon').select('stato, totale').limit(500);
-      const kpi = { da_acquistare: 0, da_spedire: 0, da_ricevere: 0, da_verificare: 0, completati_oggi: 0 };
+      const kpi = { da_acquistare: 0, da_spedire: 0, da_ricevere: 0, da_verificare: 0 };
       (ordini || []).forEach(o => {
         if (o.stato === 'da-acquistare') kpi.da_acquistare++;
         if (o.stato === 'da-spedire') kpi.da_spedire++;
@@ -33,13 +43,11 @@ export default async function handler(req, res) {
       return res.json({ success: true, data: { kpi } });
     }
 
-    // ── SYNC AMAZON ────────────────────────────────────────
     if (action === 'syncAll') {
       const result = await syncAmazon();
       return res.json({ success: true, ...result });
     }
 
-    // ── GET ALL ─────────────────────────────────────────────
     if (action === 'getAll') {
       const { table } = body;
       if (!table) return res.status(400).json({ success: false, error: 'Tabella non specificata' });
@@ -50,23 +58,19 @@ export default async function handler(req, res) {
       return res.json({ success: true, data });
     }
 
-    // ── UPSERT ──────────────────────────────────────────────
     if (action === 'upsert' || action === 'aggiornaOrdine' || action === 'aggiornaReso' || action === 'aggiornaPratica') {
-      const { table, record, id, ...fields } = body;
+      const { table, record, id, action: _, ...fields } = body;
       const tbl = table || (action === 'aggiornaOrdine' ? 'ordini_amazon' : action === 'aggiornaReso' ? 'resi_clienti' : 'pratiche_assicurative');
-      const { data, error } = record 
+      const { data, error } = record
         ? await supabase.from(tbl).upsert(record).select().single()
         : await supabase.from(tbl).update(fields).eq('id', id || fields.id).select().single();
       if (error) return res.status(500).json({ success: false, error: error.message });
       return res.json({ success: true, data });
     }
 
-    // ── INVIA MESSAGGIO AMAZON ──────────────────────────────
     if (action === 'inviaMessaggioAmazon') {
       const { orderId, testo } = body;
-      if (!orderId || !testo) {
-        return res.status(400).json({ success: false, error: 'orderId e testo richiesti' });
-      }
+      if (!orderId || !testo) return res.status(400).json({ success: false, error: 'orderId e testo richiesti' });
       const tokenRes = await fetch('https://api.amazon.com/auth/o2/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -77,52 +81,25 @@ export default async function handler(req, res) {
           client_secret: process.env.AMAZON_CLIENT_SECRET,
         }).toString()
       });
-      const tokenData = await tokenRes.json();
-      const accessToken = tokenData.access_token;
-      if (!accessToken) return res.status(401).json({ success: false, error: 'Token Amazon non ottenuto' });
-      
+      const { access_token } = await tokenRes.json();
+      if (!access_token) return res.status(401).json({ success: false, error: 'Token Amazon non ottenuto' });
       const msgRes = await fetch(
         `https://sellingpartnerapi-eu.amazon.com/messaging/v1/orders/${orderId}/messages`,
-        {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${accessToken}`,
-            'x-amz-access-token': accessToken,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ body: testo, marketplaceId: process.env.AMAZON_MARKETPLACE_ID || 'APJ6JRA9NG5V4' })
-        }
+        { method: 'POST', headers: { 'Authorization': `Bearer ${access_token}`, 'x-amz-access-token': access_token, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ body: testo, marketplaceId: process.env.AMAZON_MARKETPLACE_ID || 'APJ6JRA9NG5V4' }) }
       );
-      
-      await supabase.from('messaggi_clienti').insert({
-        id: 'MSG-' + Date.now(), ordine_id: orderId,
-        canale: 'Amazon', direzione: 'uscita', testo, stato: 'inviato',
-        creato_il: new Date().toISOString()
-      }).catch(() => {});
-      
+      await supabase.from('messaggi_clienti').insert({ id: 'MSG-' + Date.now(), ordine_id: orderId, canale: 'Amazon', direzione: 'uscita', testo, stato: 'inviato', creato_il: new Date().toISOString() }).catch(() => {});
       return res.json({ success: msgRes.ok, status: msgRes.status });
     }
 
-    // ── CREA PRATICA ────────────────────────────────────────
-    if (action === 'creaPratica' || action === 'caricoProdotto' || action === 'logMessaggio') {
+    if (action === 'creaPratica' || action === 'caricoProdotto' || action === 'logMessaggio' || action === 'vendita_banco') {
       const { action: _, ...record } = body;
-      const tbl = action === 'creaPratica' ? 'pratiche_assicurative' 
-                : action === 'caricoProdotto' ? 'catalogo' 
-                : 'messaggi_clienti';
+      const tbl = action === 'creaPratica' ? 'pratiche_assicurative' : action === 'caricoProdotto' ? 'catalogo' : action === 'vendita_banco' ? 'vendite_banco' : 'messaggi_clienti';
       const { data, error } = await supabase.from(tbl).insert(record).select().single();
       if (error) return res.status(500).json({ success: false, error: error.message });
       return res.json({ success: true, data });
     }
 
-    // ── VENDITA BANCO ────────────────────────────────────────
-    if (action === 'vendita_banco') {
-      const { action: _, ...record } = body;
-      const { data, error } = await supabase.from('vendite_banco').insert(record).select().single();
-      if (error) return res.status(500).json({ success: false, error: error.message });
-      return res.json({ success: true, data });
-    }
-
-    // ── UTENTI ───────────────────────────────────────────────
     if (action === 'getUtenti') {
       const { data } = await supabase.from('utenti').select('id,username,nome,ruolo,attivo,ultimo_accesso,creato_il').order('creato_il');
       return res.json({ success: true, data });
@@ -131,20 +108,17 @@ export default async function handler(req, res) {
     if (action === 'creaUtente') {
       const { username, password, nome, ruolo } = body;
       const crypto = await import('crypto');
-      const hash = crypto.default.createHash('sha256').update(password + process.env.CRON_SECRET).digest('hex');
-      const { data, error } = await supabase.from('utenti').insert({
-        id: 'USR-' + Date.now(), username: username.toLowerCase(),
-        password_hash: hash, nome, ruolo: ruolo || 'operatore'
-      }).select().single();
+      const hash = crypto.default.createHash('sha256').update(password + (process.env.CRON_SECRET || '')).digest('hex');
+      const { data, error } = await supabase.from('utenti').insert({ id: 'USR-' + Date.now(), username: username.toLowerCase(), password_hash: hash, nome, ruolo: ruolo || 'operatore' }).select().single();
       if (error) return res.status(400).json({ success: false, error: error.message });
       return res.json({ success: true, data });
     }
 
     if (action === 'aggiornaUtente') {
-      const { id, password, ...fields } = body;
+      const { id, password, action: _, ...fields } = body;
       if (password) {
         const crypto = await import('crypto');
-        fields.password_hash = crypto.default.createHash('sha256').update(password + process.env.CRON_SECRET).digest('hex');
+        fields.password_hash = crypto.default.createHash('sha256').update(password + (process.env.CRON_SECRET || '')).digest('hex');
       }
       const { data, error } = await supabase.from('utenti').update(fields).eq('id', id).select().single();
       if (error) return res.status(400).json({ success: false, error: error.message });
@@ -163,3 +137,6 @@ export default async function handler(req, res) {
     return res.status(500).json({ success: false, error: err.message });
   }
 }
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`GEMMA API running on port ${PORT}`));
