@@ -3024,7 +3024,7 @@ function hideLogin() {
             '<td><span class="chip">' + (r.motivo||'—') + '</span></td>' +
             '<td>€' + parseFloat(r.importo||0).toFixed(2) + '</td>' +
             '<td><span class="chip c-' + (r.stato==='chiuso'?'green':r.stato==='da-valutare'?'amber':'blue') + '">' + (r.stato||'—') + '</span></td>' +
-            '<td class="rg"><button class="btn bg bxs" onclick="apriSchedaReso(\"'+r.id+'\")" style="font-size:11px"><i class="ti ti-eye"></i></button></td>';
+            '<td class="rg"><button class="btn bg bxs" data-id="'+r.id+'" onclick="apriSchedaReso(this.dataset.id)" style="font-size:11px"><i class="ti ti-eye"></i></button></td>';
           tbody.appendChild(tr);
         });
       }).catch(function(){});
