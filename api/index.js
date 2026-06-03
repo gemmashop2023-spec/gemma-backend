@@ -46,7 +46,7 @@ async function handler(req, res) {
     if (action === 'syncAll') {
       const { syncRimborsi, syncResi } = await import('../lib/amazon.js');
       const [amazonResult, rimborsiNuovi, resiNuovi] = await Promise.all([
-        syncAmazon(),
+        syncAmazon(body.giorni || 30),
         syncRimborsi().catch(() => 0),
         syncResi().catch(() => 0)
       ]);
