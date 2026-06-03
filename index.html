@@ -2857,98 +2857,71 @@ function tbAction() {
 }
 
 async function eseguiSync() {
-  // Mostra overlay di sincronizzazione
-  var overlay = document.getElementById('sync-overlay');
-  if (!overlay) {
-    overlay = document.createElement('div');
-    overlay.id = 'sync-overlay';
-    overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:8000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px';
-    overlay.innerHTML = '<div style="background:#1a2035;border-radius:16px;padding:32px 40px;text-align:center;min-width:300px;box-shadow:0 20px 60px rgba(0,0,0,0.5)">' +
-      '<div id="sync-spinner" style="width:48px;height:48px;border:4px solid rgba(255,255,255,0.1);border-top:4px solid #3b82f6;border-radius:50%;margin:0 auto 16px;animation:spin 0.8s linear infinite"></div>' +
-      '<div style="color:#fff;font-size:15px;font-weight:700;margin-bottom:8px">Sincronizzazione in corso</div>' +
-      '<div id="sync-status-text" style="color:#9ca3af;font-size:12px">Connessione al server...</div>' +
-      '<div id="sync-progress" style="margin-top:16px;width:100%;height:4px;background:rgba(255,255,255,0.1);border-radius:2px"><div id="sync-bar" style="height:100%;background:#3b82f6;border-radius:2px;width:0%;transition:width 0.5s"></div></div>' +
-      '</div>';
-    document.body.appendChild(overlay);
+  // Crea pannello fisso in basso a destra
+  var panel = document.getElementById('sync-panel');
+  if (!panel) {
+    panel = document.createElement('div');
+    panel.id = 'sync-panel';
+    panel.style.cssText = 'position:fixed;bottom:24px;right:24px;background:#1e293b;color:#fff;border-radius:12px;padding:16px 20px;min-width:260px;box-shadow:0 8px 32px rgba(0,0,0,0.5);z-index:9999;font-family:inherit';
+    document.body.appendChild(panel);
   }
-  var bar = document.getElementById('sync-progress-bar');
-  var barFill = document.getElementById('sync-bar');
-  var statusInline = document.getElementById('sync-status-inline');
-  if (bar) bar.style.display = 'block';
-  if (statusInline) statusInline.style.display = 'block';
-  // Keep overlay hidden
-  if (overlay) overlay.style.display = 'none';
+  panel.style.display = 'block';
+  panel.style.opacity = '1';
+  panel.innerHTML =
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">' +
+      '<div id="sp-spinner" style="width:16px;height:16px;border:2px solid rgba(255,255,255,0.2);border-top:2px solid #3b82f6;border-radius:50%;animation:spSpin 0.8s linear infinite;flex-shrink:0"></div>' +
+      '<div style="font-size:13px;font-weight:700">Sincronizzazione Amazon</div>' +
+    '</div>' +
+    '<div id="sp-msg" style="font-size:12px;color:#94a3b8;margin-bottom:10px">Connessione al server...</div>' +
+    '<div style="width:100%;height:4px;background:rgba(255,255,255,0.1);border-radius:2px">' +
+      '<div id="sp-bar" style="height:100%;width:5%;background:#3b82f6;border-radius:2px;transition:width 0.4s"></div>' +
+    '</div>';
 
-  function setStatus(msg, progress) {
-    var el = document.getElementById('sync-status-text');
-    var bar = document.getElementById('sync-bar');
-    var statusInline = document.getElementById('sync-status-inline');
-    var btnLbl = document.getElementById('tb-lbl');
-    if (el) el.textContent = msg;
-    if (bar) bar.style.width = progress + '%';
-    if (statusInline) statusInline.textContent = msg;
-    if (btnLbl) btnLbl.textContent = msg;
+  function spSet(msg, pct) {
+    var m = document.getElementById('sp-msg');
+    var b = document.getElementById('sp-bar');
+    if (m) m.textContent = msg;
+    if (b) b.style.width = pct + '%';
   }
-
-  function closeOverlay(success, msg) {
-    if (overlay) overlay.style.display = 'none';
-    var bar = document.getElementById('sync-progress-bar');
-    var barFill = document.getElementById('sync-bar');
-    var statusInline = document.getElementById('sync-status-inline');
-    var btnLbl = document.getElementById('tb-lbl');
+  function spClose(ok, msg) {
+    var spinner = document.getElementById('sp-spinner');
+    var bar = document.getElementById('sp-bar');
+    if (spinner) { spinner.style.animation = 'none'; spinner.style.borderTopColor = ok ? '#22c55e' : '#ef4444'; }
+    if (bar) { bar.style.width = '100%'; bar.style.background = ok ? '#22c55e' : '#ef4444'; }
+    spSet(msg, 100);
     setTimeout(function() {
-      if (bar) { bar.style.display = 'none'; }
-      if (barFill) barFill.style.width = '0%';
-      if (statusInline) statusInline.style.display = 'none';
-      if (btnLbl) btnLbl.textContent = 'Sincronizza';
-    }, 1500);
-    if (success) {
-      showToast('\u2713 ' + msg);
-    } else {
-      showToast('\u26a0 ' + msg);
-    }
+      var p = document.getElementById('sync-panel');
+      if (p) p.style.display = 'none';
+    }, 3500);
+    showToast((ok ? '✓ ' : '⚠ ') + msg);
+    var lbl = document.getElementById('tb-lbl');
+    if (lbl) lbl.textContent = 'Sincronizza';
   }
+
+  var lbl = document.getElementById('tb-lbl');
+  if (lbl) lbl.textContent = 'Sync...';
 
   if (!IS_LIVE) {
-    setTimeout(function() { closeOverlay(false, 'Modalità demo — configura API per dati reali'); }, 1000);
+    spClose(false, 'Modalità demo');
     return;
   }
 
   try {
-    setStatus('Connessione ad Amazon SP-API...', 20);
-    
-    const result = await api('syncAll');
-    
-    setStatus('Aggiornamento dati...', 80);
-    
+    spSet('Connessione ad Amazon SP-API...', 20);
+    var result = await api('syncAll');
+    spSet('Aggiornamento tabella...', 80);
     if (result) {
-      const amz = result.amazon || {};
-      const eb  = result.ebay  || {};
-      
-      setStatus('Completato!', 100);
-      
-      setTimeout(async function() {
-        closeOverlay(true, 
-          'Amazon: ' + (amz.nuovi||0) + ' nuovi, ' + (amz.aggiornati||0) + ' aggiornati | ' +
-          'eBay: ' + (eb.nuovi||0) + ' nuovi'
-        );
-        var ls = document.getElementById('sync-last');
-        if (ls) ls.textContent = 'Ultima sync: ' + new Date().toLocaleTimeString('it-IT');
-        await loadOrdiniAmazon();
-        await loadDashboard();
-      }, 800);
-      
+      var nuovi = (result.amazon && result.amazon.nuovi) || result.nuovi || 0;
+      var agg   = (result.amazon && result.amazon.aggiornati) || result.aggiornati || 0;
+      await loadOrdiniAmazon();
+      await loadDashboard();
+      spClose(true, 'Amazon: ' + nuovi + ' nuovi, ' + agg + ' aggiornati');
     } else {
-      closeOverlay(false, 'Nessuna risposta dal server');
+      spClose(false, 'Nessuna risposta dal server');
     }
-    
   } catch(err) {
-    closeOverlay(false, 'Errore: ' + err.message);
+    spClose(false, 'Errore: ' + err.message);
   }
-
-  // Ripristina bottoni
-  ['sync-btn','sync-btn-settings'].forEach(function(id) { var b=document.getElementById(id); if(b) b.disabled=false; });
-  ['sync-label','sync-label-settings'].forEach(function(id) { var s=document.getElementById(id); if(s) s.textContent='Sincronizza ora'; });
 }
 
 
