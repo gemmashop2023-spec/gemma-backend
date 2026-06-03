@@ -52,7 +52,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .s-user{display:flex;align-items:center;gap:10px}
 .s-av{width:32px;height:32px;border-radius:50%;background:#1e3a5f;display:flex;align-items:center;justify-content:center;color:#60a5fa;font-size:11px;font-weight:700;flex-shrink:0}
 /* ── MAIN ── */
-#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;width:0}
+#main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 /* ── TOPBAR ── */
 #topbar{height:54px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 22px;gap:10px;flex-shrink:0}
 .tb-title{font-size:15px;font-weight:700;color:var(--text);flex:1}
@@ -68,8 +68,8 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .stab .badge-w{background:#f59e0b}
 .stab .badge-p{background:#8b5cf6}
 /* ── CONTENT ── */
-#content{flex:1;overflow-y:auto;overflow-x:auto;padding:22px;scrollbar-width:thin;scrollbar-color:#ddd transparent}
-.pg{display:none;min-width:0}.pg.active{display:block;min-width:0;width:100%}
+#content{flex:1;overflow:auto;padding:22px;scrollbar-width:thin;scrollbar-color:#ddd transparent}
+.pg{display:none;min-width:0}.pg.active{display:block}
 /* ── SHARED COMPONENTS ── */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:16px}
 .card-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
@@ -2847,26 +2847,11 @@ async function salvaAcquistoLive(data) {
 
 
 function tbAction() {
-  // Determine current page and call appropriate action
-  var activePg = document.querySelector('.pg.active');
-  var pgId = activePg ? activePg.id.replace('pg-','') : 'dashboard';
-  
-  // Pages that sync with Amazon/eBay
-  var syncPages = ['dashboard','ordini-amazon','ordini-ebay','cancellazioni','rimborsi'];
-  if (syncPages.indexOf(pgId) >= 0) {
-    eseguiSync();
-    return;
-  }
-  
-  // Other pages - check pageMap for cb
-  var cfg = pageMap[pgId];
-  if (cfg && cfg.action && cfg.action.cb) {
-    try { eval(cfg.action.cb); } catch(e) {}
-  }
+  eseguiSync();
 }
 
 async function eseguiSync() {
-  // Feedback immediato sul bottone
+  showToast('⟳ Sincronizzazione in corso...');
   var btnLbl = document.getElementById('tb-lbl');
   var btnIcon = document.getElementById('tb-icon');
   if (btnLbl) btnLbl.textContent = 'Sincronizzazione...';
