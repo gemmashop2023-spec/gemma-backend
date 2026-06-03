@@ -44,8 +44,18 @@ async function handler(req, res) {
     }
 
     if (action === 'syncAll') {
-      const result = await syncAmazon();
-      return res.json({ success: true, ...result });
+      const { syncRimborsi, syncResi } = await import('../lib/amazon.js');
+      const [amazonResult, rimborsiNuovi, resiNuovi] = await Promise.all([
+        syncAmazon(),
+        syncRimborsi().catch(() => 0),
+        syncResi().catch(() => 0)
+      ]);
+      return res.json({ 
+        success: true, 
+        ...amazonResult,
+        rimborsi_nuovi: rimborsiNuovi,
+        resi_nuovi: resiNuovi
+      });
     }
 
     if (action === 'getAll') {
