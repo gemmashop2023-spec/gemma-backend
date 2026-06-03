@@ -69,7 +69,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .stab .badge-p{background:#8b5cf6}
 /* ── CONTENT ── */
 #content{flex:1;overflow-y:auto;overflow-x:auto;padding:22px;scrollbar-width:thin;scrollbar-color:#ddd transparent}
-.pg{display:none;min-width:0}.pg.active{display:block;min-width:max-content;width:100%}
+.pg{display:none;min-width:0}.pg.active{display:block;min-width:0;width:100%}
 /* ── SHARED COMPONENTS ── */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:16px}
 .card-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
@@ -211,7 +211,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
   
   #app { flex-direction: row !important; }
 }
-</style>
+.tbl-outer{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;max-width:100%}.tbl{min-width:800px;width:100%;border-collapse:collapse}</style>
 </head>
 <body>
 <!-- ═══ SCHERMATA LOGIN ═══ -->
@@ -3020,6 +3020,55 @@ function hideLogin() {
   nav('dashboard');
   avviaReportAutomatico();
   caricaImpostazioniCommissioni();
+  // Carica tutti i dati live
+  if (IS_LIVE) {
+    loadDashboard();
+    loadOrdiniAmazon();
+    loadAcquisti();
+    // Carica anche resi e rimborsi
+    setTimeout(function() {
+      api('getAll', { table: 'resi_clienti' }).then(function(data) {
+        if (!data) return;
+        var tbody = document.getElementById('resi-clienti-tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        (data || []).forEach(function(r) {
+          var tr = document.createElement('tr');
+          tr.dataset.reso = r.id;
+          tr.dataset.stato = r.stato || '';
+          tr.dataset.ordine = r.numero_ordine || '';
+          tr.dataset.importo = r.importo || 0;
+          tr.innerHTML = '<td class="mono" style="color:var(--purple)">' + (r.id||'—') + '</td>' +
+            '<td>' + (r.numero_ordine||'—') + '</td>' +
+            '<td>' + (r.prodotto||'—') + '</td>' +
+            '<td>' + (r.cliente||'—') + '</td>' +
+            '<td><span class="chip">' + (r.motivo||'—') + '</span></td>' +
+            '<td>€' + parseFloat(r.importo||0).toFixed(2) + '</td>' +
+            '<td><span class="chip c-' + (r.stato==='chiuso'?'green':r.stato==='da-valutare'?'amber':'blue') + '">' + (r.stato||'—') + '</span></td>' +
+            '<td class="rg"><button class="btn bg bxs" onclick="apriSchedaReso(\''+r.id+'\')" style="font-size:11px"><i class="ti ti-eye"></i></button>' +
+            (r.attenzione ? ' <span style="color:#ef4444;font-weight:700;font-size:11px">⚠ ATTENZIONE</span>' : '') + '</td>';
+          tbody.appendChild(tr);
+        });
+      }).catch(function(){});
+      
+      api('getAll', { table: 'rimborsi_amazon' }).then(function(data) {
+        if (!data) return;
+        var tbody = document.getElementById('rimb-assic-tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        (data || []).forEach(function(r) {
+          var tr = document.createElement('tr');
+          tr.innerHTML = '<td class="mono">' + (r.id||'—') + '</td>' +
+            '<td>' + (r.ordine_id||'—') + '</td>' +
+            '<td>' + new Date(r.data||Date.now()).toLocaleDateString('it-IT') + '</td>' +
+            '<td>€' + parseFloat(r.importo||0).toFixed(2) + '</td>' +
+            '<td><span class="chip">' + (r.motivo||'—') + '</span></td>' +
+            '<td><span class="chip c-' + (r.stato==='chiuso'?'green':'amber') + '">' + (r.stato||'—') + '</span></td>';
+          tbody.appendChild(tr);
+        });
+      }).catch(function(){});
+    }, 1000);
+  }
   var av = document.querySelector('.s-av');
   if (av && _currentUser) av.textContent = (_currentUser.nome||_currentUser.username||'').slice(0,2).toUpperCase();
   var usr = document.querySelector('#nav-foot .s-user > div > div:first-child');
