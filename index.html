@@ -72,7 +72,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .stab .badge-p{background:#8b5cf6}
 /* ── CONTENT ── */
 #content{flex:1;overflow:auto;padding:22px;scrollbar-width:thin;scrollbar-color:#ddd transparent}
-.pg{display:none;min-width:0;max-width:100%}.pg.active{display:block;max-width:100%}
+.pg{display:none;min-width:0}.pg.active{display:block}
 /* ── SHARED COMPONENTS ── */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:16px;min-width:0}
 .card-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
@@ -88,7 +88,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .kc-val{font-size:22px;font-weight:800;color:var(--text);line-height:1}
 .kc-sub{font-size:11px;color:var(--text-sec);margin-top:4px}
 .up{color:#10b981}.dn{color:#ef4444}.warn{color:#f59e0b}
-.tw{overflow-x:auto;border-radius:8px;border:1px solid var(--border-light);-webkit-overflow-scrolling:touch}
+.tw{overflow-x:auto;overflow-y:auto;max-height:calc(100vh - 260px);border-radius:8px;border:1px solid var(--border-light);-webkit-overflow-scrolling:touch}
 table{width:100%;min-width:max-content;border-collapse:collapse;font-size:12px}
 th{text-align:left;padding:9px 12px;color:var(--text-sec);font-weight:700;background:#f9fafb;border-bottom:1px solid var(--border-light);font-size:11px;white-space:nowrap}
 td{padding:9px 12px;border-bottom:1px solid var(--border-light);color:var(--text);vertical-align:middle}
@@ -231,6 +231,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 @media (max-width: 480px) {
   .kgrid.k2, .kgrid.k3, .kgrid.k4, .kgrid.k5 { grid-template-columns: 1fr; }
 }
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -1659,6 +1660,7 @@ function nav(id) {
   else if (id === 'dashboard' && IS_LIVE) loadDashboard();
   else if (id === 'magazzino' && IS_LIVE) loadCatalogo();
   else if (id === 'resi-clienti' && IS_LIVE) loadResiClienti();
+  else if (id === 'rimborsi-assicurativi' && IS_LIVE) loadPratiche();
   const cfg = pageMap[id] || {title:id, action:{icon:'ti-refresh',label:'Azione'}, tabs:[]};
 
   // topbar title with section badge
@@ -2839,6 +2841,35 @@ async function loadResiClienti() {
     tbody.appendChild(tr);
   });
 }
+
+async function loadPratiche() {
+  if (!IS_LIVE) return;
+  var data = await api('getAll', { table: 'pratiche_assicurative' });
+  if (!data) return;
+  var tbody = document.getElementById('rimb-assic-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  data.forEach(function(p) {
+    var tr = document.createElement('tr');
+    tr.dataset.statoAssic = p.stato || '';
+    var chipColor = p.stato === 'chiusa' ? 'c-teal' : p.stato === 'approvata' ? 'c-green' : p.stato === 'istruttoria' ? 'c-amber' : 'c-blue';
+    tr.innerHTML =
+      '<td class="mono" style="color:var(--purple);font-weight:700">' + (p.id||'—') + '</td>' +
+      '<td>' + (p.data_apertura ? new Date(p.data_apertura).toLocaleDateString('it-IT') : '—') + '</td>' +
+      '<td>' + (p.reso_id ? '<span class="arrow-link" onclick="nav('resi-clienti')">' + p.reso_id + '</span>' : '—') + '</td>' +
+      '<td>' + (p.ordine_id||'—') + '</td>' +
+      '<td><strong>' + (p.prodotto||'—') + '</strong></td>' +
+      '<td><span class="chip c-purple">' + (p.soggetto||'—') + '</span></td>' +
+      '<td><span class="chip c-amber">' + (p.tipo_sinistro||'—') + '</span></td>' +
+      '<td style="font-weight:700">€' + parseFloat(p.importo_richiesto||0).toFixed(2) + '</td>' +
+      '<td style="color:var(--green)">' + (p.importo_rimborsato > 0 ? '€'+parseFloat(p.importo_rimborsato).toFixed(2) : '—') + '</td>' +
+      '<td><span class="chip ' + chipColor + '">' + (p.stato||'—') + '</span></td>' +
+      '<td style="color:var(--text-muted);font-size:11px">' + (p.allegati ? 'Sì' : 'Nessun allegato') + '</td>' +
+      '<td class="rg"><button class="btn bg bxs"><i class="ti ti-eye"></i>Dettaglio</button></td>';
+    tbody.appendChild(tr);
+  });
+}
+
 async function loadDashboard() {
   if (!IS_LIVE) return;
   const data = await api('getDashboard');
@@ -3169,22 +3200,8 @@ function hideLogin() {
       }).catch(function(){});
       
       loadRimborsiAmazon();
-      api('getAll', { table: 'rimborsi_amazon' }).then(function(data) {
-        if (!data) return;
-        var tbody = document.getElementById('rimb-assic-tbody');
-        if (!tbody) return;
-        tbody.innerHTML = '';
-        (data || []).forEach(function(r) {
-          var tr = document.createElement('tr');
-          tr.innerHTML = '<td class="mono">' + (r.id||'—') + '</td>' +
-            '<td>' + (r.ordine_id||'—') + '</td>' +
-            '<td>' + new Date(r.data||Date.now()).toLocaleDateString('it-IT') + '</td>' +
-            '<td>€' + parseFloat(r.importo||0).toFixed(2) + '</td>' +
-            '<td><span class="chip">' + (r.motivo||'—') + '</span></td>' +
-            '<td><span class="chip c-' + (r.stato==='chiuso'?'green':'amber') + '">' + (r.stato||'—') + '</span></td>';
-          tbody.appendChild(tr);
-        });
-      }).catch(function(){});
+      loadPratiche();
+// rimborsi_amazon: gestiti da loadRimborsiAmazon() nella sezione dedicata
     }, 1000);
   }
   var av = document.querySelector('.s-av');
