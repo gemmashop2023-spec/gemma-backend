@@ -62,7 +62,6 @@ async function handler(req, res) {
       const { table } = body;
       if (!table) return res.status(400).json({ success: false, error: 'Tabella non specificata' });
       let query = supabase.from(table).select('*').limit(500);
-      try { query = query.order('creato_il', { ascending: false }); } catch(e) {}
       const { data, error } = await query;
       if (error) return res.status(500).json({ success: false, error: error.message });
       return res.json({ success: true, data });
