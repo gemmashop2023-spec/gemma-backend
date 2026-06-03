@@ -269,7 +269,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
       <div><div style="color:#d0d8f0;font-size:12px;font-weight:600">Amministratore</div><div style="color:#3a4258;font-size:11px">Administrator</div></div>
     </div>
   </div>
-<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v2.6</div>
+<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v2.7</div>
 </div>
 
 <!-- ── MAIN ── -->
@@ -345,7 +345,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
     </select>
     <div class="ml" style="display:flex;align-items:center;gap:6px">
       <span style="font-size:11px;color:var(--text-sec);white-space:nowrap">Periodo:</span>
-      <select class="fi" id="sync-giorni" style="width:100px">
+      <select class="fi" id="sync-giorni" style="width:100px" onchange="filterOrdiniPerPeriodo(this.value)">
         <option value="30">30 giorni</option>
         <option value="60">60 giorni</option>
         <option value="90">90 giorni</option>
@@ -1803,6 +1803,20 @@ function filterOrdini(val) {
   document.querySelectorAll('#ordini-tbody tr').forEach(tr => {
     tr.style.display = (!val || tr.dataset.stato === val) ? '' : 'none';
   });
+}
+
+function filterOrdiniPerPeriodo(giorni) {
+  giorni = parseInt(giorni) || 30;
+  var cutoff = new Date(Date.now() - giorni * 24 * 60 * 60 * 1000);
+  document.querySelectorAll('#ordini-tbody tr').forEach(function(tr) {
+    var dataOrd = tr.dataset.dataOrdine;
+    if (!dataOrd) { tr.style.display = ''; return; }
+    var d = new Date(dataOrd);
+    tr.style.display = (d >= cutoff) ? '' : 'none';
+  });
+  // Aggiorna anche il filtro stato se attivo
+  var statoSel = document.querySelector('#pg-ordini-amazon .fi');
+  if (statoSel && statoSel.value) filterOrdini(statoSel.value);
 }
 
 // ── ORDINI: SEGNA CONSEGNATO ──
