@@ -269,7 +269,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
       <div><div style="color:#d0d8f0;font-size:12px;font-weight:600">Amministratore</div><div style="color:#3a4258;font-size:11px">Administrator</div></div>
     </div>
   </div>
-<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v2.8</div>
+<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v2.9</div>
 </div>
 
 <!-- ── MAIN ── -->
@@ -346,6 +346,8 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
     <div class="ml" style="display:flex;align-items:center;gap:6px">
       <span style="font-size:11px;color:var(--text-sec);white-space:nowrap">Periodo:</span>
       <select class="fi" id="sync-giorni" style="width:100px" onchange="filterOrdiniPerPeriodo(this.value)">
+        <option value="7">7 giorni</option>
+        <option value="15">15 giorni</option>
         <option value="30">30 giorni</option>
         <option value="60">60 giorni</option>
         <option value="90">90 giorni</option>
