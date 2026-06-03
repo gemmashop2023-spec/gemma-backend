@@ -269,7 +269,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
       <div><div style="color:#d0d8f0;font-size:12px;font-weight:600">Amministratore</div><div style="color:#3a4258;font-size:11px">Administrator</div></div>
     </div>
   </div>
-<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v3.5</div>
+<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v3.6</div>
 </div>
 
 <!-- ── MAIN ── -->
@@ -2791,7 +2791,7 @@ async function loadOrdiniAmazon(giorni, anno) {
     tr.dataset.dataOrdine = ord.data_ordine || '';
     tr.id = 'row-' + ord.id;
     tr.innerHTML = `
-      <td class="link-ord" onclick="navTo('ordine','${ord.numero_ordine}')" style="cursor:pointer">${ord.numero_ordine}</td>
+      <td class="link-ord" onclick="navTo('ordine','${ord.numero_ordine}')" style="cursor:pointer">${ord.numero_ordine}<div style="font-size:10px;color:var(--text-muted);margin-top:2px">${ord.data_ordine ? new Date(ord.data_ordine).toLocaleDateString('it-IT') : '—'}</div></td>
       <td><div style="font-weight:700;color:${colorProd}">${ord.prodotto || '—'}</div><div style="font-size:10px;margin-top:2px;color:${colorProd}">${ord.sku || ''}</div></td>
       <td>${ord.cliente || '—'}</td><td>${ord.marketplace || 'IT'}</td>
       <td>€${parseFloat(ord.totale||0).toFixed(2)}</td>
