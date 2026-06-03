@@ -2999,6 +2999,62 @@ function hideLogin() {
   nav('dashboard');
   avviaReportAutomatico();
   caricaImpostazioniCommissioni();
+  // Carica dati live
+  if (typeof IS_LIVE !== 'undefined' && IS_LIVE) {
+    if (typeof loadDashboard === 'function') loadDashboard();
+    if (typeof loadOrdiniAmazon === 'function') loadOrdiniAmazon();
+    if (typeof loadAcquisti === 'function') loadAcquisti();
+    setTimeout(function() {
+      // Resi clienti
+      api('getAll', { table: 'resi_clienti' }).then(function(data) {
+        if (!data) return;
+        var tbody = document.getElementById('resi-clienti-tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        (data || []).forEach(function(r) {
+          var tr = document.createElement('tr');
+          tr.dataset.reso = r.id; tr.dataset.stato = r.stato || '';
+          tr.innerHTML = '<td class="mono" style="color:var(--purple)">' + (r.id||'—') + '</td>' +
+            '<td>' + (r.numero_ordine||'—') + '</td>' +
+            '<td>' + (r.prodotto||'—') + '</td>' +
+            '<td>' + (r.cliente||'—') + '</td>' +
+            '<td><span class="chip">' + (r.motivo||'—') + '</span></td>' +
+            '<td>€' + parseFloat(r.importo||0).toFixed(2) + '</td>' +
+            '<td><span class="chip c-' + (r.stato==='chiuso'?'green':r.stato==='da-valutare'?'amber':'blue') + '">' + (r.stato||'—') + '</span></td>' +
+            '<td class="rg"><button class="btn bg bxs" onclick="apriSchedaReso(''+r.id+'')" style="font-size:11px"><i class="ti ti-eye"></i></button></td>';
+          tbody.appendChild(tr);
+        });
+      }).catch(function(){});
+      // Pratiche assicurative
+      api('getAll', { table: 'pratiche_assicurative' }).then(function(data) {
+        if (!data) return;
+        var tbody = document.getElementById('rimb-assic-tbody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        (data || []).forEach(function(p) {
+          var tr = document.createElement('tr');
+          tr.dataset.statoAssic = p.stato || '';
+          var chipColor = p.stato==='chiusa'?'c-teal':p.stato==='approvata'?'c-green':p.stato==='istruttoria'?'c-amber':'c-blue';
+          var sogMap = {'xcover':'c-purple','amazon':'c-orange','corriere':'c-blue'};
+          var sogChip = sogMap[(p.soggetto||'').toLowerCase().split(' ')[0]] || 'c-gray';
+          tr.innerHTML =
+            '<td class="mono" style="color:var(--purple);font-weight:700">' + (p.id||'—') + '</td>' +
+            '<td>' + (p.data_apertura ? new Date(p.data_apertura).toLocaleDateString('it-IT') : '—') + '</td>' +
+            '<td>' + (p.reso_id||'—') + '</td>' +
+            '<td>' + (p.ordine_id||'—') + '</td>' +
+            '<td><strong>' + (p.prodotto||'—') + '</strong></td>' +
+            '<td><span class="chip ' + sogChip + '">' + (p.soggetto||'—') + '</span></td>' +
+            '<td><span class="chip c-amber">' + (p.tipo_sinistro||'—') + '</span></td>' +
+            '<td style="font-weight:700">€' + parseFloat(p.importo_richiesto||0).toFixed(2) + '</td>' +
+            '<td style="color:var(--green)">' + (parseFloat(p.importo_rimborsato||0)>0 ? '€'+parseFloat(p.importo_rimborsato).toFixed(2) : '—') + '</td>' +
+            '<td><span class="chip ' + chipColor + '">' + (p.stato||'—') + '</span></td>' +
+            '<td style="color:var(--text-muted);font-size:11px">—</td>' +
+            '<td class="rg"><button class="btn bg bxs"><i class="ti ti-eye"></i>Dettaglio</button></td>';
+          tbody.appendChild(tr);
+        });
+      }).catch(function(){});
+    }, 800);
+  }
   var av = document.querySelector('.s-av');
   if (av && _currentUser) av.textContent = (_currentUser.nome||_currentUser.username||'').slice(0,2).toUpperCase();
   var usr = document.querySelector('#nav-foot .s-user > div > div:first-child');
