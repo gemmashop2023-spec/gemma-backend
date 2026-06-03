@@ -269,7 +269,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
       <div><div style="color:#d0d8f0;font-size:12px;font-weight:600">Amministratore</div><div style="color:#3a4258;font-size:11px">Administrator</div></div>
     </div>
   </div>
-<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v3.2</div>
+<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v3.3</div>
 </div>
 
 <!-- ── MAIN ── -->
@@ -2940,8 +2940,8 @@ async function eseguiSync() {
     if (result) {
       var nuovi = (result.amazon && result.amazon.nuovi) || result.nuovi || 0;
       var agg   = (result.amazon && result.amazon.aggiornati) || result.aggiornati || 0;
-      await loadOrdiniAmazon();
-      await loadDashboard();
+      var giorniSel = parseInt(document.getElementById('sync-giorni')?.value || '30');
+      await loadOrdiniAmazon(giorniSel);
       spClose(true, 'Amazon: ' + nuovi + ' nuovi, ' + agg + ' aggiornati');
     } else {
       spClose(false, 'Nessuna risposta dal server');
