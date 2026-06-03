@@ -3,6 +3,9 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
 <title>GEMMA vc64fd0f9 — Warehouse Manager</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css"/>
 <style>
@@ -54,7 +57,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 /* ── MAIN ── */
 #main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
 /* ── TOPBAR ── */
-#topbar{height:54px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 22px;gap:10px;flex-shrink:0}
+#topbar{height:54px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 22px;gap:10px;flex-shrink:0}.tb-menu-btn{display:none;background:none;border:none;cursor:pointer;padding:4px 8px;color:var(--text);font-size:20px;border-radius:6px}.tb-menu-btn:hover{background:var(--bg)}
 .tb-title{font-size:15px;font-weight:700;color:var(--text);flex:1}
 .tb-search{display:flex;align-items:center;gap:7px;background:#f5f6f8;border:1px solid var(--border);border-radius:8px;padding:6px 12px;width:210px}
 .tb-search input{background:none;border:none;outline:none;font-size:12px;color:var(--text);width:100%}
@@ -69,9 +72,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-seri
 .stab .badge-p{background:#8b5cf6}
 /* ── CONTENT ── */
 #content{flex:1;overflow:auto;padding:22px;scrollbar-width:thin;scrollbar-color:#ddd transparent}
-.pg{display:none;min-width:0}.pg.active{display:block}
+.pg{display:none;min-width:0;max-width:100%}.pg.active{display:block;max-width:100%}
 /* ── SHARED COMPONENTS ── */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:16px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:18px;margin-bottom:16px;min-width:0}
 .card-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
 .card-ttl{font-size:13px;font-weight:700;color:var(--text);display:flex;align-items:center;gap:7px}
 .kgrid{display:grid;gap:12px;margin-bottom:18px}
@@ -211,7 +214,24 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
   
   #app { flex-direction: row !important; }
 }
-.tbl-outer{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;max-width:100%}.tbl{min-width:800px;width:100%;border-collapse:collapse}</style>
+.tbl-outer{overflow-x:auto;-webkit-overflow-scrolling:touch;width:100%;max-width:100%}.tbl{min-width:800px;width:100%;border-collapse:collapse}
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  #sidebar { display: none; }
+  #sidebar.mobile-open { display: flex; position: fixed; z-index: 300; height: 100vh; top: 0; left: 0; }
+  #main { width: 100vw; }
+  #content { padding: 12px; }
+  .kgrid.k2, .kgrid.k3, .kgrid.k4, .kgrid.k5 { grid-template-columns: repeat(2,1fr); }
+  .tw { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .toolbar { flex-wrap: wrap; gap: 6px; }
+  #topbar { padding: 0 12px; }
+  .tb-menu-btn { display: flex !important; }
+  .modal { width: 95vw !important; max-width: 95vw !important; }
+}
+@media (max-width: 480px) {
+  .kgrid.k2, .kgrid.k3, .kgrid.k4, .kgrid.k5 { grid-template-columns: 1fr; }
+}
+</style>
 </head>
 <body>
 <!-- ═══ SCHERMATA LOGIN ═══ -->
@@ -284,7 +304,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 
 <!-- ── MAIN ── -->
 <div id="main">
-  <div id="topbar">
+  <div id="topbar"><button class="tb-menu-btn" onclick="toggleSidebar()" title="Menu"><i class="ti ti-menu-2"></i></button>
     <div class="tb-title" id="tb-title">Dashboard</div>
     <div class="tb-search"><i class="ti ti-search"></i><input placeholder="Cerca ordine, SKU, cliente..."/></div>
     <button class="btn bg" style="padding:6px 10px"><i class="ti ti-bell"></i></button>
@@ -838,7 +858,30 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 <!-- PLACEHOLDER PAGES -->
 <div class="pg" id="pg-ordini-ebay"><div class="ai ai-blue"><i class="ti ti-info-circle"></i><span>Ordini eBay — struttura identica agli ordini Amazon, sincronizzazione via eBay REST API. <button class="btn bg bxs" onclick="nav('impostazioni')">Configura eBay API</button></span></div></div>
 <div class="pg" id="pg-banco"><div class="card"><div class="card-ttl">Vendita al Banco</div><div style="margin-top:10px;color:var(--text-sec);font-size:12px">Modulo POS per vendite dirette, carico cliente, metodo pagamento, scarico stock automatico.</div></div></div>
-<div class="pg" id="pg-rimborsi"><div class="card"><div class="card-ttl">Rimborsi Amazon</div><div style="margin-top:10px;color:var(--text-sec);font-size:12px">Gestione rimborsi anomali con flag RIMB.ASS / RIMB.CLI / RECLAMO / PERDITA.</div></div></div>
+<div class="pg" id="pg-rimborsi">
+  <div class="kgrid k4" id="kpi-rimborsi-amz">
+    <div class="kc"><div class="kc-lbl">Da classificare</div><div class="kc-val warn" id="rimb-kpi-class">0</div></div>
+    <div class="kc"><div class="kc-lbl">RIMB.CLI</div><div class="kc-val dn" id="rimb-kpi-cli">0</div></div>
+    <div class="kc"><div class="kc-lbl">RIMB.ASS</div><div class="kc-val" style="color:var(--purple)" id="rimb-kpi-ass">0</div></div>
+    <div class="kc"><div class="kc-lbl">Totale rimborsi</div><div class="kc-val" id="rimb-kpi-tot">€0</div></div>
+  </div>
+  <div class="toolbar">
+    <select class="fi" style="width:200px" onchange="filterRimborsiAmazon(this.value)">
+      <option value="">Tutti gli stati</option>
+      <option value="da-classificare">Da classificare</option>
+      <option value="RIMB.CLI">RIMB.CLI</option>
+      <option value="RIMB.ASS">RIMB.ASS</option>
+      <option value="RECLAMO">Reclamo</option>
+      <option value="chiuso">Chiuso</option>
+    </select>
+    <div class="ml"><button class="btn bp bxs" onclick="loadRimborsiAmazon()"><i class="ti ti-refresh"></i>Aggiorna</button></div>
+  </div>
+  <div class="tw"><table><thead><tr>
+    <th>ID</th><th>Ordine</th><th>Data</th><th>Importo</th><th>Motivo</th><th>Tipo</th><th>Stato</th><th></th>
+  </tr></thead><tbody id="rimborsi-amz-tbody">
+    <tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:20px">Caricamento...</td></tr>
+  </tbody></table></div>
+<div class="card"><div class="card-ttl">Rimborsi Amazon</div><div style="margin-top:10px;color:var(--text-sec);font-size:12px">Gestione rimborsi anomali con flag RIMB.ASS / RIMB.CLI / RECLAMO / PERDITA.</div></div></div>
 <div class="pg" id="pg-cancellazioni"><div class="card"><div class="card-ttl">Cancellazioni</div><div style="margin-top:10px;color:var(--text-sec);font-size:12px">Rilevamento cancellazioni ordini e blocco a cascata su fulfillment/acquisti/messaggi.</div></div></div>
 <div class="pg" id="pg-messaggi"><div class="card"><div class="card-ttl">Messaggi cliente</div><div style="margin-top:10px;color:var(--text-sec);font-size:12px">Template Amazon BSM + WhatsApp post-consegna.</div></div></div>
 <div class="pg" id="pg-fulfillment"><div class="card"><div class="card-ttl">Fulfillment</div><div style="margin-top:10px;color:var(--text-sec);font-size:12px">Gestione approvvigionamento ordini — tracking, 48h, sostitutive.</div></div></div>
@@ -1609,6 +1652,13 @@ function nav(id) {
     if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + id + "'")) n.classList.add('active');
   });
 
+  // Carica dati quando si naviga alla pagina
+  if (id === 'ordini-amazon' && IS_LIVE) loadOrdiniAmazon();
+  else if (id === 'acquisti' && IS_LIVE) loadAcquisti();
+  else if (id === 'rimborsi' && IS_LIVE) loadRimborsiAmazon();
+  else if (id === 'dashboard' && IS_LIVE) loadDashboard();
+  else if (id === 'magazzino' && IS_LIVE) loadCatalogo();
+  else if (id === 'resi-clienti' && IS_LIVE) loadResiClienti();
   const cfg = pageMap[id] || {title:id, action:{icon:'ti-refresh',label:'Azione'}, tabs:[]};
 
   // topbar title with section badge
@@ -2689,6 +2739,106 @@ async function api(action, extra = {}) {
 
 // ── CARICAMENTO DATI LIVE ────────────────────────────────────
 
+
+async function loadRimborsiAmazon() {
+  if (!IS_LIVE) return;
+  var data = await api('getAll', { table: 'rimborsi_amazon' });
+  var tbody = document.getElementById('rimborsi-amz-tbody');
+  if (!tbody) return;
+  if (!data || !data.length) {
+    tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;color:var(--text-muted);padding:20px">Nessun rimborso Amazon trovato</td></tr>';
+    return;
+  }
+  tbody.innerHTML = '';
+  var totale = 0, nClass = 0, nCli = 0, nAss = 0;
+  data.forEach(function(r) {
+    var tr = document.createElement('tr');
+    var imp = parseFloat(r.importo || 0);
+    totale += imp;
+    if (r.stato === 'da-classificare') nClass++;
+    else if (r.stato === 'RIMB.CLI') nCli++;
+    else if (r.stato === 'RIMB.ASS') nAss++;
+    var chipColor = r.stato === 'da-classificare' ? 'c-amber' : r.stato === 'RIMB.CLI' ? 'c-red' : r.stato === 'RIMB.ASS' ? 'c-purple' : r.stato === 'chiuso' ? 'c-green' : 'c-gray';
+    tr.innerHTML =
+      '<td class="mono" style="color:var(--purple)">' + (r.id||'—') + '</td>' +
+      '<td class="mono">' + (r.ordine_id||'—') + '</td>' +
+      '<td>' + new Date(r.data||Date.now()).toLocaleDateString('it-IT') + '</td>' +
+      '<td style="font-weight:700;color:var(--red)">€' + imp.toFixed(2) + '</td>' +
+      '<td>' + (r.motivo||'—') + '</td>' +
+      '<td>' + (r.tipo||'—') + '</td>' +
+      '<td><span class="chip ' + chipColor + '">' + (r.stato||'—') + '</span></td>' +
+      '<td class="rg"><button class="btn bg bxs" onclick="classificaRimborso('' + r.id + '')"><i class="ti ti-tag"></i>Classifica</button></td>';
+    tbody.appendChild(tr);
+  });
+  var setEl = function(id, v) { var e = document.getElementById(id); if(e) e.textContent = v; };
+  setEl('rimb-kpi-class', nClass);
+  setEl('rimb-kpi-cli', nCli);
+  setEl('rimb-kpi-ass', nAss);
+  setEl('rimb-kpi-tot', '€' + totale.toFixed(2));
+}
+
+function filterRimborsiAmazon(val) {
+  document.querySelectorAll('#rimborsi-amz-tbody tr').forEach(function(tr) {
+    tr.style.display = (!val || tr.querySelector('.chip')?.textContent === val) ? '' : 'none';
+  });
+}
+
+function classificaRimborso(id) {
+  var tipo = prompt('Classifica il rimborso:\n1. RIMB.CLI (rimborso cliente legittimo)\n2. RIMB.ASS (apertura pratica assicurativa)\n3. RECLAMO (contestazione)\n4. PERDITA\n\nDigita la classificazione:');
+  if (!tipo) return;
+  api('upsert', { table: 'rimborsi_amazon', record: { id: id, stato: tipo.trim().toUpperCase(), classificato_il: new Date().toISOString() } })
+    .then(function() { showToast('✓ Rimborso ' + id + ' classificato: ' + tipo); loadRimborsiAmazon(); });
+}
+
+
+async function loadCatalogo() {
+  if (!IS_LIVE) return;
+  var data = await api('getAll', { table: 'magazzino' });
+  var tbody = document.getElementById('catalogo-tbody');
+  if (!tbody || !data) return;
+  tbody.innerHTML = '';
+  data.forEach(function(p) {
+    var tr = document.createElement('tr');
+    tr.dataset.condizione = p.condizione || '';
+    var stato = parseInt(p.quantita) <= 0 ? 'critico' : parseInt(p.quantita) <= (p.soglia||2) ? 'basso' : 'ok';
+    var statoChip = stato === 'critico' ? '<span class="chip c-red">Critico</span>' : stato === 'basso' ? '<span class="chip c-amber">Basso</span>' : '<span class="chip c-green">Ok</span>';
+    tr.innerHTML =
+      '<td class="mono">' + (p.sku||'—') + '</td>' +
+      '<td><strong>' + (p.nome||p.prodotto||'—') + '</strong></td>' +
+      '<td><span class="chip">' + (p.condizione||'—') + '</span></td>' +
+      '<td style="font-weight:700">' + (p.quantita||0) + '</td>' +
+      '<td>' + (p.soglia||'—') + '</td>' +
+      '<td>' + (p.posizione||'—') + '</td>' +
+      '<td>' + statoChip + '</td>' +
+      '<td>' + (p.in_assistenza||0) + '</td>' +
+      '<td>€' + parseFloat(p.costo_acquisto||0).toFixed(2) + '</td>' +
+      '<td></td><td></td><td>€' + parseFloat(p.prezzo_vendita||0).toFixed(2) + '</td>' +
+      '<td class="rg"><button class="btn bg bxs"><i class="ti ti-eye"></i></button></td>';
+    tbody.appendChild(tr);
+  });
+}
+
+async function loadResiClienti() {
+  if (!IS_LIVE) return;
+  var data = await api('getAll', { table: 'resi_clienti' });
+  var tbody = document.getElementById('resi-clienti-tbody');
+  if (!tbody || !data) return;
+  tbody.innerHTML = '';
+  (data || []).forEach(function(r) {
+    var tr = document.createElement('tr');
+    tr.dataset.reso = r.id;
+    tr.dataset.stato = r.stato || '';
+    tr.innerHTML = '<td class="mono" style="color:var(--purple)">' + (r.id||'—') + '</td>' +
+      '<td>' + (r.numero_ordine||'—') + '</td>' +
+      '<td>' + (r.prodotto||'—') + '</td>' +
+      '<td>' + (r.cliente||'—') + '</td>' +
+      '<td><span class="chip">' + (r.motivo||'—') + '</span></td>' +
+      '<td>€' + parseFloat(r.importo||0).toFixed(2) + '</td>' +
+      '<td><span class="chip c-' + (r.stato==='chiuso'?'green':r.stato==='da-valutare'?'amber':'blue') + '">' + (r.stato||'—') + '</span></td>' +
+      '<td class="rg"><button class="btn bg bxs" onclick="apriSchedaReso(\'' + r.id + '\')" style="font-size:11px"><i class="ti ti-eye"></i></button></td>';
+    tbody.appendChild(tr);
+  });
+}
 async function loadDashboard() {
   if (!IS_LIVE) return;
   const data = await api('getDashboard');
@@ -2740,6 +2890,7 @@ async function loadOrdiniAmazon() {
       <td><div style="font-weight:700;color:${colorProd}">${ord.prodotto || '—'}</div><div style="font-size:10px;margin-top:2px;color:${colorProd}">${ord.sku || ''}</div></td>
       <td>${ord.cliente || '—'}</td><td>${ord.marketplace || 'IT'}</td>
       <td>€${parseFloat(ord.totale||0).toFixed(2)}</td>
+      <td>${_buildUtileTd(ord)}</td>
       <td style="${scadStyle}">${scadStr}</td>
       <td id="stato-${ord.id}">${statoChip}</td>
       <td id="tracking-${ord.id}" class="mono" style="color:var(--blue);font-size:11px">${ord.tracking || '<span style="color:var(--text-muted)">—</span>'}</td>
@@ -2974,6 +3125,12 @@ function showLogin() {
   if (u) { setTimeout(function(){ u.focus(); }, 100); }
 }
 
+
+function toggleSidebar() {
+  var sb = document.getElementById('sidebar');
+  sb.classList.toggle('mobile-open');
+}
+
 function hideLogin() {
   var el = document.getElementById('login-screen');
   if (el) el.style.display = 'none';
@@ -3011,6 +3168,7 @@ function hideLogin() {
         });
       }).catch(function(){});
       
+      loadRimborsiAmazon();
       api('getAll', { table: 'rimborsi_amazon' }).then(function(data) {
         if (!data) return;
         var tbody = document.getElementById('rimb-assic-tbody');
