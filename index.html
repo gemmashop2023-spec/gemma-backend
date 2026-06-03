@@ -269,7 +269,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
       <div><div style="color:#d0d8f0;font-size:12px;font-weight:600">Amministratore</div><div style="color:#3a4258;font-size:11px">Administrator</div></div>
     </div>
   </div>
-<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v3.4</div>
+<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v3.5</div>
 </div>
 
 <!-- ── MAIN ── -->
@@ -343,16 +343,23 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
     <select class="fi" style="width:130px">
       <option>Amazon IT</option><option>Amazon DE</option><option>Amazon FR</option>
     </select>
-    <div class="ml" style="display:flex;align-items:center;gap:6px">
+    <div class="ml" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+      <span style="font-size:11px;color:var(--text-sec);white-space:nowrap">Anno:</span>
+      <select class="fi" id="filtro-anno" style="width:80px" onchange="cambiaAnno(this.value)">
+        <option value="2026">2026</option>
+        <option value="2025">2025</option>
+        <option value="2024">2024</option>
+      </select>
       <span style="font-size:11px;color:var(--text-sec);white-space:nowrap">Periodo:</span>
-      <select class="fi" id="sync-giorni" style="width:100px" onchange="filterOrdiniPerPeriodo(this.value)">
+      <select class="fi" id="sync-giorni" style="width:120px" onchange="filterOrdiniPerPeriodo(this.value)">
         <option value="15">Ultimi 15 giorni</option>
         <option value="30">Ultimi 30 giorni</option>
         <option value="60">Ultimi 60 giorni</option>
         <option value="180">Ultimi 180 giorni</option>
-        <option value="365">Ultimi 365 giorni</option>
+        <option value="365">Tutto l'anno</option>
       </select>
-      <button class="btn bp" onclick="tbAction()"><i class="ti ti-refresh"></i>Sincronizza SP-API</button>
+      <button class="btn bp" onclick="tbAction()"><i class="ti ti-refresh"></i>Sincronizza</button>
+      <button class="btn bg bxs" onclick="archiviaAnno()" title="Scarica archivio anno selezionato"><i class="ti ti-archive"></i>Archivia anno</button>
     </div>
   </div>
 
@@ -1804,6 +1811,35 @@ function filterOrdini(val) {
   });
 }
 
+function cambiaAnno(anno) {
+  var giorni = parseInt(document.getElementById('sync-giorni')?.value || '30');
+  loadOrdiniAmazon(giorni, anno);
+}
+
+function archiviaAnno() {
+  var anno = document.getElementById('filtro-anno')?.value || '2026';
+  if (!confirm('Avvia archiviazione ordini ' + anno + ' da Amazon?\nPotrebbe richiedere diversi minuti.')) return;
+  var panel = document.getElementById('sync-panel');
+  if (panel) { panel.style.display = 'block'; panel.style.opacity = '1'; }
+  var spMsg = document.getElementById('sp-msg');
+  var spBar = document.getElementById('sp-bar');
+  if (spMsg) spMsg.textContent = 'Archiviazione ' + anno + ' in corso...';
+  if (spBar) { spBar.style.width = '10%'; spBar.style.background = '#f59e0b'; }
+  api('syncAnno', { anno: parseInt(anno) }).then(function(r) {
+    if (r) {
+      var msg = 'Archivio ' + anno + ': ' + (r.nuovi||0) + ' nuovi, ' + (r.aggiornati||0) + ' aggiornati';
+      if (spMsg) spMsg.textContent = '✓ ' + msg;
+      if (spBar) { spBar.style.width = '100%'; spBar.style.background = '#22c55e'; }
+      showToast('✓ ' + msg);
+      setTimeout(function() { if (panel) panel.style.display = 'none'; }, 3500);
+      loadOrdiniAmazon(365, anno);
+    }
+  }).catch(function(e) {
+    if (spMsg) spMsg.textContent = '⚠ Errore: ' + e.message;
+    if (spBar) spBar.style.background = '#ef4444';
+  });
+}
+
 function filterOrdiniPerPeriodo(giorni) {
   loadOrdiniAmazon(parseInt(giorni) || 30);
 }
@@ -2715,9 +2751,11 @@ async function loadDashboard() {
   }
 }
 
-async function loadOrdiniAmazon(giorni) {
+async function loadOrdiniAmazon(giorni, anno) {
   if (!IS_LIVE) return;
-  var allOrdini = await api('getAll', { table: 'ordini_amazon' });
+  var annoSel = anno || document.getElementById('filtro-anno')?.value || '2026';
+  var tabella = 'ordini_' + annoSel;
+  var allOrdini = await api('getAll', { table: tabella });
   if (!allOrdini || !allOrdini.length) return;
   var ordini = allOrdini;
   if (giorni && parseInt(giorni) < 3650) {
