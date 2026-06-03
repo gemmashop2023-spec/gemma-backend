@@ -58,6 +58,36 @@ async function handler(req, res) {
       });
     }
 
+    if (action === 'debugOrdine') {
+      const { default: supabaseClient } = await import('../lib/supabase.js');
+      const orderId = body.orderId;
+      // Ottieni token Amazon
+      const tokenRes = await fetch('https://api.amazon.com/auth/o2/token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams({
+          grant_type: 'refresh_token',
+          refresh_token: process.env.AMAZON_REFRESH_TOKEN,
+          client_id: process.env.AMAZON_CLIENT_ID,
+          client_secret: process.env.AMAZON_CLIENT_SECRET,
+        })
+      });
+      const { access_token } = await tokenRes.json();
+      // Chiama orderItems
+      const itemsRes = await fetch(
+        'https://sellingpartnerapi-eu.amazon.com/orders/v0/orders/' + orderId + '/orderItems',
+        { headers: { 'x-amz-access-token': access_token } }
+      );
+      const items = await itemsRes.json();
+      // Chiama order details
+      const orderRes = await fetch(
+        'https://sellingpartnerapi-eu.amazon.com/orders/v0/orders/' + orderId,
+        { headers: { 'x-amz-access-token': access_token } }
+      );
+      const order = await orderRes.json();
+      return res.json({ success: true, items, order });
+    }
+
     if (action === 'syncAnno') {
       const anno = parseInt(body.anno) || new Date().getFullYear();
       const tabella = 'ordini_' + anno;
