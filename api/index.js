@@ -1,289 +1,72 @@
-import { getAll, getById, insert, update, upsert, remove } from '../lib/supabase.js';
-import { syncAmazon, syncRimborsi } from '../lib/amazon.js';
-import { syncEbay } from '../lib/ebay.js';
+import { createClient } from '@supabase/supabase-js';
+import { syncAmazon } from '../lib/amazon.js';
 
-export const config = { maxDuration: 60 };
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
+);
 
 export default async function handler(req, res) {
-  // CORS — permette accesso dal file HTML locale e dal dominio Aruba
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');
   if (req.method === 'OPTIONS') return res.status(200).end();
 
   try {
-    const { action, table, id } = { ...req.query, ...(req.body || {}) };
     const body = req.body || {};
-    let result;
+    const { action } = body;
 
-    switch (action) {
-
-      // ── LETTURA ────────────────────────────────────────────
-      case 'getAll':
-        result = await getAll(table);
-        break;
-
-      case 'getById':
-        result = await getById(table, id);
-        break;
-
-      case 'getDashboard':
-        result = await getDashboard();
-        break;
-
-      // ── SYNC PIATTAFORME ───────────────────────────────────
-      case 'syncAmazon':
-        result = await syncAmazon();
-        break;
-
-      case 'syncEbay':
-        result = await syncEbay();
-        break;
-
-      case 'syncAll': {
-        const [amz, ebay] = await Promise.allSettled([syncAmazon(), syncEbay()]);
-        result = {
-          amazon: amz.status === 'fulfilled' ? amz.value : { errore: amz.reason?.message },
-          ebay:   ebay.status === 'fulfilled' ? ebay.value : { errore: ebay.reason?.message },
-        };
-        break;
-      }
-
-      // ── ORDINI: AGGIORNA STATO + FLAG ──────────────────────
-      case 'aggiornaStato': {
-        const upd = { stato: body.stato };
-        if (body.tracking)  upd.tracking = body.tracking;
-        if (body.stato === 'da-ricevere')   upd.data_spedizione  = new Date().toISOString();
-        if (body.stato === 'da-verificare') upd.data_consegna    = new Date().toISOString();
-        if (body.stato === 'completato')    upd.data_completato  = new Date().toISOString();
-        result = await update('ordini_amazon', body.id, upd);
-        break;
-      }
-
-      case 'aggiornaFlag': {
-        const flags = {};
-        if (body.flag_spedito        !== undefined) flags.flag_spedito        = body.flag_spedito;
-        if (body.flag_consegnato     !== undefined) flags.flag_consegnato     = body.flag_consegnato;
-        if (body.flag_verificato_24h !== undefined) flags.flag_verificato_24h = body.flag_verificato_24h;
-        if (body.tracking) flags.tracking = body.tracking;
-        result = await update('ordini_amazon', body.id, flags);
-        break;
-      }
-
-      // ── ACQUISTI (manuali) ─────────────────────────────────
-      case 'creaAcquisto': {
-        const n = await getAll('acquisti');
-        body.data.id = 'ACQ-' + String(n.length + 1).padStart(3, '0') + '-' + Date.now();
-        result = await insert('acquisti', body.data);
-        break;
-      }
-
-      case 'updateAcquisto':
-        result = await update('acquisti', body.id, body.data);
-        break;
-
-      case 'collegaAcquisto':
-        // Collega acquisto a ordine Amazon e aggiorna stato ordine
-        await update('ordini_amazon', body.ordine_id, {
-          acq_id:          body.acq_id,
-          acq_piattaforma: body.piattaforma,
-          acq_venditore:   body.venditore,
-          acq_prezzo:      body.prezzo,
-          acq_stato:       'non-spedito',
-          acq_destinazione: body.destinazione || 'verso-magazzino',
-        });
-        result = { collegato: true };
-        break;
-
-      case 'updateAcqStato': {
-        // Aggiorna stato acquisto su ordine Amazon
-        const acqUpdate = { acq_stato: body.acq_stato };
-        if (body.acq_tracking) acqUpdate.acq_tracking = body.acq_tracking;
-        // Se acquisto arrivato in magazzino → ordine diventa da-spedire
-        if (body.acq_stato === 'consegnato' && body.acq_destinazione === 'verso-magazzino') {
-          acqUpdate.stato = 'da-spedire';
-        }
-        // Se spedito direttamente al cliente → da-ricevere
-        if (body.acq_stato === 'verso-cliente') {
-          acqUpdate.stato = 'da-ricevere';
-        }
-        result = await update('ordini_amazon', body.ordine_id, acqUpdate);
-        break;
-      }
-
-      // ── RESI CLIENTI ──────────────────────────────────────
-      case 'creaReso': {
-        const resi = await getAll('resi_clienti');
-        body.data.id = 'RSAMZ-' + String(resi.length + 1).padStart(3, '0');
-        result = await insert('resi_clienti', body.data);
-        break;
-      }
-
-      case 'updateReso':
-        result = await update('resi_clienti', body.id, body.data);
-        break;
-
-      // ── PRATICHE ASSICURATIVE ─────────────────────────────
-      case 'apriPratica': {
-        const pratiche = await getAll('rimborsi_assicurativi');
-        const newId = 'RASSIC-' + String(pratiche.length + 1).padStart(3, '0');
-        body.data.id      = newId;
-        body.data.soggetto = body.data.soggetto || 'xCover';
-        body.data.stato   = 'inviata';
-        result = await insert('rimborsi_assicurativi', body.data);
-        // Aggiorna reso con riferimento pratica
-        if (body.data.reso_id) {
-          await update('resi_clienti', body.data.reso_id, { pratica_assic_id: newId });
-        }
-        break;
-      }
-
-      case 'updatePratica':
-        result = await update('rimborsi_assicurativi', body.id, body.data);
-        break;
-
-      // ── CONTESTAZIONI ─────────────────────────────────────
-      case 'creaContestazione': {
-        const cont = await getAll('contestazioni');
-        body.data.id = 'CONT-' + String(cont.length + 1).padStart(3, '0');
-        result = await insert('contestazioni', body.data);
-        break;
-      }
-
-      case 'updateContestazione':
-        result = await update('contestazioni', body.id, body.data);
-        break;
-
-      // ── RESI VENDITORI ────────────────────────────────────
-      case 'creaResoVenditore': {
-        const rv = await getAll('resi_venditori');
-        body.data.id = 'RESO-' + String(rv.length + 1).padStart(3, '0');
-        result = await insert('resi_venditori', body.data);
-        break;
-      }
-
-      // ── MAGAZZINO ─────────────────────────────────────────
-      case 'updateMagazzino':
-        result = await update('magazzino', body.id, body.data);
-        break;
-
-      case 'creaMovimento': {
-        body.data.id = 'MOV-' + Date.now();
-        result = await insert('movimenti', body.data);
-        break;
-      }
-
-      case 'inviaAssistenza': {
-        const ass = await getAll('assistenza');
-        const assId = 'ASS-' + String(ass.length + 1).padStart(3, '0');
-        body.data.id = assId;
-        result = await insert('assistenza', body.data);
-        // Blocca il prodotto in magazzino
-        await update('magazzino', body.data.sku_id, { in_assistenza: true, assist_id: assId });
-        // Registra movimento uscita
-        await insert('movimenti', {
-          id: 'MOV-' + Date.now(),
-          tipo: 'uscita',
-          sku: body.data.sku,
-          prodotto: body.data.prodotto,
-          quantita: -1,
-          causale: 'Inviato in assistenza',
-          stato_prodotto: 'in-assistenza',
-        });
-        break;
-      }
-
-      // ── GENERICO ──────────────────────────────────────────
-      case 'insert':
-        result = await insert(table, body.data);
-        break;
-
-      case 'update':
-        result = await update(table, id || body.id, body.data);
-        break;
-
-      case 'delete':
-        result = await remove(table, id || body.id);
-        break;
-
-      default:
-        return res.status(400).json({ success: false, error: 'Azione non riconosciuta: ' + action });
+    if (!action) {
+      return res.status(400).json({ success: false, error: 'Azione non specificata' });
     }
 
-    res.status(200).json({ success: true, data: result });
+    // ── DASHBOARD ──────────────────────────────────────────
+    if (action === 'getDashboard') {
+      const { data: ordini } = await supabase.from('ordini_amazon').select('stato, totale').limit(500);
+      const kpi = { da_acquistare: 0, da_spedire: 0, da_ricevere: 0, da_verificare: 0, completati_oggi: 0 };
+      (ordini || []).forEach(o => {
+        if (o.stato === 'da-acquistare') kpi.da_acquistare++;
+        if (o.stato === 'da-spedire') kpi.da_spedire++;
+        if (o.stato === 'da-ricevere') kpi.da_ricevere++;
+        if (o.stato === 'da-verificare') kpi.da_verificare++;
+      });
+      return res.json({ success: true, data: { kpi } });
+    }
 
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ success: false, error: err.message });
-  }
-}
+    // ── SYNC AMAZON ────────────────────────────────────────
+    if (action === 'syncAll') {
+      const result = await syncAmazon();
+      return res.json({ success: true, ...result });
+    }
 
-// ── DASHBOARD ─────────────────────────────────────────────────
+    // ── GET ALL ─────────────────────────────────────────────
+    if (action === 'getAll') {
+      const { table } = body;
+      if (!table) return res.status(400).json({ success: false, error: 'Tabella non specificata' });
+      let query = supabase.from(table).select('*').limit(500);
+      try { query = query.order('creato_il', { ascending: false }); } catch(e) {}
+      const { data, error } = await query;
+      if (error) return res.status(500).json({ success: false, error: error.message });
+      return res.json({ success: true, data });
+    }
 
-async function getDashboard() {
-  const [ordini, ebay, acquisti, resi, magazzino, logSyncData] = await Promise.all([
-    getAll('ordini_amazon'),
-    getAll('ordini_ebay'),
-    getAll('acquisti'),
-    getAll('resi_clienti'),
-    getAll('magazzino'),
-    getAll('log_sync'),
-  ]);
+    // ── UPSERT ──────────────────────────────────────────────
+    if (action === 'upsert' || action === 'aggiornaOrdine' || action === 'aggiornaReso' || action === 'aggiornaPratica') {
+      const { table, record, id, ...fields } = body;
+      const tbl = table || (action === 'aggiornaOrdine' ? 'ordini_amazon' : action === 'aggiornaReso' ? 'resi_clienti' : 'pratiche_assicurative');
+      const { data, error } = record 
+        ? await supabase.from(tbl).upsert(record).select().single()
+        : await supabase.from(tbl).update(fields).eq('id', id || fields.id).select().single();
+      if (error) return res.status(500).json({ success: false, error: error.message });
+      return res.json({ success: true, data });
+    }
 
-  const oggi = new Date().toDateString();
-
-  const kpi = {
-    da_acquistare:    ordini.filter(o => o.stato === 'da-acquistare').length,
-    da_spedire:       ordini.filter(o => o.stato === 'da-spedire').length,
-    da_ricevere:      ordini.filter(o => o.stato === 'da-ricevere').length,
-    da_verificare:    ordini.filter(o => o.stato === 'da-verificare').length,
-    completati_oggi:  ordini.filter(o => o.stato === 'completato' && new Date(o.data_completato).toDateString() === oggi).length,
-    ebay_aperti:      ebay.filter(o => o.stato !== 'completato').length,
-    resi_aperti:      resi.filter(r => r.stato !== 'chiuso').length,
-    cancellazioni_oggi: ordini.filter(o => o.stato === 'cancellato' && new Date(o.aggiornato_il).toDateString() === oggi).length,
-    sotto_soglia:     magazzino.filter(p => parseInt(p.quantita) <= parseInt(p.soglia_minima)).length,
-    in_assistenza:    magazzino.filter(p => p.in_assistenza).length,
-    fatturato_mese:   calcolaFatturato([...ordini, ...ebay]),
-    costo_acquisti_mese: calcolaCosti(acquisti),
-  };
-
-  return {
-    kpi,
-    ultimi_ordini_amazon: ordini.slice(0, 5),
-    ultimi_ordini_ebay:   ebay.slice(0, 5),
-    scorte_critiche:      magazzino.filter(p => parseInt(p.quantita) <= parseInt(p.soglia_minima)).slice(0, 5),
-    ultima_sync:          logSyncData[0] || null,
-  };
-}
-
-function calcolaFatturato(ordini) {
-  const now = new Date();
-  return ordini
-    .filter(o => {
-      const d = new Date(o.data_ordine || o.creato_il);
-      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-    })
-    .reduce((s, o) => s + (parseFloat(o.totale) || 0), 0);
-}
-
-function calcolaCosti(acquisti) {
-  const now = new Date();
-  return acquisti
-    .filter(a => {
-      const d = new Date(a.data || a.creato_il);
-      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
-    })
-    .reduce((s, a) => s + (parseFloat(a.prezzo) || 0), 0);
-}
-  // ── INVIA MESSAGGIO AMAZON ──────────────────────────────
-  if (action === 'inviaMessaggioAmazon') {
-    try {
+    // ── INVIA MESSAGGIO AMAZON ──────────────────────────────
+    if (action === 'inviaMessaggioAmazon') {
       const { orderId, testo } = body;
       if (!orderId || !testo) {
         return res.status(400).json({ success: false, error: 'orderId e testo richiesti' });
       }
-      
-      // Get fresh access token
       const tokenRes = await fetch('https://api.amazon.com/auth/o2/token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
@@ -292,35 +75,91 @@ function calcolaCosti(acquisti) {
           refresh_token: process.env.AMAZON_REFRESH_TOKEN,
           client_id: process.env.AMAZON_CLIENT_ID,
           client_secret: process.env.AMAZON_CLIENT_SECRET,
-        })
+        }).toString()
       });
       const tokenData = await tokenRes.json();
       const accessToken = tokenData.access_token;
+      if (!accessToken) return res.status(401).json({ success: false, error: 'Token Amazon non ottenuto' });
       
-      if (!accessToken) {
-        return res.status(401).json({ success: false, error: 'Token Amazon non ottenuto' });
-      }
-
-      const { inviaMessaggioAcquirente } = await import('../lib/amazon.js');
-      const result = await inviaMessaggioAcquirente(orderId, testo, accessToken);
+      const msgRes = await fetch(
+        `https://sellingpartnerapi-eu.amazon.com/messaging/v1/orders/${orderId}/messages`,
+        {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'x-amz-access-token': accessToken,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ body: testo, marketplaceId: process.env.AMAZON_MARKETPLACE_ID || 'APJ6JRA9NG5V4' })
+        }
+      );
       
-      // Log in Supabase
-      if (result.success) {
-        await supabase.from('messaggi_clienti').insert({
-          id: 'MSG-' + Date.now(),
-          ordine_id: orderId,
-          canale: 'Amazon',
-          direzione: 'uscita',
-          testo: testo,
-          stato: 'inviato',
-          creato_il: new Date().toISOString()
-        }).catch(() => {});
-      }
+      await supabase.from('messaggi_clienti').insert({
+        id: 'MSG-' + Date.now(), ordine_id: orderId,
+        canale: 'Amazon', direzione: 'uscita', testo, stato: 'inviato',
+        creato_il: new Date().toISOString()
+      }).catch(() => {});
       
-      return res.json(result);
-    } catch (err) {
-      return res.status(500).json({ success: false, error: err.message });
+      return res.json({ success: msgRes.ok, status: msgRes.status });
     }
-  }
 
-  
+    // ── CREA PRATICA ────────────────────────────────────────
+    if (action === 'creaPratica' || action === 'caricoProdotto' || action === 'logMessaggio') {
+      const { action: _, ...record } = body;
+      const tbl = action === 'creaPratica' ? 'pratiche_assicurative' 
+                : action === 'caricoProdotto' ? 'catalogo' 
+                : 'messaggi_clienti';
+      const { data, error } = await supabase.from(tbl).insert(record).select().single();
+      if (error) return res.status(500).json({ success: false, error: error.message });
+      return res.json({ success: true, data });
+    }
+
+    // ── VENDITA BANCO ────────────────────────────────────────
+    if (action === 'vendita_banco') {
+      const { action: _, ...record } = body;
+      const { data, error } = await supabase.from('vendite_banco').insert(record).select().single();
+      if (error) return res.status(500).json({ success: false, error: error.message });
+      return res.json({ success: true, data });
+    }
+
+    // ── UTENTI ───────────────────────────────────────────────
+    if (action === 'getUtenti') {
+      const { data } = await supabase.from('utenti').select('id,username,nome,ruolo,attivo,ultimo_accesso,creato_il').order('creato_il');
+      return res.json({ success: true, data });
+    }
+
+    if (action === 'creaUtente') {
+      const { username, password, nome, ruolo } = body;
+      const crypto = await import('crypto');
+      const hash = crypto.default.createHash('sha256').update(password + process.env.CRON_SECRET).digest('hex');
+      const { data, error } = await supabase.from('utenti').insert({
+        id: 'USR-' + Date.now(), username: username.toLowerCase(),
+        password_hash: hash, nome, ruolo: ruolo || 'operatore'
+      }).select().single();
+      if (error) return res.status(400).json({ success: false, error: error.message });
+      return res.json({ success: true, data });
+    }
+
+    if (action === 'aggiornaUtente') {
+      const { id, password, ...fields } = body;
+      if (password) {
+        const crypto = await import('crypto');
+        fields.password_hash = crypto.default.createHash('sha256').update(password + process.env.CRON_SECRET).digest('hex');
+      }
+      const { data, error } = await supabase.from('utenti').update(fields).eq('id', id).select().single();
+      if (error) return res.status(400).json({ success: false, error: error.message });
+      return res.json({ success: true, data });
+    }
+
+    if (action === 'getLog') {
+      const { data } = await supabase.from('log_attivita').select('*').order('data', { ascending: false }).limit(100);
+      return res.json({ success: true, data });
+    }
+
+    return res.json({ success: false, error: 'Azione non riconosciuta: ' + action });
+
+  } catch (err) {
+    console.error('Handler error:', err);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+}
