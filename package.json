@@ -1,8 +1,16 @@
 {
   "name": "gemma-warehouse",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "type": "module",
+  "main": "api/index.js",
+  "scripts": {
+    "start": "node api/index.js"
+  },
   "dependencies": {
-    "@supabase/supabase-js": "^2.43.0"
+    "@supabase/supabase-js": "^2.43.0",
+    "express": "^4.19.0"
+  },
+  "engines": {
+    "node": ">=18"
   }
 }
