@@ -269,7 +269,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
       <div><div style="color:#d0d8f0;font-size:12px;font-weight:600">Amministratore</div><div style="color:#3a4258;font-size:11px">Administrator</div></div>
     </div>
   </div>
-<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v3.6</div>
+<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v3.7</div>
 </div>
 
 <!-- ── MAIN ── -->
@@ -2754,7 +2754,7 @@ async function loadDashboard() {
 async function loadOrdiniAmazon(giorni, anno) {
   if (!IS_LIVE) return;
   var annoSel = anno || document.getElementById('filtro-anno')?.value || '2026';
-  var tabella = 'ordini_' + annoSel;
+  var tabella = annoSel == '2026' ? 'ordini_amazon' : 'ordini_' + annoSel;
   var allOrdini = await api('getAll', { table: tabella });
   if (!allOrdini || !allOrdini.length) return;
   var ordini = allOrdini;
