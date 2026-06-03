@@ -269,7 +269,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
       <div><div style="color:#d0d8f0;font-size:12px;font-weight:600">Amministratore</div><div style="color:#3a4258;font-size:11px">Administrator</div></div>
     </div>
   </div>
-<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v3.7</div>
+<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v3.8</div>
 </div>
 
 <!-- ── MAIN ── -->
@@ -1998,10 +1998,14 @@ function segnaConsegnato(btn, ordine) {
 // ── KPI AGGIORNAMENTO ──
 function aggiornaKpiOrdini() {
   const counts = {'da-acquistare':0,'da-spedire':0,'da-ricevere':0,'da-verificare':0,'completato':0};
+  var totaleVisibili = 0;
   document.querySelectorAll('#ordini-tbody tr[data-stato]').forEach(r => {
+    if (r.style.display !== 'none') totaleVisibili++;
     const s = r.dataset.stato;
     if (counts[s] !== undefined) counts[s]++;
   });
+  var el = document.getElementById('ordini-count');
+  if (el) el.textContent = totaleVisibili;
   const map = {'da-acquistare':'kpi-da-acq','da-spedire':'kpi-da-sped','da-ricevere':'kpi-da-ric','da-verificare':'kpi-da-ver','completato':'kpi-compl'};
   Object.entries(map).forEach(([stato, elId]) => {
     const el = document.getElementById(elId);
