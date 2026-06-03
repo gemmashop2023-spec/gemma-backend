@@ -1597,6 +1597,9 @@ function nav(id) {
     if (n.getAttribute('onclick') && n.getAttribute('onclick').includes("'" + id + "'")) n.classList.add('active');
   });
 
+  if (id === 'ordini-amazon' && IS_LIVE) loadOrdiniAmazon();
+  if (id === 'acquisti'      && IS_LIVE) loadAcquisti();
+  if (id === 'dashboard'     && IS_LIVE) loadDashboard();
   const cfg = pageMap[id] || {title:id, action:{icon:'ti-refresh',label:'Azione'}, tabs:[]};
 
   // topbar title with section badge
