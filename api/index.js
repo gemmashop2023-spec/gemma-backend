@@ -58,6 +58,16 @@ async function handler(req, res) {
       });
     }
 
+    if (action === 'syncAnno') {
+      const anno = parseInt(body.anno) || new Date().getFullYear();
+      const tabella = 'ordini_' + anno;
+      const { syncAmazon } = await import('../lib/amazon.js');
+      const inizioAnno = new Date(anno, 0, 1).toISOString();
+      const fineAnno   = new Date(anno + 1, 0, 1).toISOString();
+      const result = await syncAmazon(0, inizioAnno, fineAnno, tabella);
+      return res.json({ success: true, ...result, anno, tabella });
+    }
+
     if (action === 'getAll') {
       const { table } = body;
       if (!table) return res.status(400).json({ success: false, error: 'Tabella non specificata' });
