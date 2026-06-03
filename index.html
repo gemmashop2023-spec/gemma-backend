@@ -199,6 +199,121 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 .login-error{color:#ef4444;font-size:12px;margin-top:8px;text-align:center;min-height:18px}
 .login-user-info{display:flex;align-items:center;gap:8px;padding:6px 10px;background:rgba(255,255,255,.06);border-radius:8px;cursor:pointer}
 .login-user-info:hover{background:rgba(255,255,255,.1)}
+
+/* ═══ RESPONSIVE — Desktop topbar / Mobile sidebar ═══ */
+
+/* DESKTOP (>= 900px): sidebar becomes topbar */
+@media (min-width: 900px) {
+  #app { flex-direction: column !important; }
+  
+  #sidebar {
+    width: 100% !important;
+    height: auto !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    padding: 0 !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--nav-border) !important;
+    overflow: visible !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .s-logo {
+    padding: 8px 16px !important;
+    border-bottom: none !important;
+    flex-shrink: 0 !important;
+    margin-right: 8px !important;
+  }
+  
+  .s-logo-text { display: none !important; }
+  
+  .s-logo-icon { width: 32px !important; height: 32px !important; }
+  
+  .s-logo-icon i { font-size: 16px !important; }
+  
+  .s-logo span { font-size: 15px !important; }
+  
+  .nav-section {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    padding: 0 4px !important;
+    gap: 0 !important;
+  }
+  
+  .nav-section-label { display: none !important; }
+  
+  .nav-item {
+    flex-direction: row !important;
+    padding: 8px 10px !important;
+    border-radius: 6px !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+  }
+  
+  .nav-item i { font-size: 14px !important; }
+  
+  .nav-item .label { font-size: 11px !important; }
+  
+  .s-sections {
+    flex: 1 !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    display: flex !important;
+    flex-direction: row !important;
+    padding: 4px 0 !important;
+    gap: 0 !important;
+    scrollbar-width: none !important;
+  }
+  
+  .s-sections::-webkit-scrollbar { display: none !important; }
+  
+  #nav-foot {
+    padding: 6px 12px !important;
+    border-top: none !important;
+    border-left: 1px solid var(--nav-border) !important;
+    flex-shrink: 0 !important;
+  }
+  
+  .s-user { padding: 4px 8px !important; }
+  
+  .s-av { width: 28px !important; height: 28px !important; font-size: 11px !important; }
+  
+  #nav-foot .s-user > div > div:first-child { font-size: 11px !important; }
+  #nav-foot .s-user > div > div:last-child { display: none !important; }
+  
+  /* Main content full width */
+  #main {
+    flex: 1 !important;
+    overflow: hidden !important;
+  }
+  
+  #content {
+    overflow: auto !important;
+  }
+  
+  /* Tables get full width */
+  .tbl-wrap, .tbl { width: 100% !important; }
+}
+
+/* MOBILE (< 900px): sidebar stays on left as before */
+@media (max-width: 899px) {
+  #sidebar {
+    width: var(--nav-w) !important;
+    flex-direction: column !important;
+    height: 100% !important;
+  }
+  
+  .s-sections {
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+  }
+  
+  .nav-section { flex-direction: column !important; }
+  
+  #app { flex-direction: row !important; }
+}
 </style>
 </head>
 <body>
