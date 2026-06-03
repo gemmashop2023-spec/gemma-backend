@@ -1808,17 +1808,7 @@ function filterOrdini(val) {
 }
 
 function filterOrdiniPerPeriodo(giorni) {
-  giorni = parseInt(giorni) || 30;
-  var cutoff = new Date(Date.now() - giorni * 24 * 60 * 60 * 1000);
-  document.querySelectorAll('#ordini-tbody tr').forEach(function(tr) {
-    var dataOrd = tr.dataset.dataOrdine;
-    if (!dataOrd) { tr.style.display = ''; return; }
-    var d = new Date(dataOrd);
-    tr.style.display = (d >= cutoff) ? '' : 'none';
-  });
-  // Aggiorna anche il filtro stato se attivo
-  var statoSel = document.querySelector('#pg-ordini-amazon .fi');
-  if (statoSel && statoSel.value) filterOrdini(statoSel.value);
+  loadOrdiniAmazon(parseInt(giorni) || 30);
 }
 
 // ── ORDINI: SEGNA CONSEGNATO ──
