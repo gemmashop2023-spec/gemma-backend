@@ -32,7 +32,7 @@ async function handler(req, res) {
     }
 
     if (action === 'getDashboard') {
-      const { data: ordini } = await supabase.from('ordini_amazon').select('stato, totale').limit(500);
+      const { data: ordini } = await supabase.from('ordini_amazon').select('stato, totale').limit(5000);
       const kpi = { da_acquistare: 0, da_spedire: 0, da_ricevere: 0, da_verificare: 0 };
       (ordini || []).forEach(o => {
         if (o.stato === 'da-acquistare') kpi.da_acquistare++;
@@ -61,7 +61,7 @@ async function handler(req, res) {
     if (action === 'getAll') {
       const { table } = body;
       if (!table) return res.status(400).json({ success: false, error: 'Tabella non specificata' });
-      let query = supabase.from(table).select('*').limit(500);
+      let query = supabase.from(table).select('*').limit(5000);
       const { data, error } = await query;
       if (error) return res.status(500).json({ success: false, error: error.message });
       return res.json({ success: true, data });
