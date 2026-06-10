@@ -269,7 +269,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
       <div><div style="color:#d0d8f0;font-size:12px;font-weight:600">Amministratore</div><div style="color:#3a4258;font-size:11px">Administrator</div></div>
     </div>
   </div>
-<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v4.1</div>
+<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v4.2</div>
 </div>
 
 <!-- ── MAIN ── -->
@@ -560,7 +560,18 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
     <input class="fi" style="width:220px" placeholder="Cerca SKU, nome..."/>
     <select class="fi" style="width:130px"><option>Tutte le categorie</option><option>Smartphone</option><option>PC & Mac</option><option>Accessori</option></select>
     <select class="fi" style="width:130px"><option>Tutti gli stati</option><option>Ok</option><option>Basso</option><option>Critico</option><option>In assistenza</option></select>
-    <select class="fi" style="width:160px" id="filter-condizione" onchange="filterCondizione(this.value)"><option value="">Tutte le condizioni</option><option value="nuovo">Nuovo</option><option value="come-nuovo">Usato come nuovo</option><option value="usato-ottime">Usato — Ottime cond.</option><option value="usato-buone">Usato — Buone cond.</option><option value="ricondizionato">Ricondizionato</option><option value="scatola-aperta">Scatola aperta</option><option value="rotto">Rotto / Ricambi</option></select>
+    <select class="fi" class="fi" style="width:160px" id="filter-condizione" onchange="filterCondizione(this.value)"><option value="">Tutte le condizioni</option>
+<option value="Nuovo">Nuovo</option>
+<option value="Ricondizionato certificato">Ricondizionato certificato</option>
+<option value="Usato - Come nuovo">Usato - Come nuovo</option>
+<option value="Usato - Ottime condizioni">Usato - Ottime condizioni</option>
+<option value="Usato - Buone condizioni">Usato - Buone condizioni</option>
+<option value="Usato - Condizioni accettabili">Usato - Condizioni accettabili</option>
+<option value="Collezione - Come nuovo">Collezione - Come nuovo</option>
+<option value="Collezione - Ottime condizioni">Collezione - Ottime condizioni</option>
+<option value="Collezione - Buone condizioni">Collezione - Buone condizioni</option>
+<option value="Collezione - Condizioni accettabili">Collezione - Condizioni accettabili</option>
+</select>
     <div class="ml rg">
       <button class="btn bg bxs" onclick="openModal('m-carico')"><i class="ti ti-arrow-bar-to-down"></i>Carico</button>
       <button class="btn bp" onclick="openModal('m-nuovo-sku')"><i class="ti ti-plus"></i>Nuovo SKU</button>
