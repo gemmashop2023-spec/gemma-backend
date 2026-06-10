@@ -574,7 +574,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
 </select>
     <div class="ml rg">
       <button class="btn bg bxs" onclick="openModal('m-carico')"><i class="ti ti-arrow-bar-to-down"></i>Carico</button>
-      <button class="btn bp" onclick="openModal('m-nuovo-sku')"><i class="ti ti-plus"></i>Nuovo SKU</button>
+      <button class="btn bp" onclick="openModal('m-nuovo-sku')"><i class="ti ti-plus"></i>Carica prodotto</button>
     </div>
   </div>
   <div class="tw"><table><thead><tr><th>SKU</th><th>Prodotto</th><th>Condiz.</th><th>Qtà</th><th>Soglia</th><th>Posizione</th><th>Stato</th><th>Assistenza</th><th>Costo acq.</th><th>Log.</th><th>Costo tot.</th><th>Prezzo vend.</th><th></th></tr></thead><tbody id="catalogo-tbody">
@@ -1602,7 +1602,7 @@ const pageMap = {  dashboard:    {title:'Dashboard',               action:{icon:
   rimborsi:     {title:'Rimborsi Amazon',         action:{icon:'ti-plus',label:'Nuovo rimborso'},   tabs:[]},
   cancellazioni:{title:'Cancellazioni',           action:{icon:'ti-refresh',label:'Sincronizza'},   tabs:[]},
   messaggi:     {title:'Messaggi cliente',        action:{icon:'ti-settings',label:'Impostazioni'}, tabs:[]},
-  magazzino:    {title:'Magazzino — Catalogo',    action:{icon:'ti-plus',label:'Nuovo SKU'},        tabs:[{l:'Catalogo',p:'magazzino'},{l:'Movimenti',p:'movimenti'},{l:'In assistenza',p:'assistenza',badge:'0',bclass:'badge-p'}]},
+  magazzino:    {title:'Magazzino — Catalogo',    action:{icon:'ti-plus',label:'Carica prodotto'},        tabs:[{l:'Catalogo',p:'magazzino'},{l:'Movimenti',p:'movimenti'},{l:'In assistenza',p:'assistenza',badge:'0',bclass:'badge-p'}]},
   movimenti:    {title:'Movimenti magazzino',     action:{icon:'ti-download',label:'Export'},       tabs:[{l:'Catalogo',p:'magazzino'},{l:'Movimenti',p:'movimenti'},{l:'In assistenza',p:'assistenza',badge:'0',bclass:'badge-p'}]},
   assistenza:   {title:'Articoli in assistenza',  action:{icon:'ti-plus',label:'Invia in assistenza',cb:'openModal(\"m-invia-assistenza\")'},tabs:[{l:'Catalogo',p:'magazzino'},{l:'Movimenti',p:'movimenti'},{l:'In assistenza',p:'assistenza',badge:'0',bclass:'badge-p'}]},
   acquisti:     {title:'Ordini acquisto',         action:{icon:'ti-plus',label:'Nuovo acquisto',cb:'openModal(\"m-nuovo-acquisto\")'},     tabs:[{l:'Acquisti',p:'acquisti'},{l:'Fulfillment',p:'fulfillment',badge:'0',bclass:'badge-w'},{l:'Contestazioni',p:'contestazioni-acquisti',badge:'0',bclass:'badge-w'},{l:'Resi a venditori',p:'resi-venditori'}], note:'ACQUISTI'},
