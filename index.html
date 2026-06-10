@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>GEMMA v4.6bac8 — Warehouse Manager</title>
+<title>GEMMA v4.7bac8 — Warehouse Manager</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css"/>
 <style>
 /* ── RESET & TOKENS ── */
@@ -269,7 +269,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
       <div><div style="color:#d0d8f0;font-size:12px;font-weight:600">Amministratore</div><div style="color:#3a4258;font-size:11px">Administrator</div></div>
     </div>
   </div>
-<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v4.6</div>
+<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v4.7</div>
 </div>
 
 <!-- ── MAIN ── -->
@@ -1602,7 +1602,7 @@ const pageMap = {  dashboard:    {title:'Dashboard',               action:{icon:
   rimborsi:     {title:'Rimborsi Amazon',         action:{icon:'ti-plus',label:'Nuovo rimborso'},   tabs:[]},
   cancellazioni:{title:'Cancellazioni',           action:{icon:'ti-refresh',label:'Sincronizza'},   tabs:[]},
   messaggi:     {title:'Messaggi cliente',        action:{icon:'ti-settings',label:'Impostazioni'}, tabs:[]},
-  magazzino:    {title:'Magazzino — Catalogo',    action:{icon:'ti-plus',label:'Carica prodotto'},        tabs:[{l:'Catalogo',p:'magazzino'},{l:'Movimenti',p:'movimenti'},{l:'In assistenza',p:'assistenza',badge:'0',bclass:'badge-p'}]},
+  magazzino:    {title:'Magazzino — Catalogo',    action:{icon:'ti-plus',label:'Carica prodotto', cb:"openModal('m-nuovo-sku')"},        tabs:[{l:'Catalogo',p:'magazzino'},{l:'Movimenti',p:'movimenti'},{l:'In assistenza',p:'assistenza',badge:'0',bclass:'badge-p'}]},
   movimenti:    {title:'Movimenti magazzino',     action:{icon:'ti-download',label:'Export'},       tabs:[{l:'Catalogo',p:'magazzino'},{l:'Movimenti',p:'movimenti'},{l:'In assistenza',p:'assistenza',badge:'0',bclass:'badge-p'}]},
   assistenza:   {title:'Articoli in assistenza',  action:{icon:'ti-plus',label:'Invia in assistenza',cb:'openModal(\"m-invia-assistenza\")'},tabs:[{l:'Catalogo',p:'magazzino'},{l:'Movimenti',p:'movimenti'},{l:'In assistenza',p:'assistenza',badge:'0',bclass:'badge-p'}]},
   acquisti:     {title:'Ordini acquisto',         action:{icon:'ti-plus',label:'Nuovo acquisto',cb:'openModal(\"m-nuovo-acquisto\")'},     tabs:[{l:'Acquisti',p:'acquisti'},{l:'Fulfillment',p:'fulfillment',badge:'0',bclass:'badge-w'},{l:'Contestazioni',p:'contestazioni-acquisti',badge:'0',bclass:'badge-w'},{l:'Resi a venditori',p:'resi-venditori'}], note:'ACQUISTI'},
