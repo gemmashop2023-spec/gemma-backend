@@ -269,7 +269,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
       <div><div style="color:#d0d8f0;font-size:12px;font-weight:600">Amministratore</div><div style="color:#3a4258;font-size:11px">Administrator</div></div>
     </div>
   </div>
-<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v4.3</div>
+<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v4.4</div>
 </div>
 
 <!-- ── MAIN ── -->
@@ -2727,6 +2727,24 @@ function selCond(el) {
 const API_URL = 'https://gemma-backend-zw8p.onrender.com'; // es. https://gemma-backend-xxx.vercel.app
 
 const IS_LIVE = true;
+
+// Mappatura condizioni Amazon -> eBay
+const CONDIZIONE_MAP = {
+  'Nuovo':                          'Nuovo',
+  'Ricondizionato certificato':     'Ricondizionato certificato',
+  'Usato - Come nuovo':             'Come nuovo - Usato',
+  'Usato - Ottime condizioni':      'Molto buono - Usato',
+  'Usato - Buone condizioni':       'Buono - Usato',
+  'Usato - Condizioni accettabili': 'Accettabile - Usato',
+  'Collezione - Come nuovo':        'Aperto - mai usato',
+  'Collezione - Ottime condizioni': 'Molto buono - Usato',
+  'Collezione - Buone condizioni':  'Buono - Usato',
+  'Collezione - Condizioni accettabili': 'Accettabile - Usato',
+};
+
+function condizioneEbay(condizioneAmazon) {
+  return CONDIZIONE_MAP[condizioneAmazon] || condizioneAmazon;
+}
 
 // Chiamata generica all'API
 async function api(action, extra = {}) {
