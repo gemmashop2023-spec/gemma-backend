@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>GEMMA v4.5bac8 — Warehouse Manager</title>
+<title>GEMMA v4.6bac8 — Warehouse Manager</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.11.0/dist/tabler-icons.min.css"/>
 <style>
 /* ── RESET & TOKENS ── */
@@ -269,7 +269,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
       <div><div style="color:#d0d8f0;font-size:12px;font-weight:600">Amministratore</div><div style="color:#3a4258;font-size:11px">Administrator</div></div>
     </div>
   </div>
-<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v4.5</div>
+<div style="font-size:10px;color:#3a4258;padding:4px 0 0 2px">GEMMA v4.6</div>
 </div>
 
 <!-- ── MAIN ── -->
@@ -1039,69 +1039,7 @@ tfoot td{background:#f9fafb;font-weight:700;font-size:12px;padding:10px 12px;bor
     <div class="mf"><button class="btn bg" onclick="closeModal('m-carico')">Annulla</button><button class="btn bp"><i class="ti ti-arrow-bar-to-down"></i>Conferma carico</button></div>
   </div>
 </div>
-<div class="mbg hidden" id="m-nuovo-sku">
-  <div class="modal" style="width:560px">
-    <div class="mh">
-      <div style="font-size:15px;font-weight:700">Carica prodotto in magazzino</div>
-      <button class="mc" onclick="closeModal('m-nuovo-sku')"><i class="ti ti-x"></i></button>
-    </div>
-    <div class="mb">
-      <div class="fr" style="margin-bottom:12px">
-        <div class="fg" style="margin-bottom:0">
-          <div class="fl">ASIN <span style="color:var(--red)">*</span></div>
-          <input class="fi" id="carico-asin" placeholder="es. B08N5KWB9H"/>
-        </div>
-        <div class="fg" style="margin-bottom:0">
-          <div class="fl">SKU (opzionale)</div>
-          <input class="fi" id="carico-sku" placeholder="es. LG-28TN515S-BK"/>
-        </div>
-      </div>
-      <div class="fg">
-        <div class="fl">Nome prodotto <span style="color:var(--red)">*</span></div>
-        <input class="fi" id="carico-nome" placeholder="es. LG 28TN515S Monitor TV 28 pollici"/>
-      </div>
-      <div class="fr" style="margin-bottom:12px">
-        <div class="fg" style="margin-bottom:0">
-          <div class="fl">Condizione Amazon <span style="color:var(--red)">*</span></div>
-          <select class="fi" id="carico-condizione2">
-            <option value="Nuovo">Nuovo</option>
-            <option value="Ricondizionato certificato">Ricondizionato certificato</option>
-            <option value="Usato - Come nuovo">Usato - Come nuovo</option>
-            <option value="Usato - Ottime condizioni" selected>Usato - Ottime condizioni</option>
-            <option value="Usato - Buone condizioni">Usato - Buone condizioni</option>
-            <option value="Usato - Condizioni accettabili">Usato - Condizioni accettabili</option>
-            <option value="Collezione - Come nuovo">Collezione - Come nuovo</option>
-            <option value="Collezione - Ottime condizioni">Collezione - Ottime condizioni</option>
-            <option value="Collezione - Buone condizioni">Collezione - Buone condizioni</option>
-            <option value="Collezione - Condizioni accettabili">Collezione - Condizioni accettabili</option>
-          </select>
-        </div>
-        <div class="fg" style="margin-bottom:0">
-          <div class="fl">Quantità <span style="color:var(--red)">*</span></div>
-          <input class="fi" id="carico-qty" type="number" min="1" value="1"/>
-        </div>
-      </div>
-      <div class="fr" style="margin-bottom:12px">
-        <div class="fg" style="margin-bottom:0">
-          <div class="fl">Prezzo acquisto (€)</div>
-          <input class="fi" id="carico-prezzo" type="number" min="0" step="0.01" placeholder="0.00"/>
-        </div>
-        <div class="fg" style="margin-bottom:0">
-          <div class="fl">Posizione magazzino</div>
-          <input class="fi" id="carico-posizione" placeholder="es. Scaffale A3"/>
-        </div>
-      </div>
-      <div class="fg">
-        <div class="fl">Note</div>
-        <input class="fi" id="carico-note" placeholder="es. Piccolo graffio sul bordo"/>
-      </div>
-    </div>
-    <div class="mf">
-      <button class="btn bg" onclick="closeModal('m-nuovo-sku')">Annulla</button>
-      <button class="btn bp" onclick="salvaCaricoProdotto()"><i class="ti ti-check"></i>Carica in magazzino</button>
-    </div>
-  </div>
-</div>
+
 <div class="mbg hidden" id="m-nuovo-acquisto">
   <div class="modal" style="width:600px">
     <div class="mh">
@@ -4701,5 +4639,68 @@ checkAuth();
   </div>
 </div>
 
+<div class="mbg hidden" id="m-nuovo-sku">
+  <div class="modal" style="width:560px">
+    <div class="mh">
+      <div style="font-size:15px;font-weight:700">Carica prodotto in magazzino</div>
+      <button class="mc" onclick="closeModal('m-nuovo-sku')"><i class="ti ti-x"></i></button>
+    </div>
+    <div class="mb">
+      <div class="fr" style="margin-bottom:12px">
+        <div class="fg" style="margin-bottom:0">
+          <div class="fl">ASIN <span style="color:var(--red)">*</span></div>
+          <input class="fi" id="carico-asin" placeholder="es. B08N5KWB9H"/>
+        </div>
+        <div class="fg" style="margin-bottom:0">
+          <div class="fl">SKU (opzionale)</div>
+          <input class="fi" id="carico-sku" placeholder="es. LG-28TN515S-BK"/>
+        </div>
+      </div>
+      <div class="fg">
+        <div class="fl">Nome prodotto <span style="color:var(--red)">*</span></div>
+        <input class="fi" id="carico-nome" placeholder="es. LG 28TN515S Monitor TV 28 pollici"/>
+      </div>
+      <div class="fr" style="margin-bottom:12px">
+        <div class="fg" style="margin-bottom:0">
+          <div class="fl">Condizione Amazon <span style="color:var(--red)">*</span></div>
+          <select class="fi" id="carico-condizione2">
+            <option value="Nuovo">Nuovo</option>
+            <option value="Ricondizionato certificato">Ricondizionato certificato</option>
+            <option value="Usato - Come nuovo">Usato - Come nuovo</option>
+            <option value="Usato - Ottime condizioni" selected>Usato - Ottime condizioni</option>
+            <option value="Usato - Buone condizioni">Usato - Buone condizioni</option>
+            <option value="Usato - Condizioni accettabili">Usato - Condizioni accettabili</option>
+            <option value="Collezione - Come nuovo">Collezione - Come nuovo</option>
+            <option value="Collezione - Ottime condizioni">Collezione - Ottime condizioni</option>
+            <option value="Collezione - Buone condizioni">Collezione - Buone condizioni</option>
+            <option value="Collezione - Condizioni accettabili">Collezione - Condizioni accettabili</option>
+          </select>
+        </div>
+        <div class="fg" style="margin-bottom:0">
+          <div class="fl">Quantità <span style="color:var(--red)">*</span></div>
+          <input class="fi" id="carico-qty" type="number" min="1" value="1"/>
+        </div>
+      </div>
+      <div class="fr" style="margin-bottom:12px">
+        <div class="fg" style="margin-bottom:0">
+          <div class="fl">Prezzo acquisto (€)</div>
+          <input class="fi" id="carico-prezzo" type="number" min="0" step="0.01" placeholder="0.00"/>
+        </div>
+        <div class="fg" style="margin-bottom:0">
+          <div class="fl">Posizione magazzino</div>
+          <input class="fi" id="carico-posizione" placeholder="es. Scaffale A3"/>
+        </div>
+      </div>
+      <div class="fg">
+        <div class="fl">Note</div>
+        <input class="fi" id="carico-note" placeholder="es. Piccolo graffio sul bordo"/>
+      </div>
+    </div>
+    <div class="mf">
+      <button class="btn bg" onclick="closeModal('m-nuovo-sku')">Annulla</button>
+      <button class="btn bp" onclick="salvaCaricoProdotto()"><i class="ti ti-check"></i>Carica in magazzino</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
